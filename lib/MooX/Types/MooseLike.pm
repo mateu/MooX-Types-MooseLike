@@ -7,7 +7,7 @@ use List::Util;
 
 use base qw(Exporter);
 our @EXPORT =
-  qw(Num Int ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef Bool);
+  qw(Num Int Bool ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef);
 
 =head1 Methods
 
@@ -37,6 +37,20 @@ quote_sub 'MooX::Types::MooseLike::is_Int' => q{
 
 sub Int {
     __PACKAGE__->can('is_Int');
+}
+
+=head2 Bool
+
+A boolean 1|0 type
+
+=cut
+
+quote_sub 'MooX::Types::MooseLike::is_Bool' => q{
+        die "$_[0] is not a Boolean" if ($_[0] != 0 && $_[0] != 1);
+};
+
+sub Bool {
+    __PACKAGE__->can('is_Bool');
 }
 
 =head2 ArrayRef
@@ -131,20 +145,6 @@ quote_sub 'MooX::Types::MooseLike::is_NoRef' => q{
 
 sub NoRef {
     __PACKAGE__->can('is_NoRef');
-}
-
-=head2 Bool
-
-A boolean 1|0 type
-
-=cut
-
-quote_sub 'MooX::Types::MooseLike::is_Bool' => q{
-        die "$_[0] is not a Boolean" if ($_[0] != 0 && $_[0] != 1);
-};
-
-sub Bool {
-    __PACKAGE__->can('is_Bool');
 }
 
 1;
