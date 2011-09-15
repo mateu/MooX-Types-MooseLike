@@ -93,8 +93,6 @@ MooX::Types::MooseLike - Moose like types for Moo
 
 =head1 SYNOPSIS
 
-Give your Moo attributes a Moose like type:
-
     package MyPackage;
     use Moo;
     use MooX::Types::MooseLike;
