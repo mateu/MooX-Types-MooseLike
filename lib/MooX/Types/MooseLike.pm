@@ -9,7 +9,26 @@ use base qw(Exporter);
 our @EXPORT =
   qw(Num Int Bool ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef);
 
-=head1 Methods
+=head1 NAME
+
+MooX::Types::MooseLike - Moose like types for Moo
+
+=head1 SYNOPSIS
+
+Give your Moo attributes a Moose like type:
+
+    package MyPackage;
+    use Moo;
+    use MooX::Types::MooseLike;
+    
+    has "beers_by_day_of_week" => (
+        isa => HashRef
+    );
+    has "current_BAC" => (
+        isa => Num
+    );
+
+=head1 METHODS
 
 =head2 Num
 
