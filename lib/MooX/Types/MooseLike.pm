@@ -1,11 +1,13 @@
 use strictures 1;
+
 package MooX::Types::MooseLike;
 use Sub::Quote qw(quote_sub);
 use Scalar::Util;
 use List::Util;
 
 use base qw(Exporter);
-our @EXPORT = qw(Num Int ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef Bool);
+our @EXPORT =
+  qw(Num Int ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef Bool);
 
 =head1 Methods
 
@@ -15,12 +17,12 @@ A number type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_Num' =>  q{
+quote_sub 'MooX::Types::MooseLike::is_Num' => q{
         die "$_[0] is not a Number!" unless Scalar::Util::looks_like_number($_[0]);
 };
 
 sub Num {
-    __PACKAGE__->can('is_Num'); 
+    __PACKAGE__->can('is_Num');
 }
 
 =head2 Int
@@ -33,8 +35,8 @@ quote_sub 'MooX::Types::MooseLike::is_Int' => q{
         die "$_[0] is not an Integer!" unless ((Scalar::Util::looks_like_number($_[0])) && ($_[0] == int $_[0]));
 };
 
-sub Int { 
-    __PACKAGE__->can('is_Int'); 
+sub Int {
+    __PACKAGE__->can('is_Int');
 }
 
 =head2 ArrayRef
@@ -43,9 +45,10 @@ An ArrayRef type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_ArrayRef' => q{ die "$_[0] is not an ArrayRef!" if ref($_[0]) ne 'ARRAY' };
+quote_sub 'MooX::Types::MooseLike::is_ArrayRef' =>
+  q{ die "$_[0] is not an ArrayRef!" if ref($_[0]) ne 'ARRAY' };
 
-sub ArrayRef {  
+sub ArrayRef {
     __PACKAGE__->can('is_ArrayRef');
 }
 
@@ -55,9 +58,10 @@ A HashRef type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_HashRef' => q{ die "$_[0] is not a HashRef!" if ref($_[0]) ne 'HASH' };
+quote_sub 'MooX::Types::MooseLike::is_HashRef' =>
+  q{ die "$_[0] is not a HashRef!" if ref($_[0]) ne 'HASH' };
 
-sub HashRef {  
+sub HashRef {
     __PACKAGE__->can('is_HashRef');
 }
 
@@ -67,10 +71,11 @@ A CodeRef type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_CodeRef' => q{ die "$_[0] is not a CodeRef!" if ref($_[0]) ne 'CODE' };
+quote_sub 'MooX::Types::MooseLike::is_CodeRef' =>
+  q{ die "$_[0] is not a CodeRef!" if ref($_[0]) ne 'CODE' };
 
-sub CodeRef { 
-     __PACKAGE__->can('is_CodeRef');
+sub CodeRef {
+    __PACKAGE__->can('is_CodeRef');
 }
 
 =head2 RegexpRef
@@ -79,10 +84,11 @@ A regular expression reference type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_RegexpRef' => q{ die "$_[0] is not a RegexpRef!" if ref($_[0]) ne 'Regexp' };
+quote_sub 'MooX::Types::MooseLike::is_RegexpRef' =>
+  q{ die "$_[0] is not a RegexpRef!" if ref($_[0]) ne 'Regexp' };
 
 sub RegexpRef {
-	__PACKAGE__->can('is_RegexpRef');
+    __PACKAGE__->can('is_RegexpRef');
 }
 
 =head2 GlobRef
@@ -91,7 +97,8 @@ A glob reference type
 
 =cut
 
-quote_sub 'MooX::Types::MooseLike::is_GlobRef' => q{ die "$_[0] is not a GlobRef!" if ref($_[0]) ne 'GLOB' };
+quote_sub 'MooX::Types::MooseLike::is_GlobRef' =>
+  q{ die "$_[0] is not a GlobRef!" if ref($_[0]) ne 'GLOB' };
 
 sub GlobRef {
     __PACKAGE__->can('is_GlobRef');
@@ -109,7 +116,7 @@ quote_sub 'MooX::Types::MooseLike::is_AHRef' => q{
 };
 
 sub AHRef {
-	__PACKAGE__->can('is_AHRef');
+    __PACKAGE__->can('is_AHRef');
 }
 
 =head2 NoRef
@@ -123,7 +130,7 @@ quote_sub 'MooX::Types::MooseLike::is_NoRef' => q{
 };
 
 sub NoRef {
-     __PACKAGE__->can('is_NoRef');
+    __PACKAGE__->can('is_NoRef');
 }
 
 =head2 Bool
@@ -136,8 +143,8 @@ quote_sub 'MooX::Types::MooseLike::is_Bool' => q{
         die "$_[0] is not a Boolean" if ($_[0] != 0 && $_[0] != 1);
 };
 
-sub Bool {  
-	__PACKAGE__->can('is_Bool');
+sub Bool {
+    __PACKAGE__->can('is_Bool');
 }
 
 1;
