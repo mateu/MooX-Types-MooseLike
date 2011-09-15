@@ -102,7 +102,7 @@ MooX::Types::MooseLike - Moose like types for Moo
 
     package MyPackage;
     use Moo;
-    use MooX::Types::MooseLike;
+    use MooX::Types::MooseLike qw(:all)
     
     has "beers_by_day_of_week" => (
         isa => HashRef
