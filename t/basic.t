@@ -1,7 +1,7 @@
 #use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
-use MooX::Types::MooseLike;
+use MooX::Types::MooseLike qw(:all);
 
 has 'a_number' => (
     is => 'ro',
