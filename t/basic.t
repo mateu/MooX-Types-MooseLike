@@ -1,4 +1,3 @@
-#use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
 use MooX::Types::MooseLike qw(:all);
@@ -62,7 +61,7 @@ ok(MooX::Types::MooseLike::Test->new(an_integer => -1), 'Int');
 like(
     exception { MooX::Types::MooseLike::Test->new(an_integer => 1.01) }, 
     qr/is not an Integer/,
-    'a non-integer is an exception when we want a Integer'
+    'a non-integer is an exception when we want an Integer'
 );
 
 # Test ArrayRef
@@ -83,12 +82,12 @@ ok(MooX::Types::MooseLike::Test->new(a_hash => {}), 'HashRef');
 like(
     exception { MooX::Types::MooseLike::Test->new(a_hash => []) }, 
     qr/ARRAY.*?is not a HashRef/,
-    'an ArrayRef is an exception when we want an HashRef'
+    'an ArrayRef is an exception when we want a HashRef'
 );
 like(
     exception { MooX::Types::MooseLike::Test->new(a_hash => 'string') }, 
     qr/string is not a HashRef/,
-    'a String is an exception when we want an HashRef'
+    'a String is an exception when we want a HashRef'
 );
 
 # Test CodeRef
@@ -96,7 +95,7 @@ ok(MooX::Types::MooseLike::Test->new(a_code => sub {}), 'CodeRef');
 like(
     exception { MooX::Types::MooseLike::Test->new(a_code => []) }, 
     qr/ARRAY.*?is not a CodeRef/,
-    'an ArrayRef is an exception when we want an CodeRef'
+    'an ArrayRef is an exception when we want a CodeRef'
 );
 
 # Test RegexpRef
@@ -104,7 +103,7 @@ ok(MooX::Types::MooseLike::Test->new(a_regex => qr{}), 'RegexpRef');
 like(
     exception { MooX::Types::MooseLike::Test->new(a_regex => []) }, 
     qr/ARRAY.*?is not a RegexpRef/,
-    'an ArrayRef is an exception when we want an RegexpRef'
+    'an ArrayRef is an exception when we want a RegexpRef'
 );
 
 # Test GlobRef
@@ -114,7 +113,7 @@ ok(MooX::Types::MooseLike::Test->new(a_glob => \*FOO), 'GlobRef');
 like(
     exception { MooX::Types::MooseLike::Test->new(a_glob => []) }, 
     qr/ARRAY.*?is not a GlobRef/,
-    'an ArrayRef is an exception when we want an GlobRef'
+    'an ArrayRef is an exception when we want a GlobRef'
 );
 
 # Test AHRef
@@ -130,7 +129,7 @@ ok(MooX::Types::MooseLike::Test->new(a_noref => 'yarn'), 'NoRef');
 like(
     exception { MooX::Types::MooseLike::Test->new(a_noref => []) }, 
     qr/ARRAY.*?is a reference/,
-    'an ArrayRef is an exception when we want an NoRef'
+    'an ArrayRef is an exception when we want a NoRef'
 );
 
 # Test Bool
