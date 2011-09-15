@@ -6,11 +6,14 @@ use Scalar::Util;
 use List::Util;
 
 use base qw(Exporter);
-our @EXPORT =
-  qw(Num Int Bool ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef);
+our @EXPORT_OK = qw(
+  Num Int Bool ArrayRef HashRef CodeRef RegexpRef GlobRef AHRef NoRef
+);
+our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 quote_sub 'MooX::Types::MooseLike::assert_Num' => q{
-        die "$_[0] is not a Number!" unless Scalar::Util::looks_like_number($_[0]);
+        die "$_[0] is not a Number!" 
+          unless Scalar::Util::looks_like_number($_[0]);
 };
 
 sub Num {
@@ -18,7 +21,8 @@ sub Num {
 }
 
 quote_sub 'MooX::Types::MooseLike::assert_Int' => q{
-        die "$_[0] is not an Integer!" unless ((Scalar::Util::looks_like_number($_[0])) && ($_[0] == int $_[0]));
+        die "$_[0] is not an Integer!" 
+          unless ((Scalar::Util::looks_like_number($_[0])) && ($_[0] == int $_[0]));
 };
 
 sub Int {
@@ -70,7 +74,10 @@ sub GlobRef {
 
 quote_sub 'MooX::Types::MooseLike::assert_AHRef' => q{
     die "$_[0] is not an ArrayRef[HashRef]!"
-      if ( (ref($_[0]) ne 'ARRAY') || (!$_[0]->[0]) || ( List::Util::first { ref($_) ne 'HASH' } @{$_[0]} ) )
+      if ( (ref($_[0]) ne 'ARRAY') 
+           || (!$_[0]->[0]) 
+           || ( List::Util::first { ref($_) ne 'HASH' } @{$_[0]} )
+      );
 };
 
 sub AHRef {
@@ -152,7 +159,8 @@ Mateu Hunter C<hunter@missoula.org>
 
 =head1 THANKS
 
-mst provided the implementation suggestion of using 'can' on a quoted sub to define a type (subroutine).
+mst provided the implementation suggestion of using 'can' on a quoted sub 
+to define a type (subroutine).
 
 =head1 COPYRIGHT
 
