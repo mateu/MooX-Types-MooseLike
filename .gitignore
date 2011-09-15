@@ -1,2 +1,4 @@
 .includepath
 .project
+.build
+MooX-Types-MooseLike-*
