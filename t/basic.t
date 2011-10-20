@@ -1,3 +1,4 @@
+use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
 use MooX::Types::MooseLike qw(:all);
