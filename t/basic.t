@@ -3,6 +3,22 @@ package MooX::Types::MooseLike::Test;
 use Moo;
 use MooX::Types::MooseLike qw(:all);
 
+has 'a_defined' => (
+    is => 'ro',
+    isa => Defined,
+);
+has 'an_undef' => (
+    is => 'ro',
+    isa => Undef,
+);
+has 'a_value' => (
+    is => 'ro',
+    isa => Value,
+);
+has 'a_bool' => (
+    is => 'ro',
+    isa => Bool,
+);
 has 'a_number' => (
     is => 'ro',
     isa => Num,
@@ -31,23 +47,73 @@ has 'a_glob' => (
     is => 'ro',
     isa => GlobRef,
 );
+has 'a_filehandle' => (
+    is => 'ro',
+    isa => FileHandle,
+);
+has 'an_object' => (
+    is => 'ro',
+    isa => Object,
+);
 has 'a_ahref' => (
     is => 'ro',
     isa => AHRef,
 );
-has 'a_noref' => (
+has 'legal_age' => (
     is => 'ro',
-    isa => NoRef,
-);
-has 'a_bool' => (
-    is => 'ro',
-    isa => Bool,
+    isa => sub { die "$_[0] is not of legal age" unless (is_Int($_[0]) && $_[0] > 17) },
 );
 
 package main;
 use strictures 1;
 use Test::More;
 use Test::Fatal;
+use IO::Handle;
+use MooX::Types::MooseLike qw(:all);
+
+ok( is_Str('x'),                  'is_Str');
+ok(!is_Str([]),                   'is_Str fails on ArrayRef');
+ok( is_Num(3.142),                'is_Num');
+ok( is_Num('9'),                  'is_Num');
+ok(!is_Num('xxx'),                'is_Num fails on a non-numeric string');
+ok( is_Int(-3),                   'is_Int');
+ok(!is_Int(3.142),                'is_Int fails on a Float');
+ok( is_Bool('0'),                 '0 is_Bool');
+ok( is_Bool(''),                  'empty string is_Bool');
+ok( is_Bool(),                    'undef is_Bool');
+ok( is_Bool(1),                   '1 is_Bool');
+ok(!is_Bool(-1),                  'is_Bool fails on -1');
+ok( is_ArrayRef([]),              'is_ArrayRef');
+ok(!is_ArrayRef('1'),             'is_ArrayRef fails on 1');
+ok( is_HashRef({}),               'is_HashRef');
+ok(!is_HashRef([]),               'is_HashRef fails on []');
+ok( is_CodeRef(sub {}),           'is_CodeRef');
+ok(!is_CodeRef({}),               'is_CodeRef fails on {}');
+ok( is_Object(IO::Handle->new),   'Object');
+ok(!is_Object({}),               'is_Object fails on HashRef');
+
+# Undef
+ok(MooX::Types::MooseLike::Test->new(an_undef => undef), 'Undef');
+like(
+    exception { MooX::Types::MooseLike::Test->new(an_undef => '') }, 
+    qr/is not undef/,
+    'empty string is an exception when we want an Undef type'
+);
+# Defined
+ok(MooX::Types::MooseLike::Test->new(a_defined => ''), 'Defined');
+like(
+    exception { MooX::Types::MooseLike::Test->new(a_defined => undef) }, 
+    qr/is not defined/,
+    'undef is an exception when we want a Defined type'
+);
+
+# Test Num
+ok(MooX::Types::MooseLike::Test->new(an_integer => -1), 'Int');
+like(
+    exception { MooX::Types::MooseLike::Test->new(an_integer => 1.01) }, 
+    qr/is not an Integer/,
+    'a non-integer is an exception when we want an Integer'
+);
 
 # Test Num
 ok(MooX::Types::MooseLike::Test->new(a_number => 3.14), 'Num');
@@ -117,6 +183,22 @@ like(
     'an ArrayRef is an exception when we want a GlobRef'
 );
 
+# Test FileHandle
+ok(MooX::Types::MooseLike::Test->new(a_filehandle => IO::Handle->new), 'FileHandle');
+like(
+    exception { MooX::Types::MooseLike::Test->new(a_filehandle => []) }, 
+    qr/ARRAY.*?is not a FileHandle/,
+    'an ArrayRef is an exception when we want a FileHandle'
+);
+
+# Test Object
+ok(MooX::Types::MooseLike::Test->new(an_object => IO::Handle->new), 'Object');
+like(
+    exception { MooX::Types::MooseLike::Test->new(an_object => []) }, 
+    qr/ARRAY.*?is not an Object/,
+    'an ArrayRef is an exception when we want an Object'
+);
+
 # Test AHRef
 ok(MooX::Types::MooseLike::Test->new(a_ahref => [{}]), 'AHRef');
 like(
@@ -125,12 +207,12 @@ like(
     'an ArrayRef is an exception when we want an AHRef'
 );
 
-# Test NoRef
-ok(MooX::Types::MooseLike::Test->new(a_noref => 'yarn'), 'NoRef');
+# Test Value
+ok(MooX::Types::MooseLike::Test->new(a_value => 'yarn'), 'Value');
 like(
-    exception { MooX::Types::MooseLike::Test->new(a_noref => []) }, 
-    qr/ARRAY.*?is a reference/,
-    'an ArrayRef is an exception when we want a NoRef'
+    exception { MooX::Types::MooseLike::Test->new(a_value => []) }, 
+    qr/ARRAY.*?is not a value/,
+    'an ArrayRef is an exception when we want a Value'
 );
 
 # Test Bool
@@ -139,7 +221,16 @@ my $false_boolean_value = 0.001;
 like(
     exception { MooX::Types::MooseLike::Test->new(a_bool => $false_boolean_value) }, 
     qr/$false_boolean_value is not a Boolean/,
-    'an non-boolean is an exception when we want a Bool'
+    'a non-boolean is an exception when we want a Bool'
+);
+
+# Test legal_age attribute which has an 'isa' that uses 'is_Int'
+ok(MooX::Types::MooseLike::Test->new(legal_age => 18), 'Legal Age');
+my $minor_age = 17;
+like(
+    exception { MooX::Types::MooseLike::Test->new(legal_age => $minor_age) }, 
+    qr/$minor_age is not of legal age/,
+    'an integer less than 18 is an exception when we want a legal age'
 );
 
 done_testing;

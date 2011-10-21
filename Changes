@@ -1,4 +1,13 @@
 {{$NEXT}}
+        ADDITIONS:
+        * Most non-parameterized types of the basic Moose type hierarchy
+          are now supported.  Exceptions are ClassName and RoleName
+        * Ability to re-use the type tests to build new ones via is_$type()
+        IMPROVEMENTS:
+        * Refactored generation of assert_Foo() to use a dispatch table
+          and captures for quote_sub.
+        FIXES:
+        * Add AutoPrereq to dist.ini so Makefile.PL gets dependencies generated
 
 0.01    2011-09-15
         Initial Release
