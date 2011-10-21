@@ -13,86 +13,86 @@ my %types = (
   Any => {
     test    => sub { 1 },
     message => sub { "If you get here you've achieved the impossible, congrats." }
-  }, 
+    },
   Item => {
     test    => sub { 1 },
     message => sub { "If you get here you've achieved the impossible, congrats" }
-  }, 
+    },
   Undef => {
     test    => sub { !defined($_[0]) },
     message => sub { "$_[0] is not undef" }
-  },
-  # Note the single quotes so $_[0] is not interpreted - undef and strictures => FATAL
+    },
+# Note the single quotes so $_[0] is not interpreted - undef and strictures => FATAL
   Defined => {
     test    => sub { defined($_[0]) },
-    message => sub { '$_[0] is not defined' }    
-  },
+    message => sub { '$_[0] is not defined' }
+    },
   Bool => {
-#  	test    => sub { $_[0] == 0 || $_[0] == 1 },
-  	test    => sub {  !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0' },
-  	message => sub { "$_[0] is not a Boolean" },
-  },
+    #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
+    test    => sub {  !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0' },
+    message => sub { "$_[0] is not a Boolean" },
+    },
   Value => {
     test    => sub { !ref($_[0]) },
     message => sub { "$_[0] is not a value" }
-  }, 
+    },
   Ref => {
     test    => sub { ref($_[0]) },
     message => sub { "$_[0] is not a reference" }
-  }, 
+    },
   Str => {
     test    => sub { ref(\$_[0]) eq 'SCALAR' },
     message => sub { "$_[0] is not a string" }
-  }, 
+    },
   Num => {
-  	test    => sub { Scalar::Util::looks_like_number($_[0]) },
-  	message => sub { "$_[0] is not a Number!" },
-  },
+    test    => sub { Scalar::Util::looks_like_number($_[0]) },
+    message => sub { "$_[0] is not a Number!" },
+    },
   Int => {
 #  	test    => sub { Scalar::Util::looks_like_number($_[0]) && ($_[0] == int $_[0]) },
-  	test    => sub { "$_[0]" =~ /^-?[0-9]+$/ },
-  	message => sub { "$_[0] is not an Integer!" },
-  },
+    test    => sub { "$_[0]" =~ /^-?[0-9]+$/ },
+    message => sub { "$_[0] is not an Integer!" },
+    },
   ScalarRef  => {
     test    => sub { ref($_[0]) eq 'SCALAR' },
     message => sub { "$_[0] is not an ScalarRef!" },
-  },
+    },
   ArrayRef  => {
-  	test    => sub { ref($_[0]) eq 'ARRAY' },
-  	message => sub { "$_[0] is not an ArrayRef!" },
-  },
+    test    => sub { ref($_[0]) eq 'ARRAY' },
+    message => sub { "$_[0] is not an ArrayRef!" },
+    },
   HashRef  => {
-  	test    => sub { ref($_[0]) eq 'HASH' },
-  	message => sub { "$_[0] is not a HashRef!" },
-  },
+    test    => sub { ref($_[0]) eq 'HASH' },
+    message => sub { "$_[0] is not a HashRef!" },
+    },
   CodeRef  => {
-  	test    => sub { ref($_[0]) eq 'CODE' },
-  	message => sub { "$_[0] is not a CodeRef!" },
-  },
+    test    => sub { ref($_[0]) eq 'CODE' },
+    message => sub { "$_[0] is not a CodeRef!" },
+    },
   RegexpRef  => {
-  	test    => sub { ref($_[0]) eq 'Regexp' },
-  	message => sub { "$_[0] is not a RegexpRef!" },
-  },
+    test    => sub { ref($_[0]) eq 'Regexp' },
+    message => sub { "$_[0] is not a RegexpRef!" },
+    },
   GlobRef => {
-  	test    => sub { ref($_[0]) eq 'GLOB' },
-  	message => sub { "$_[0] is not a GlobRef!" },
-  }, 
+    test    => sub { ref($_[0]) eq 'GLOB' },
+    message => sub { "$_[0] is not a GlobRef!" },
+    },
   FileHandle  => {
-  	test    => sub { Scalar::Util::openhandle($_[0]) || (blessed($_[0]) && $_[0]->isa("IO::Handle")) },
-  	message => sub { "$_[0] is not a FileHandle!" },
-  },
+    test    => sub { Scalar::Util::openhandle($_[0]) || (blessed($_[0]) && $_[0]->isa("IO::Handle")) },
+    message => sub { "$_[0] is not a FileHandle!" },
+    },
   Object => {
-  	test    => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
-  	message => sub { "$_[0] is not an Object!" },
-  },  
+    test    => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
+    message => sub { "$_[0] is not an Object!" },
+    },
   AHRef  => {
-  	test    => sub { (ref($_[0]) eq 'ARRAY') 
-                        && ($_[0]->[0]) 
-                        && ( List::Util::first { ref($_) eq 'HASH' } @{$_[0]} )
-  	           },
-  	message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
-  },
-);
+    test    => sub { (ref($_[0]) eq 'ARRAY')
+        && ($_[0]->[0])
+        && ( List::Util::first { ref($_) eq 'HASH' } @{$_[0]} )
+      },
+    message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
+    },
+  );
 
 my @types = keys %types;
 # Add is_Type (test) to the exports
@@ -102,35 +102,33 @@ our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 use Data::Dumper::Concise;
 foreach my $type (keys %{types}) {
-	next unless (defined $types{$type}->{message});
-	
-	my $assertion = 'assert_' . $type;
-    my $name = __PACKAGE__ . '::' . $assertion;
-    my $msg; $$msg   = $types{$type}->{message};
-    my $test; $$test = $types{$type}->{test};
+  next unless (defined $types{$type}->{message});
 
-    quote_sub $name => q{
+  my $assertion = 'assert_' . $type;
+  my $name = __PACKAGE__ . '::' . $assertion;
+  my $msg; $$msg   = $types{$type}->{message};
+  my $test; $$test = $types{$type}->{test};
+
+  quote_sub $name => q{
         die $$msg->(@_) if not $$test->(@_);
-    }, { '$msg' => \$msg, '$test' => \$test };
-    
-   {
-        no strict 'refs'; ## no critic
-        # Construct the Type
-        *$type = sub {
-    	   __PACKAGE__->can($assertion);
-        };
-        # Make the type test available as: is_Type
-        my $is_type = 'is_' . $type;
-        *$is_type = sub {
-        	# Say good-bye to your self
-        	#shift;
-        	die "Exception: ${is_type}() can only take one argument.\nSuggestion: Maybe you want to pass a reference?\n" 
-        	  if defined $_[1];
-        	$$test->($_[0]);
-        }
-   }
-}
+}, { '$msg' => \$msg, '$test' => \$test };
 
+  {
+    no strict 'refs'; ## no critic
+    # Construct the Type
+    *$type = sub {
+      __PACKAGE__->can($assertion);
+      };
+
+    # Make the type test available as: is_Type
+    my $is_type = 'is_' . $type;
+    *$is_type = sub {
+      die "Exception: ${is_type}() can only take one argument.\nSuggestion: Maybe you want to pass a reference?\n"
+        if defined $_[1];
+      $$test->($_[0]);
+      }
+  }
+}
 
 1;
 
