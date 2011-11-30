@@ -100,17 +100,16 @@ my @tests = map { 'is_' . $_ } @types;
 our @EXPORT_OK = (@types, @tests);
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
-use Data::Dumper::Concise;
 foreach my $type (keys %{types}) {
   next unless (defined $types{$type}->{message});
 
   my $assertion = 'assert_' . $type;
   my $name = __PACKAGE__ . '::' . $assertion;
-  my $msg; $$msg   = $types{$type}->{message};
-  my $test; $$test = $types{$type}->{test};
+  my $msg  = $types{$type}->{message};
+  my $test = $types{$type}->{test};
 
   quote_sub $name => q{
-        die $$msg->(@_) if not $$test->(@_);
+        die $msg->(@_) if not $test->(@_);
 }, { '$msg' => \$msg, '$test' => \$test };
 
   {
@@ -125,7 +124,7 @@ foreach my $type (keys %{types}) {
     *$is_type = sub {
       die "Exception: ${is_type}() can only take one argument.\nSuggestion: Maybe you want to pass a reference?\n"
         if defined $_[1];
-      $$test->($_[0]);
+      $test->($_[0]);
       }
   }
 }
