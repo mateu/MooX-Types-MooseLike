@@ -105,11 +105,11 @@ foreach my $type (keys %{types}) {
 
   my $assertion = 'assert_' . $type;
   my $name = __PACKAGE__ . '::' . $assertion;
-  my $msg; $$msg   = $types{$type}->{message};
-  my $test; $$test = $types{$type}->{test};
+  my $msg  = $types{$type}->{message};
+  my $test = $types{$type}->{test};
 
   quote_sub $name => q{
-        die $$msg->(@_) if not $$test->(@_);
+        die $msg->(@_) if not $test->(@_);
 }, { '$msg' => \$msg, '$test' => \$test };
 
   {
@@ -124,7 +124,7 @@ foreach my $type (keys %{types}) {
     *$is_type = sub {
       die "Exception: ${is_type}() can only take one argument.\nSuggestion: Maybe you want to pass a reference?\n"
         if defined $_[1];
-      $$test->($_[0]);
+      $test->($_[0]);
       }
   }
 }
