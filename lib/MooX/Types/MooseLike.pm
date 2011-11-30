@@ -100,7 +100,6 @@ my @tests = map { 'is_' . $_ } @types;
 our @EXPORT_OK = (@types, @tests);
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
-use Data::Dumper::Concise;
 foreach my $type (keys %{types}) {
   next unless (defined $types{$type}->{message});
 
