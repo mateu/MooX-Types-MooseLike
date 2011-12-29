@@ -92,7 +92,7 @@ my %types = (
       },
     message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
     },
-  );
+ );
 
 my @types = keys %types;
 # Add is_Type (test) to the exports
@@ -129,6 +129,10 @@ foreach my $type (keys %{types}) {
   }
 }
 
+sub get_types {
+    return sort keys %types;
+}
+
 1;
 
 =head1 NAME
@@ -155,7 +159,32 @@ MooX::Types::MooseLike - Moose like types for Moo
         	           unless (is_Int($_[0]) && $_[0] > 17) },
 );
 
-=head1 SUBROUTINES (Types)
+=head1 DESCRIPTION
+
+Moo attributes (like Moose) have an 'isa' property. 
+This module provides some basic types for this property.
+One can import all types with ':all' tag or import 
+a list of types like:
+    
+    use MooX::Types::MooseLike qw/HashRef CodeRef/;
+
+so one could then declare some attributtes like:
+
+    has 'contact' => (
+        is  => 'ro',
+        isa => HashRef,
+    );
+    has 'guest_list' => (
+        is  => 'ro',
+        isa => ArrayRef,
+    );
+   
+These types provide a check that the contact attribute is a hash reference,
+and that the guest_list is an array reference.  
+
+=head1 TYPES (subroutines)
+
+All available types are listed below.
 
 =head2 Any
 
@@ -228,6 +257,12 @@ A type that is an object (think blessed)
 =head2 AHRef
 
 An ArrayRef[HashRef] type
+
+=head1 METHODS
+
+=head2 get_types
+
+Get a list of the available types
 
 =head1 AUTHOR
 
