@@ -1,7 +1,7 @@
 use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
-use MooX::Types::MooseLike qw(:all);
+use MooX::Types::MooseLike::Base qw(:all);
 
 has 'a_defined' => (
     is => 'ro',
@@ -69,7 +69,7 @@ use strictures 1;
 use Test::More;
 use Test::Fatal;
 use IO::Handle;
-use MooX::Types::MooseLike qw(:all);
+use MooX::Types::MooseLike::Base qw(:all);
 
 ok( is_Str('x'),                  'is_Str');
 ok(!is_Str([]),                   'is_Str fails on ArrayRef');

@@ -2,137 +2,65 @@ use strictures 1;
 
 package MooX::Types::MooseLike;
 use Sub::Quote qw(quote_sub);
-use Scalar::Util qw(blessed);
-use List::Util;
-
 use base qw(Exporter);
+use Data::Dumper::Concise;
 
-# These types act like those found in Moose::Util::TypeConstraints.
-# Generally speaking, the same test is used.
-my %types = (
-  Any => {
-    test    => sub { 1 },
-    message => sub { "If you get here you've achieved the impossible, congrats." }
-    },
-  Item => {
-    test    => sub { 1 },
-    message => sub { "If you get here you've achieved the impossible, congrats" }
-    },
-  Undef => {
-    test    => sub { !defined($_[0]) },
-    message => sub { "$_[0] is not undef" }
-    },
-# Note the single quotes so $_[0] is not interpreted - undef and strictures => FATAL
-  Defined => {
-    test    => sub { defined($_[0]) },
-    message => sub { '$_[0] is not defined' }
-    },
-  Bool => {
-    #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
-    test    => sub {  !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0' },
-    message => sub { "$_[0] is not a Boolean" },
-    },
-  Value => {
-    test    => sub { !ref($_[0]) },
-    message => sub { "$_[0] is not a value" }
-    },
-  Ref => {
-    test    => sub { ref($_[0]) },
-    message => sub { "$_[0] is not a reference" }
-    },
-  Str => {
-    test    => sub { ref(\$_[0]) eq 'SCALAR' },
-    message => sub { "$_[0] is not a string" }
-    },
-  Num => {
-    test    => sub { Scalar::Util::looks_like_number($_[0]) },
-    message => sub { "$_[0] is not a Number!" },
-    },
-  Int => {
-#  	test    => sub { Scalar::Util::looks_like_number($_[0]) && ($_[0] == int $_[0]) },
-    test    => sub { "$_[0]" =~ /^-?[0-9]+$/ },
-    message => sub { "$_[0] is not an Integer!" },
-    },
-  ScalarRef  => {
-    test    => sub { ref($_[0]) eq 'SCALAR' },
-    message => sub { "$_[0] is not an ScalarRef!" },
-    },
-  ArrayRef  => {
-    test    => sub { ref($_[0]) eq 'ARRAY' },
-    message => sub { "$_[0] is not an ArrayRef!" },
-    },
-  HashRef  => {
-    test    => sub { ref($_[0]) eq 'HASH' },
-    message => sub { "$_[0] is not a HashRef!" },
-    },
-  CodeRef  => {
-    test    => sub { ref($_[0]) eq 'CODE' },
-    message => sub { "$_[0] is not a CodeRef!" },
-    },
-  RegexpRef  => {
-    test    => sub { ref($_[0]) eq 'Regexp' },
-    message => sub { "$_[0] is not a RegexpRef!" },
-    },
-  GlobRef => {
-    test    => sub { ref($_[0]) eq 'GLOB' },
-    message => sub { "$_[0] is not a GlobRef!" },
-    },
-  FileHandle  => {
-    test    => sub { Scalar::Util::openhandle($_[0]) || (blessed($_[0]) && $_[0]->isa("IO::Handle")) },
-    message => sub { "$_[0] is not a FileHandle!" },
-    },
-  Object => {
-    test    => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
-    message => sub { "$_[0] is not an Object!" },
-    },
-  AHRef  => {
-    test    => sub { (ref($_[0]) eq 'ARRAY')
-        && ($_[0]->[0])
-        && ( List::Util::first { ref($_) eq 'HASH' } @{$_[0]} )
-      },
-    message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
-    },
- );
+sub register_types {
+	my ($type_definitions, $into) = @_;
+	foreach my $type_def (@{$type_definitions}) {
+	  # Skip if not well-defined, i.e. the def has no test or message
+	  my $type_name = $type_def->{name};
+	  next unless defined $type_name; 
+	  my $coderefs = make_type($type_name, $type_def, $into);
+	  install_type($type_name, $coderefs, $into);
+	}
+}
 
-my @types = keys %types;
-# Add is_Type (test) to the exports
-my @tests = map { 'is_' . $_ } @types;
-our @EXPORT_OK = (@types, @tests);
-our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
-
-foreach my $type (keys %{types}) {
-  next unless (defined $types{$type}->{message});
-
-  my $assertion = 'assert_' . $type;
-  my $name = __PACKAGE__ . '::' . $assertion;
-  my $msg  = $types{$type}->{message};
-  my $test = $types{$type}->{test};
-
-  quote_sub $name => q{
-        die $msg->(@_) if not $test->(@_);
-}, { '$msg' => \$msg, '$test' => \$test };
-
-  {
-    no strict 'refs'; ## no critic
-    # Construct the Type
-    *$type = sub {
-      __PACKAGE__->can($assertion);
-      };
-
-    # Make the type test available as: is_Type
-    my $is_type = 'is_' . $type;
-    *$is_type = sub {
-      die "Exception: ${is_type}() can only take one argument.\nSuggestion: Maybe you want to pass a reference?\n"
-        if defined $_[1];
-      $test->($_[0]);
-      }
+  sub install_type {
+  	my ($type_name, $coderefs, $namespace) = @_;
+  	$namespace ||= __PACKAGE__;
+  	my $is_type_name          = 'is_' . $type_name;
+  	my $assert_type_name      = 'assert_' . $type_name;
+  	my $type_full_name        = $namespace . '::' . $type_name;
+  	my $is_type_full_name     = $namespace . '::' . $is_type_name;
+  	my $assert_type_full_name = $namespace . '::' . $assert_type_name;
+  	
+  	{
+	  no strict 'refs'; ## no critic
+  	  *$type_full_name        = $coderefs->{type};
+  	  *$is_type_full_name     = $coderefs->{is_type};
+  	  *$assert_type_full_name = $coderefs->{assert_type};
+      push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name, $assert_type_name;
+  	}
+  	return;
   }
-}
+  
+  sub make_type {
+  	my ($type_name, $type_definition, $namespace) = @_;
+  	$namespace ||= __PACKAGE__;
+    my $assertion = 'assert_' . $type_name;
+    my $assert_type_full_name = $namespace . '::' . $assertion;
+    my $msg  = $type_definition->{message};
+    my $test = $type_definition->{test};
+    my $subtype_of = $type_definition->{subtype_of}||'Any';
+	my $from = $type_definition->{from}||'MooX::Types::MooseLike::Base';
+    
+    my $full_test = sub {
+      my $subtype_test = $from . '::is_' . $subtype_of;
+	  no strict 'refs'; ## no critic
+	  return (&{$subtype_test}(@_) && $test->(@_));
+    };	
+  	my $assert_type = quote_sub $assert_type_full_name => q{
+        die $msg->(@_) if not $test->(@_);
+    }, { '$msg' => \$msg, '$test' => \$full_test };
 
-sub get_types {
-    return sort keys %types;
-}
-
+	return {
+		type        => sub { $namespace->can($assertion) },
+		is_type     => sub { $test->($_[0]) },
+		assert_type => $assert_type
+	};
+  }
+  
 1;
 
 =head1 NAME
@@ -157,34 +85,9 @@ MooX::Types::MooseLike - Moose like types for Moo
         is => 'ro',
         isa => sub { die "$_[0] is not of legal age" 
         	           unless (is_Int($_[0]) && $_[0] > 17) },
-);
-
-=head1 DESCRIPTION
-
-Moo attributes (like Moose) have an 'isa' property. 
-This module provides some basic types for this property.
-One can import all types with ':all' tag or import 
-a list of types like:
-    
-    use MooX::Types::MooseLike qw/HashRef CodeRef/;
-
-so one could then declare some attributtes like:
-
-    has 'contact' => (
-        is  => 'ro',
-        isa => HashRef,
     );
-    has 'guest_list' => (
-        is  => 'ro',
-        isa => ArrayRef,
-    );
-   
-These types provide a check that the contact attribute is a hash reference,
-and that the guest_list is an array reference.  
 
-=head1 TYPES (subroutines)
-
-All available types are listed below.
+=head1 SUBROUTINES (Types)
 
 =head2 Any
 
@@ -257,12 +160,6 @@ A type that is an object (think blessed)
 =head2 AHRef
 
 An ArrayRef[HashRef] type
-
-=head1 METHODS
-
-=head2 get_types
-
-Get a list of the available types
 
 =head1 AUTHOR
 
