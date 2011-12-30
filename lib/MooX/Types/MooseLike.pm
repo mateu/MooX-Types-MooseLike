@@ -63,3 +63,36 @@ sub make_type {
 }
 
 1;
+__END__ 
+
+=head1 NAME
+
+MooX::Types::MooseLike - some Moosish types and a typer builder
+
+=head1 SYNOPSIS
+
+    package MyPackage;
+    use Moo;
+    use MooX::Types::MooseLike::Base qw(:all);
+    
+    has "beers_by_day_of_week" => (
+        isa => HashRef
+    );
+    has "current_BAC" => (
+        isa => Num
+    );
+    
+    # Also supporting is_$type.  For example, is_Int() can be used as follows
+    has 'legal_age' => (
+        is => 'ro',
+        isa => sub { die "$_[0] is not of legal age" 
+        	           unless (is_Int($_[0]) && $_[0] > 17) },
+    );
+
+=head1 DESCRIPTION
+
+See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
+
+See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
+
+
