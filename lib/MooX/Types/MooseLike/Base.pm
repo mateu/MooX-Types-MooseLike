@@ -116,3 +116,147 @@ MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 1
+
+__END__ 
+
+=head1 NAME
+
+MooX::Types::MooseLike::Base - Moose like types for Moo
+
+=head1 SYNOPSIS
+
+    package MyPackage;
+    use Moo;
+    use MooX::Types::MooseLike qw(:all);
+    
+    has "beers_by_day_of_week" => (
+        isa => HashRef
+    );
+    has "current_BAC" => (
+        isa => Num
+    );
+    
+    # Also supporting is_$type.  For example, is_Int() can be used as follows
+    has 'legal_age' => (
+        is => 'ro',
+        isa => sub { die "$_[0] is not of legal age" 
+        	           unless (is_Int($_[0]) && $_[0] > 17) },
+    );
+
+=head1 DESCRIPTION
+
+Moo attributes (like Moose) have an 'isa' property.
+This module provides some basic types for this property.
+One can import all types with ':all' tag or import
+a list of types like:
+
+    use MooX::Types::MooseLike::Base qw/HashRef CodeRef/;
+
+so one could then declare some attributtes like:
+
+	has 'contact' => (
+	  is => 'ro',
+	  isa => HashRef,
+	);
+	has 'guest_list' => (
+	  is => 'ro',
+	  isa => ArrayRef,
+	);
+
+These types provide a check that the contact attribute is a hash reference,
+and that the guest_list is an array reference.
+
+=head1 TYPES (subroutines)
+
+All available types are listed below.
+
+=head2 Any
+
+Any type (test is always true)
+
+=head2 Item
+
+Synonymous with Any type 
+
+=head2 Undef
+
+A type that is not defined
+
+=head2 Defined
+
+A type that is defined
+
+=head2 Bool
+
+A boolean 1|0 type
+
+=head2 Value
+
+A non-reference type
+
+=head2 Ref
+
+A reference type
+
+=head2 Str
+
+A non-reference type where a reference to it is a SCALAR
+
+=head2 Num
+
+A number type
+
+=head2 Int
+
+An integer type
+
+=head2 ArrayRef
+
+An ArrayRef (ARRAY) type
+
+=head2 HashRef
+
+A HashRef (HASH) type
+
+=head2 CodeRef
+
+A CodeRef (CODE) type
+
+=head2 RegexpRef
+
+A regular expression reference type
+
+=head2 GlobRef
+
+A glob reference type
+
+=head2 FileHandle
+
+A type that is either a builtin perl filehandle or an IO::Handle object
+
+=head2 Object
+
+A type that is an object (think blessed)
+
+=head2 AHRef
+
+An ArrayRef[HashRef] type
+
+=head1 AUTHOR
+
+Mateu Hunter C<hunter@missoula.org>
+
+=head1 THANKS
+
+mst provided the implementation suggestion of using 'can' on a quoted sub 
+to define a type (subroutine).
+
+=head1 COPYRIGHT
+
+Copyright 2011, Mateu Hunter
+
+=head1 LICENSE
+
+You may distribute this code under the same terms as Perl itself.
+
+=cut
