@@ -71,23 +71,19 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 
 =head1 SYNOPSIS
 
-    package MyPackage;
-    use Moo;
-    use MooX::Types::MooseLike::Base qw(:all);
-    
-    has "beers_by_day_of_week" => (
-        isa => HashRef
-    );
-    has "current_BAC" => (
-        isa => Num
-    );
-    
-    # Also supporting is_$type.  For example, is_Int() can be used as follows
-    has 'legal_age' => (
-        is => 'ro',
-        isa => sub { die "$_[0] is not of legal age" 
-        	           unless (is_Int($_[0]) && $_[0] > 17) },
-    );
+	# API Experimental
+	package MyApp::Types;
+	use MooX::Types::MooseLike::Base;
+	use base qw(Exporter);
+	our @EXPORT_OK = ();
+	my $defs = [{ 
+		name => 'MyType', 
+		test => sub { predicate($_[0]) }, 
+		message => sub { "$_[0] is not the type we want!" }
+	}];
+	MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
+	# optionally add an 'all' tags option (use MyApp::Types qw/:all/; # to import all types)
+	our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 =head1 DESCRIPTION
 
