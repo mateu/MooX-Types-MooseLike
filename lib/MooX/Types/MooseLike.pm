@@ -7,9 +7,8 @@ use base qw(Exporter);
 sub register_types {
   my ($type_definitions, $into) = @_;
   foreach my $type_def (@{$type_definitions}) {
-
-    # Skip if not well-defined, i.e. the def has no test or message
     my $type_name = $type_def->{name};
+    # Skip if not well-defined, i.e. the type def has no name
     next unless defined $type_name;
     my $coderefs = make_type($type_name, $type_def, $into);
     install_type($type_name, $coderefs, $into);
@@ -71,7 +70,8 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 
 =head1 SYNOPSIS
 
-	# API Experimental
+	# The Base and Numeric types are stable
+	# but the API to build new types is Experimental
 	package MyApp::Types;
 	use MooX::Types::MooseLike::Base;
 	use base qw(Exporter);
@@ -82,7 +82,8 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 		message => sub { "$_[0] is not the type we want!" }
 	}];
 	MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
-	# optionally add an 'all' tags option (use MyApp::Types qw/:all/; # to import all types)
+	# optionally add an 'all' tag so one can:
+	# use MyApp::Types qw/:all/; # to import all types
 	our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 =head1 DESCRIPTION
