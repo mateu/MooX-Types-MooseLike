@@ -1,63 +1,48 @@
 use strictures 1;
-
 package MooX::Types::MooseLike;
-use Sub::Quote qw(quote_sub);
 use base qw(Exporter);
 
 sub register_types {
   my ($type_definitions, $into) = @_;
   foreach my $type_def (@{$type_definitions}) {
-    my $type_name = $type_def->{name};
-    # Skip if not well-defined, i.e. the type def has no name
-    next unless defined $type_name;
-    my $coderefs = make_type($type_name, $type_def, $into);
-    install_type($type_name, $coderefs, $into);
+    my $coderefs = make_type($type_def);
+    install_type($type_def->{name}, $coderefs, $into);
   }
 }
 
 sub install_type {
   my ($type_name, $coderefs, $namespace) = @_;
-  $namespace ||= __PACKAGE__;
   my $is_type_name          = 'is_' . $type_name;
-  my $assert_type_name      = 'assert_' . $type_name;
   my $type_full_name        = $namespace . '::' . $type_name;
   my $is_type_full_name     = $namespace . '::' . $is_type_name;
-  my $assert_type_full_name = $namespace . '::' . $assert_type_name;
 
   {
     no strict 'refs';    ## no critic
-    *$type_full_name        = $coderefs->{type};
-    *$is_type_full_name     = $coderefs->{is_type};
-    *$assert_type_full_name = $coderefs->{assert_type};
-    push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name,
-      $assert_type_name;
+    *{$type_full_name} = $coderefs->{type};
+    *{$is_type_full_name} = $coderefs->{is_type};
+    push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name;
   }
   return;
 }
 
 sub make_type {
-  my ($type_name, $type_definition, $namespace) = @_;
-  $namespace ||= __PACKAGE__;
-  my $assertion             = 'assert_' . $type_name;
-  my $assert_type_full_name = $namespace . '::' . $assertion;
-  my $msg                   = $type_definition->{message};
-  my $test                  = $type_definition->{test};
-  my $subtype_of            = $type_definition->{subtype_of} || 'Any';
-  my $from = $type_definition->{from} || 'MooX::Types::MooseLike::Base';
-
-  my $full_test = sub {
+  my ($type_definition) = @_;
+  my $test = $type_definition->{test};
+ 
+  my $full_test = $test; 
+  if (my $subtype_of = $type_definition->{subtype_of}) {
+  	my $from = $type_definition->{from} || die "Must define a 'from' namespace for the parent type: $subtype_of
+ when defining type: $type_definition->{name}";
     my $subtype_test = $from . '::is_' . $subtype_of;
     no strict 'refs';    ## no critic
-    return (&{$subtype_test}(@_) && $test->(@_));
-  };
-  my $assert_type = quote_sub $assert_type_full_name => q{
-        die $msg->(@_) if not $test->(@_);
-    }, { '$msg' => \$msg, '$test' => \$full_test };
+    $full_test = sub {return (&{$subtype_test}(@_) && $test->(@_)); };
+  }
 
   return {
-    type        => sub { $namespace->can($assertion) },
+    type        =>  sub {
+	  sub { die $type_definition->{message}->(@_) if not $full_test->(@_); };
+	},
     is_type     => sub { $test->($_[0]) },
-    assert_type => $assert_type
   };
 }
 

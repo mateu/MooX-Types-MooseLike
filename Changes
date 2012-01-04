@@ -2,7 +2,16 @@
           IMPROVEMENTS:
           * Simplified Sub::Quote usage (arcanez)
           * Removed Data::Dumper::Concise dependency (rsimoes)
-          * Description POD
+          * Bunches of POD
+          
+          ADDITIONS:
+          * Numeric Types
+          * Experimental type building API
+          
+          API CHANGES:
+          * Basic types are now found in MooX::Types::MooseLike::Base
+            instead of MooX::Types::MooseLike
+      
 
 0.02      2011-10-21 17:45:17 MST7MDT
           ADDITIONS:

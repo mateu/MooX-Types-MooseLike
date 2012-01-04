@@ -16,6 +16,7 @@ my $type_definitions = [
   {
     name       => 'NonNegativeNum',
     subtype_of => 'Num',
+    from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] >= 0 },
     message    => sub { "$_[0] is not a non-negative number!" },
   },
@@ -36,24 +37,28 @@ my $type_definitions = [
   {
     name       => 'NegativeNum',
     subtype_of => 'Num',
+    from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] < 0 },
     message    => sub { "$_[0] is not a negative number!" },
   },
   {
     name       => 'NonPositiveNum',
     subtype_of => 'Num',
+    from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] <= 0 },
     message    => sub { "$_[0] is not a non-positive number!" },
   },
   {
     name       => 'NegativeInt',
     subtype_of => 'Int',
+    from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] < 0 },
     message    => sub { "$_[0] is not a negative integer!" },
   },
   {
     name       => 'NonPositiveInt',
     subtype_of => 'Int',
+    from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] <= 0 },
     message    => sub { "$_[0] is not a non-positive integer!" },
   },
