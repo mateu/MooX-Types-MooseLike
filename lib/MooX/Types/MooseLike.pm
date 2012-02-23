@@ -1,6 +1,6 @@
 use strictures 1;
 package MooX::Types::MooseLike;
-use base qw(Exporter);
+use Exporter 5.57 'import';
 
 sub register_types {
   my ($type_definitions, $into) = @_;
@@ -59,7 +59,7 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 	# but the API to build new types is Experimental
 	package MyApp::Types;
 	use MooX::Types::MooseLike::Base;
-	use base qw(Exporter);
+	use Exporter 'import';
 	our @EXPORT_OK = ();
 	my $defs = [{ 
 		name => 'MyType', 
