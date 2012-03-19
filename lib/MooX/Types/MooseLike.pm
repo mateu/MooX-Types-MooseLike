@@ -31,7 +31,7 @@ sub make_type {
  
   my $full_test = $test; 
   if (my $subtype_of = $type_definition->{subtype_of}) {
-  	my $from = $type_definition->{from} || die "Must define a 'from' namespace for the parent type: $subtype_of
+    my $from = $type_definition->{from} || die "Must define a 'from' namespace for the parent type: $subtype_of
  when defining type: $type_definition->{name}";
     my $subtype_test = $from . '::is_' . $subtype_of;
     no strict 'refs';    ## no critic
@@ -39,10 +39,10 @@ sub make_type {
   }
 
   return {
-    type        =>  sub {
-	  sub { die $type_definition->{message}->(@_) if not $full_test->(@_); };
-	},
-    is_type     => sub { $test->($_[0]) },
+    type    =>  sub {
+      sub { die $type_definition->{message}->(@_) if not $full_test->(@_); };
+    },
+    is_type => sub { $test->($_[0]) },
   };
 }
 
@@ -55,21 +55,21 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 
 =head1 SYNOPSIS
 
-	# The Base and Numeric types are stable
-	# but the API to build new types is Experimental
-	package MyApp::Types;
-	use MooX::Types::MooseLike::Base;
-	use base qw(Exporter);
-	our @EXPORT_OK = ();
-	my $defs = [{ 
-		name => 'MyType', 
-		test => sub { predicate($_[0]) }, 
-		message => sub { "$_[0] is not the type we want!" }
-	}];
-	MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
-	# optionally add an 'all' tag so one can:
-	# use MyApp::Types qw/:all/; # to import all types
-	our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
+    # The Base and Numeric types are stable
+    # but the API to build new types is Experimental
+    package MyApp::Types;
+    use MooX::Types::MooseLike::Base;
+    use base qw(Exporter);
+    our @EXPORT_OK = ();
+    my $defs = [{ 
+      name => 'MyType', 
+      test => sub { predicate($_[0]) }, 
+      message => sub { "$_[0] is not the type we want!" }
+    }];
+    MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
+    # optionally add an 'all' tag so one can:
+    # use MyApp::Types qw/:all/; # to import all types
+    our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 =head1 DESCRIPTION
 
