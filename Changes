@@ -1,26 +1,30 @@
 {{$NEXT}}
+
+0.03      2012-03-19 10:44:10 America/Denver
           IMPROVEMENTS:
-          * Simplified Sub::Quote usage (arcanez)
-          * Removed Data::Dumper::Concise dependency (rsimoes)
-          * Bunches of POD
-          
+          * Bunches of POD [RT#73519]
+          * Simplified Exporter usage [RT#75209] (dolmen)
+          * Removed Data::Dumper::Concise dependency [RT#73469] (rsimoes)
+
           ADDITIONS:
           * Numeric Types
           * Experimental type building API
-          
+
           API CHANGES:
           * Basic types are now found in MooX::Types::MooseLike::Base
             instead of MooX::Types::MooseLike
-      
+
 
 0.02      2011-10-21 17:45:17 MST7MDT
           ADDITIONS:
           * Most non-parameterized types of the basic Moose type hierarchy
             are now supported.  Exceptions are ClassName and RoleName
           * Ability to re-use the type tests to build new ones via is_$type()
+
           IMPROVEMENTS:
           * Refactored generation of assert_Foo() to use a dispatch table
             and captures for quote_sub.
+
           FIXES:
           * Add AutoPrereq to dist.ini so Makefile.PL gets dependencies generated
 
