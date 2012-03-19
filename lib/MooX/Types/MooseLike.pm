@@ -1,6 +1,6 @@
 use strictures 1;
 package MooX::Types::MooseLike;
-use base qw(Exporter);
+use Exporter 5.57 'import';
 
 sub register_types {
   my ($type_definitions, $into) = @_;

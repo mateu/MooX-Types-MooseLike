@@ -2,7 +2,7 @@ use strictures 1;
 
 package MooX::Types::MooseLike::Numeric;
 use MooX::Types::MooseLike::Base;
-use base qw(Exporter);
+use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
 my $type_definitions = [
