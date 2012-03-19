@@ -4,7 +4,7 @@ package MooX::Types::MooseLike::Base;
 use Scalar::Util qw(blessed);
 use List::Util;
 use MooX::Types::MooseLike;
-use base qw(Exporter);
+use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
 # These types act like those found in Moose::Util::TypeConstraints.
