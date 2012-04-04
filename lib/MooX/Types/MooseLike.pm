@@ -3,9 +3,9 @@ package MooX::Types::MooseLike;
 use Exporter 5.57 'import';
 
 sub register_types {
-  my ($type_definitions, $into) = @_;
+  my ($type_definitions, $into, $moose_namespace) = @_;
   foreach my $type_def (@{$type_definitions}) {
-    my $coderefs = make_type($type_def);
+    my $coderefs = make_type($type_def, $moose_namespace);
     install_type($type_def->{name}, $coderefs, $into);
   }
 }
@@ -26,7 +26,7 @@ sub install_type {
 }
 
 sub make_type {
-  my ($type_definition) = @_;
+  my ($type_definition, $moose_namespace) = @_;
   my $test = $type_definition->{test};
  
   my $full_test = $test; 
@@ -38,10 +38,18 @@ sub make_type {
     $full_test = sub {return (&{$subtype_test}(@_) && $test->(@_)); };
   }
 
+  my $isa = sub {
+    die $type_definition->{message}->(@_) if not $full_test->(@_);
+  };
+
+  my $full_name = $moose_namespace
+                    ? "${moose_namespace}::".$type_definition->{name}
+                    : $type_definition->{name};
+
+  $Moo::HandleMoose::TYPE_MAP{$isa} = [ $full_name, $moose_namespace ];
+
   return {
-    type    =>  sub {
-      sub { die $type_definition->{message}->(@_) if not $full_test->(@_); };
-    },
+    type    =>  sub { $isa },
     is_type => sub { $test->($_[0]) },
   };
 }
