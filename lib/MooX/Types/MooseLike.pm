@@ -1,6 +1,7 @@
 use strictures 1;
 package MooX::Types::MooseLike;
 use Exporter 5.57 'import';
+use Module::Runtime qw(require_module);
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
@@ -46,7 +47,10 @@ sub make_type {
                     ? "${moose_namespace}::".$type_definition->{name}
                     : $type_definition->{name};
 
-  $Moo::HandleMoose::TYPE_MAP{$isa} = [ $full_name, $moose_namespace ];
+  $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
+    require_module($moose_namespace) if $moose_namespace;
+    Moose::Util::TypeConstraints::find_type_constraint($full_name);
+  };
 
   return {
     type    =>  sub { $isa },
