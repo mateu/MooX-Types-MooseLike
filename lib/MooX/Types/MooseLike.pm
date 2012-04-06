@@ -1,7 +1,10 @@
-use strictures 1;
 package MooX::Types::MooseLike;
+
+use strictures 1;
 use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
+
+our $VERSION = '0.04';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
@@ -89,4 +92,14 @@ See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
+=head1 COPYRIGHT
 
+Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and
+ L</CONTRIBUTORS> as listed above.
+
+=head1 LICENSE
+
+This library is free software and may be distributed under the same terms
+as perl itself.
+
+=cut
