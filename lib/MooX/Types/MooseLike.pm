@@ -1,11 +1,15 @@
-use strictures 1;
 package MooX::Types::MooseLike;
+
+use strictures 1;
 use Exporter 5.57 'import';
+use Module::Runtime qw(require_module);
+
+our $VERSION = '0.04';
 
 sub register_types {
-  my ($type_definitions, $into) = @_;
+  my ($type_definitions, $into, $moose_namespace) = @_;
   foreach my $type_def (@{$type_definitions}) {
-    my $coderefs = make_type($type_def);
+    my $coderefs = make_type($type_def, $moose_namespace);
     install_type($type_def->{name}, $coderefs, $into);
   }
 }
@@ -26,7 +30,7 @@ sub install_type {
 }
 
 sub make_type {
-  my ($type_definition) = @_;
+  my ($type_definition, $moose_namespace) = @_;
   my $test = $type_definition->{test};
  
   my $full_test = $test; 
@@ -38,10 +42,21 @@ sub make_type {
     $full_test = sub {return (&{$subtype_test}(@_) && $test->(@_)); };
   }
 
+  my $isa = sub {
+    die $type_definition->{message}->(@_) if not $full_test->(@_);
+  };
+
+  my $full_name = $moose_namespace
+                    ? "${moose_namespace}::".$type_definition->{name}
+                    : $type_definition->{name};
+
+  $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
+    require_module($moose_namespace) if $moose_namespace;
+    Moose::Util::TypeConstraints::find_type_constraint($full_name);
+  };
+
   return {
-    type    =>  sub {
-      sub { die $type_definition->{message}->(@_) if not $full_test->(@_); };
-    },
+    type    =>  sub { $isa },
     is_type => sub { $test->($_[0]) },
   };
 }
@@ -77,4 +92,22 @@ See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
+=head1 AUTHOR
 
+mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
+
+=head1 CONTRIBUTORS
+
+mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and
+ L</CONTRIBUTORS> as listed above.
+
+=head1 LICENSE
+
+This library is free software and may be distributed under the same terms
+as perl itself.
+
+=cut
