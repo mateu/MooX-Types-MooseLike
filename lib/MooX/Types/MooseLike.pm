@@ -92,6 +92,14 @@ See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
+=head1 AUTHOR
+
+mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
+
+=head1 CONTRIBUTORS
+
+mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+
 =head1 COPYRIGHT
 
 Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and
