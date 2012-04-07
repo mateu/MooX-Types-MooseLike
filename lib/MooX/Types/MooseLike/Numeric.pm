@@ -71,7 +71,9 @@ my $type_definitions = [
   },
 ];
 
-MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
+MooX::Types::MooseLike::register_types(
+  $type_definitions, __PACKAGE__, 'MooseX::Types::Common::Numeric'
+);
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 1
