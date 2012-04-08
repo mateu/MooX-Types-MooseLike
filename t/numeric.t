@@ -6,7 +6,7 @@ use MooX::Types::MooseLike::Numeric qw(:all);
 
 has 'a_positive_number' => (
     is => 'ro',
-    isa => PositiveNum('HashRef'),
+    isa => PositiveNum,
 );
 has 'a_nonnegative_number' => (
     is => 'ro',
