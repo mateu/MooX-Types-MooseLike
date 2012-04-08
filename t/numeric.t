@@ -6,11 +6,11 @@ use MooX::Types::MooseLike::Numeric qw(:all);
 
 has 'a_positive_number' => (
     is => 'ro',
-    isa => PositiveNum,
+    isa => PositiveNum('HashRef'),
 );
 has 'a_nonnegative_number' => (
     is => 'ro',
-    isa => NonNegativeNum,
+    isa => PositiveOrZeroNum,
 );
 has 'a_positive_integer' => (
     is => 'ro',
@@ -18,7 +18,7 @@ has 'a_positive_integer' => (
 );
 has 'a_nonnegative_integer' => (
     is => 'ro',
-    isa => NonNegativeInt,
+    isa => PositiveOrZeroInt,
 );
 has 'a_negative_number' => (
     is => 'ro',
@@ -26,7 +26,7 @@ has 'a_negative_number' => (
 );
 has 'a_nonpositive_number' => (
     is => 'ro',
-    isa => NonPositiveNum,
+    isa => NegativeOrZeroNum,
 );
 has 'a_negative_integer' => (
     is => 'ro',
@@ -34,7 +34,7 @@ has 'a_negative_integer' => (
 );
 has 'a_nonpositive_integer' => (
     is => 'ro',
-    isa => NonPositiveInt,
+    isa => NegativeOrZeroInt,
 );
 has 'a_single_digit' => (
     is => 'ro',
@@ -52,21 +52,21 @@ use MooX::Types::MooseLike::Numeric qw(:all);
 
 ok( is_PositiveNum(1),            'is_PositiveNum');
 ok(!is_PositiveNum(0),            'is_PositiveNum fails on zero');
-ok( is_NonNegativeNum(3.142),     'is_NonNegativeNum');
-ok(!is_NonNegativeNum(-1),        'is_NonNegativeNum fails on -1');
+ok( is_PositiveOrZeroNum(3.142),     'is_PositiveOrZeroNum');
+ok(!is_PositiveOrZeroNum(-1),        'is_PositiveOrZeroNum fails on -1');
 ok( is_PositiveInt(1),            'is_PositiveInt');
 ok(!is_PositiveInt(0),            'is_PositiveInt fails on zero');
-ok( is_NonNegativeInt(0),         'is_NonNegativeInt');
-ok(!is_NonNegativeNum(-1),        'is_NonNegativeInt fails on -1');
+ok( is_PositiveOrZeroInt(0),         'is_PositiveOrZeroInt');
+ok(!is_PositiveOrZeroInt(-1),        'is_PositiveOrZeroInt fails on -1');
 
 ok( is_NegativeNum(-1),           'is_NegativeNum');
 ok(!is_NegativeNum(0),            'is_NegativeNum fails on zero');
-ok( is_NonPositiveNum(-3.142),    'is_NonPositiveNum');
-ok(!is_NonPositiveNum(1),         'is_NonPositiveNum fails on 1');
+ok( is_NegativeOrZeroNum(-3.142),    'is_NegativeOrZeroNum');
+ok(!is_NegativeOrZeroNum(1),         'is_NegativeOrZeroNum fails on 1');
 ok( is_NegativeInt(-1),           'is_NegativeInt');
 ok(!is_NegativeInt(0),            'is_NegativeInt fails on zero');
-ok( is_NonPositiveInt(0),         'is_NonPositiveInt');
-ok(!is_NonPositiveNum(1),         'is_NonPositiveInt fails on 1');
+ok( is_NegativeOrZeroInt(0),         'is_NegativeOrZeroInt');
+ok(!is_NegativeOrZeroNum(1),         'is_NonPositiveNum fails on 1');
 
 ## PositiveNum
 ok(MooX::Types::MooseLike::Numeric::Test->new(a_positive_number => 1), 'PositiveNum');
@@ -75,8 +75,8 @@ like(
     qr/is not a positive number/,
     'empty string is an exception when we want a positive number'
 );
-## NonNegativeNum
-ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_number => 0), 'NonNegativeNum');
+## PositiveOrZeroNum
+ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_number => 0), 'PositiveOrZeroNum');
 like(
     exception { MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_number => -1) }, 
     qr/is not a non-negative number/,
@@ -90,8 +90,8 @@ like(
     qr/is not a positive integer/,
     'empty string is an exception when we want a positive integer'
 );
-## NonNegativeInt
-ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_integer => 0), 'NonNegativeNum');
+## PositiveOrZeroInt
+ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_integer => 0), 'PositiveOrZeroInt');
 like(
     exception { MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_integer => -1) }, 
     qr/is not a non-negative integer/,
@@ -106,8 +106,8 @@ like(
     qr/is not a negative number/,
     'empty string is an exception when we want a negative number'
 );
-## NonPositiveNum
-ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_number => 0), 'NonPositiveNum');
+## NegativeOrZeroNum
+ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_number => 0), 'NegativeOrZeroNum');
 like(
     exception { MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_number => 1) }, 
     qr/is not a non-positive number/,
@@ -121,14 +121,20 @@ like(
     qr/is not a negative integer/,
     'empty string is an exception when we want a negative integer'
 );
-## NonPositiveInt
-ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_integer => 0), 'NonPositiveInt');
+## NegativeOrZeroInt
+ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_integer => 0), 'NegativeOrZeroInt');
 like(
     exception { MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_integer => 1) }, 
     qr/is not a non-positive integer/,
-    '1 is an exception when we want a non-negative integer'
+    '1 is an exception when we want a non-positive integer'
 );
-
+## SingleDigit
+ok(MooX::Types::MooseLike::Numeric::Test->new(a_single_digit => 0), 'SingleDigit');
+like(
+    exception { MooX::Types::MooseLike::Numeric::Test->new(a_single_digit => 10) }, 
+    qr/is not a single digit/,
+    '10 is an exception when we want a single digit'
+);
 
 
 done_testing;

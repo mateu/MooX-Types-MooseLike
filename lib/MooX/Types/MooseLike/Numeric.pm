@@ -14,7 +14,7 @@ my $type_definitions = [
     message    => sub { "$_[0] is not a positive number!" },
   },
   {
-    name       => 'NonNegativeNum',
+    name       => 'PositiveOrZeroNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] >= 0 },
@@ -28,7 +28,7 @@ my $type_definitions = [
     message    => sub { "$_[0] is not a positive integer!" },
   },
   {
-    name       => 'NonNegativeInt',
+    name       => 'PositiveOrZeroInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] >= 0 },
@@ -42,7 +42,7 @@ my $type_definitions = [
     message    => sub { "$_[0] is not a negative number!" },
   },
   {
-    name       => 'NonPositiveNum',
+    name       => 'NegativeOrZeroNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] <= 0 },
@@ -56,7 +56,7 @@ my $type_definitions = [
     message    => sub { "$_[0] is not a negative integer!" },
   },
   {
-    name       => 'NonPositiveInt',
+    name       => 'NegativeOrZeroInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
     test       => sub { $_[0] <= 0 },
@@ -64,7 +64,7 @@ my $type_definitions = [
   },
   {
     name       => 'SingleDigit',
-    subtype_of => 'NonNegativeInt',
+    subtype_of => 'NegativeOrZeroInt',
     from       => 'MooX::Types::MooseLike::Numeric',
     test       => sub { $_[0] < 10 },
     message    => sub { "$_[0] is not a single digit!" },
@@ -106,19 +106,19 @@ Available types are listed below.
 
 =item PositiveNum
 
-=item NonNegativeNum
+=item PositiveOrZeroNum
 
 =item PositiveInt
 
-=item NonNegativeInt
+=item PositiveOrZeroInt
 
 =item NegativeNum
 
-=item NonPositiveNum
+=item NegativeOrZeroNum
 
 =item NegativeInt
 
-=item NonPositiveInt
+=item NegativeOrZeroInt
 
 =item SingleDigit
 

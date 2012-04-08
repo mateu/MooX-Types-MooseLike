@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+          ADDITIONS:
+          * Add support for Moo type inflation to Moose (mst)
+
+          API CHANGE:
+          * Numeric types equivalent to MooseX::Type::Common::Numeric
+
 0.03      2012-03-19 10:44:10 America/Denver
           IMPROVEMENTS:
           * Bunches of POD [RT#73519]
@@ -10,7 +16,7 @@
           * Numeric Types
           * Experimental type building API
 
-          API CHANGES:
+          API CHANGE:
           * Basic types are now found in MooX::Types::MooseLike::Base
             instead of MooX::Types::MooseLike
 
