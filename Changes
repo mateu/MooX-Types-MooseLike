@@ -1,5 +1,4 @@
-{{$NEXT}}
-
+0.04      2012-04-11
           ADDITIONS:
           * Add support for Moo type inflation to Moose (mst)
 
