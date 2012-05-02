@@ -38,9 +38,12 @@ my $type_definitions = [
     name => 'Bool',
 
     #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
-    test =>
-      sub { !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0' }
-    ,
+    test => sub {
+      !defined($_[0])
+        || $_[0]   eq ""
+        || "$_[0]" eq '1'
+        || "$_[0]" eq '0';
+    },
     message => sub { "$_[0] is not a Boolean" },
   },
   {
@@ -157,10 +160,9 @@ MooX::Types::MooseLike::Base - Moose like types for Moo
 
 =head1 DESCRIPTION
 
-Moo attributes (like Moose) have an 'isa' property.
-This module provides some basic types for this property.
-One can import all types with ':all' tag or import
-a list of types like:
+Moo attributes (like Moose) have an 'isa' property. This module
+provides some basic types for this property. One can import all types
+with ':all' tag or import a list of types like:
 
     use MooX::Types::MooseLike::Base qw/HashRef CodeRef/;
 
@@ -175,8 +177,8 @@ so one could then declare some attributtes like:
 	  isa => ArrayRef,
 	);
 
-These types provide a check that the contact attribute is a hash reference,
-and that the guest_list is an array reference.
+These types provide a check that the contact attribute is a hash
+reference, and that the guest_list is an array reference.
 
 =head1 TYPES (subroutines)
 
@@ -188,7 +190,7 @@ Any type (test is always true)
 
 =head2 Item
 
-Synonymous with Any type 
+Synonymous with Any type
 
 =head2 Undef
 
@@ -260,8 +262,8 @@ Mateu Hunter C<hunter@missoula.org>
 
 =head1 THANKS
 
-mst provided the implementation suggestion of using 'can' on a quoted sub 
-to define a type (subroutine).
+mst provided the implementation suggestion of using 'can' on a quoted
+sub  to define a type (subroutine).
 
 =head1 COPYRIGHT
 

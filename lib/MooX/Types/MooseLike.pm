@@ -16,13 +16,13 @@ sub register_types {
 
 sub install_type {
   my ($type_name, $coderefs, $namespace) = @_;
-  my $is_type_name          = 'is_' . $type_name;
-  my $type_full_name        = $namespace . '::' . $type_name;
-  my $is_type_full_name     = $namespace . '::' . $is_type_name;
+  my $is_type_name      = 'is_' . $type_name;
+  my $type_full_name    = $namespace . '::' . $type_name;
+  my $is_type_full_name = $namespace . '::' . $is_type_name;
 
   {
     no strict 'refs';    ## no critic
-    *{$type_full_name} = $coderefs->{type};
+    *{$type_full_name}    = $coderefs->{type};
     *{$is_type_full_name} = $coderefs->{is_type};
     push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name;
   }
@@ -32,23 +32,25 @@ sub install_type {
 sub make_type {
   my ($type_definition, $moose_namespace) = @_;
   my $test = $type_definition->{test};
- 
-  my $full_test = $test; 
+
+  my $full_test = $test;
   if (my $subtype_of = $type_definition->{subtype_of}) {
-    my $from = $type_definition->{from} || die "Must define a 'from' namespace for the parent type: $subtype_of
+    my $from = $type_definition->{from}
+      || die "Must define a 'from' namespace for the parent type: $subtype_of
  when defining type: $type_definition->{name}";
     my $subtype_test = $from . '::is_' . $subtype_of;
     no strict 'refs';    ## no critic
-    $full_test = sub {return (&{$subtype_test}(@_) && $test->(@_)); };
+    $full_test = sub { return (&{$subtype_test}(@_) && $test->(@_)); };
   }
 
   my $isa = sub {
     die $type_definition->{message}->(@_) if not $full_test->(@_);
   };
 
-  my $full_name = $moose_namespace
-                    ? "${moose_namespace}::".$type_definition->{name}
-                    : $type_definition->{name};
+  my $full_name =
+    $moose_namespace
+    ? "${moose_namespace}::" . $type_definition->{name}
+    : $type_definition->{name};
 
   $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
     require_module($moose_namespace) if $moose_namespace;
@@ -56,7 +58,7 @@ sub make_type {
   };
 
   return {
-    type    =>  sub { $isa },
+    type    => sub { $isa },
     is_type => sub { $test->($_[0]) },
   };
 }
@@ -88,9 +90,11 @@ MooX::Types::MooseLike - some Moosish types and a typer builder
 
 =head1 DESCRIPTION
 
-See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
+See L<MooX::Types::MooseLike::Base> for an example of how to build base
+types.
 
-See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
+See L<MooX::Types::MooseLike::Numeric> for an example of how to build
+subtypes.
 
 =head1 AUTHOR
 
@@ -102,12 +106,12 @@ mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and
- L</CONTRIBUTORS> as listed above.
+Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and 
+L</CONTRIBUTORS> as listed above.
 
 =head1 LICENSE
 
-This library is free software and may be distributed under the same terms
-as perl itself.
+This library is free software and may be distributed under the same
+terms as perl itself.
 
 =cut
