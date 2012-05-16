@@ -4,7 +4,7 @@ use strictures 1;
 use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
