@@ -10,4 +10,18 @@ WriteMakefile(
   PREREQ_PM => {
     Moo => '0.009015',
   }
+  META_ADD => {
+    resources => {
+      IRC         => 'irc://irc.perl.org/#moose',
+      repository  => {
+        url  => 'git://github.com/mateu/MooX-Types-MooseLike.git',
+        web  => 'http://github.com/mateu/MooX-Types-MooseLike',
+        type => 'git',
+      },
+      bugtracker  => {
+        web    => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooX-Types-MooseLike',
+        mailto => 'bug-MooX-Types-MooseLike@rt.cpan.org',
+      },
+    },
+  },
 );
