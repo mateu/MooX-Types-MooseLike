@@ -1,3 +1,6 @@
+       - Add Deps [RT#77225] (SymKat)
+       - Add META (SineSwiper)
+
 0.04 - 2012-04-27
        ADDITIONS:
        * Add support for Moo type inflation to Moose (mst)
