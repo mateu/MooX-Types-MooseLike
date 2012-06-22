@@ -3,6 +3,7 @@ package MooX::Types::MooseLike;
 use strictures 1;
 use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
+use Carp qw(confess);
 
 our $VERSION = '0.05';
 
@@ -43,7 +44,9 @@ sub make_type {
   }
 
   my $isa = sub {
-    die $type_definition->{message}->(@_) if not $full_test->(@_);
+    return if $full_test->(@_);
+    local $Carp::Internal{"MooX::Types::MooseLike"} = 1;
+    confess $type_definition->{message}->(@_);
   };
 
   my $full_name = $moose_namespace
@@ -99,6 +102,7 @@ mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
 =head1 CONTRIBUTORS
 
 mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
 
 =head1 COPYRIGHT
 
