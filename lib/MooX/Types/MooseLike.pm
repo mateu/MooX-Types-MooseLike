@@ -44,7 +44,9 @@ sub make_type {
   }
 
   my $isa = sub {
-    confess $type_definition->{message}->(@_) if not $full_test->(@_);
+    return if $full_test->(@_);
+    local $Carp::Internal{"MooX::Types::MooseLike"} = 1;
+    confess $type_definition->{message}->(@_);
   };
 
   my $full_name = $moose_namespace
