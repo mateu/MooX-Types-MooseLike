@@ -1,3 +1,4 @@
+0.06 - 2012-06-27
        - make subtype use full test [#RT78074] (SineSwiper)
        - correct SingleDigit type definition [#RT78074] (SineSwiper)
        - Add Stack Trace on Exception [RT#77583] (Mithaldu)
