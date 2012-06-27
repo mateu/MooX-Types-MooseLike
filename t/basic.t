@@ -233,4 +233,10 @@ like(
     'an integer less than 18 is an exception when we want a legal age'
 );
 
+like(
+    exception { MooX::Types::MooseLike::Test->new( an_undef => '' ) },
+    qr/is not undef.*\n.*MooX::Types::MooseLike::Test::new.*basic\.t/,
+    'error looks like useful stacktrace'
+);
+
 done_testing;
