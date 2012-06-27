@@ -60,7 +60,7 @@ sub make_type {
 
   return {
     type    =>  sub { $isa },
-    is_type => sub { $test->($_[0]) },
+    is_type => sub { $full_test->($_[0]) },
   };
 }
 
