@@ -64,7 +64,7 @@ my $type_definitions = [
   },
   {
     name       => 'SingleDigit',
-    subtype_of => 'NegativeOrZeroInt',
+    subtype_of => 'PositiveOrZeroInt',
     from       => 'MooX::Types::MooseLike::Numeric',
     test       => sub { $_[0] < 10 },
     message    => sub { "$_[0] is not a single digit!" },
