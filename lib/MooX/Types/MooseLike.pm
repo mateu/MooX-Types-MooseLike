@@ -78,6 +78,9 @@ sub make_type {
              elsif ($type_definition->{name} eq 'HashRef'){
                  @values = values %{$_[0]};
              }
+             elsif ($type_definition->{name} eq 'ScalarRef'){
+                 @values = (${$_[0]});
+             }
              foreach my $value (@values) {
                 $coderef->($value);
              }

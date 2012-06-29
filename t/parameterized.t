@@ -1,7 +1,7 @@
 use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
-use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str /;
+use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef /;
 
 has an_array_of_integers => (
   is => 'ro',
@@ -18,6 +18,10 @@ has a_hash_of_strings => (
 has an_array_of_hash_of_int => (
   is => 'ro',
   isa => ArrayRef[HashRef[Int]],
+);
+has a_scalar_ref_of_int => (
+  is => 'ro',
+  isa => ScalarRef[Int],
 );
 
 package main;
@@ -53,5 +57,11 @@ like(
     qr/is not an Integer/,
     'an ArrayRef of HashRef of Floats is an exception when we want an ArrayRef[HashRef[Int]]'
 );
-
+# Test ScalarRef[Int]
+ok(MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \1), 'ScalarRef[Int]');
+like(
+    exception { MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \'x') }, 
+    qr/is not an Integer/,
+    'a ScalarRef of Str is an exception when we want an ScalarRef[Int]'
+);
 done_testing;
