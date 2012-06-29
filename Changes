@@ -1,3 +1,4 @@
+0.07 - 2012-06-29
        - Support for parameterized types: ArrayRef, HashRef, ScalarRef
          This means one can now write: isa => ArrayRef[HashRef]
 
