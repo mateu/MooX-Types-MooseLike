@@ -15,6 +15,10 @@ has a_hash_of_strings => (
   is => 'ro',
   isa => HashRef[Str],
 );
+has an_array_of_hash_of_int => (
+  is => 'ro',
+  isa => ArrayRef[HashRef[Int]],
+);
 
 package main;
 use strictures 1;
@@ -41,6 +45,13 @@ like(
     exception { MooX::Types::MooseLike::Test->new(a_hash_of_strings => {a => MooX::Types::MooseLike::Test->new(), b => 'x'}) }, 
     qr/is not a string/,
     'an HashRef with Objects is an exception when we want an HashRef[Str]'
+);
+# Test ArrayRef[HashRef[Int]]
+ok(MooX::Types::MooseLike::Test->new(an_array_of_hash_of_int => [{a => 1}, {b => 2}]), 'ArrayRef[HashRef[Int]]');
+like(
+    exception { MooX::Types::MooseLike::Test->new(an_array_of_hash_of_int => [{x => 1},{x => 1.1}] ) }, 
+    qr/is not an Integer/,
+    'an ArrayRef of HashRef of Floats is an exception when we want an ArrayRef[HashRef[Int]]'
 );
 
 done_testing;
