@@ -174,9 +174,14 @@ so one could then declare some attributtes like:
 	  is => 'ro',
 	  isa => ArrayRef,
 	);
+	has 'records' => (
+	  is => 'ro',
+	  isa => ArrayRef[Int],
+	);
 
 These types provide a check that the contact attribute is a hash reference,
-and that the guest_list is an array reference.
+that the guest_list is an array reference, and that the records are an array
+of hash references.
 
 =head1 TYPES (subroutines)
 
@@ -250,9 +255,11 @@ A type that is either a builtin perl filehandle or an IO::Handle object
 
 A type that is an object (think blessed)
 
-=head2 AHRef
+=head2 -Parameterized Types-
 
-An ArrayRef[HashRef] type
+ArrayRef, HashRef and ScalarRef can be parameterized
+
+For example, ArrayRef[HashRef]
 
 =head1 AUTHOR
 
@@ -260,12 +267,11 @@ Mateu Hunter C<hunter@missoula.org>
 
 =head1 THANKS
 
-mst provided the implementation suggestion of using 'can' on a quoted sub 
-to define a type (subroutine).
+mst has provided critical guidance on the design 
 
 =head1 COPYRIGHT
 
-Copyright 2011, Mateu Hunter
+Copyright 2011, 2012 Mateu Hunter
 
 =head1 LICENSE
 
