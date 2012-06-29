@@ -5,7 +5,7 @@ use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
 use Carp qw(confess);
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
@@ -59,7 +59,34 @@ sub make_type {
   };
 
   return {
-    type    =>  sub { $isa },
+    type    =>  sub { 
+
+      # If we have a parameterized type we want to check its values
+      if (
+            $_[0] 
+        &&  $_[0]->[0] 
+        &&  ref($_[0]->[0]) 
+        && (ref($_[0]->[0]) eq 'CODE')
+      ) {
+        my $coderef = $_[0]->[0]; 
+        sub {
+             $isa->(@_);
+             my @values;
+             if ($type_definition->{name} eq 'ArrayRef'){
+                 @values = @{$_[0]};
+             }
+             elsif ($type_definition->{name} eq 'HashRef'){
+                 @values = values %{$_[0]};
+             }
+             foreach my $value (@values) {
+                $coderef->($value);
+             }
+        };
+      }
+      else {
+          $isa;
+      }
+    },
     is_type => sub { $full_test->($_[0]) },
   };
 }
