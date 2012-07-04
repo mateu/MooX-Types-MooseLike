@@ -1,7 +1,7 @@
 use strictures 1;
 package MooX::Types::MooseLike::Test;
 use Moo;
-use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef /;
+use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe /;
 
 has an_array_of_integers => (
   is => 'ro',
@@ -23,6 +23,18 @@ has a_scalar_ref_of_int => (
   is => 'ro',
   isa => ScalarRef[Int],
 );
+has maybe_an_int => (
+  is => 'ro',
+  isa => Maybe[Int],
+);
+has array_maybe_a_hash => (
+  is => 'ro',
+  isa => ArrayRef[Maybe[HashRef]],
+);
+has array_maybe_a_hash_of_int => (
+  is => 'ro',
+  isa => ArrayRef[Maybe[HashRef[Int]]],
+);
 
 package main;
 use strictures 1;
@@ -38,6 +50,7 @@ like(
 );
 # Test ArrayRef[HashRef]
 ok(MooX::Types::MooseLike::Test->new(an_array_of_hash => [{a => 1}, {b => 2}]), 'ArrayRef[HashRef]');
+ok(MooX::Types::MooseLike::Test->new(an_array_of_hash => [{a => 1}, {b => undef}]), 'ArrayRef[HashRef] with undef');
 like(
     exception { MooX::Types::MooseLike::Test->new(an_array_of_hash => [{x => 1},[1,2,3]]) }, 
     qr/is not a HashRef/,
@@ -63,5 +76,30 @@ like(
     exception { MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \'x') }, 
     qr/is not an Integer/,
     'a ScalarRef of Str is an exception when we want an ScalarRef[Int]'
+);
+# Test ScalarRef[Int]
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int => 41), 'Maybe[Int] as an integer');
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int => undef), 'Maybe[Int] as undef');
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int => -24), 'Maybe[Int] as undef');
+like(
+    exception { MooX::Types::MooseLike::Test->new(maybe_an_int => 'x') }, 
+    qr/is not an Integer/,
+    'a Str is an exception when we want a Maybe[Int]'
+);
+# Test ArrayRef[Maybe[HashRef]]
+ok(MooX::Types::MooseLike::Test->new(array_maybe_a_hash => [{a => 41}]), 'ArrayRef[Maybe[HashRef]] as an HashRef');
+ok(MooX::Types::MooseLike::Test->new(array_maybe_a_hash => [undef,{a => 41}]), 'ArrayRef[Maybe[HashRef]] with an undef');
+like(
+    exception { MooX::Types::MooseLike::Test->new(array_maybe_a_hash => ['x']) }, 
+    qr/is not a HashRef/,
+    'a Str is an exception when we want a Maybe[HashRef]'
+);
+# Test ArrayRef[Maybe[HashRef[Int]]]
+ok(MooX::Types::MooseLike::Test->new(array_maybe_a_hash_of_int => [{a => 41}]), 'ArrayRef[Maybe[HashRef]] as a HashRef[Int]');
+ok(MooX::Types::MooseLike::Test->new(array_maybe_a_hash_of_int => [undef,{a => -1}]), 'ArrayRef[Maybe[HashRef]] with an undef');
+like(
+    exception { MooX::Types::MooseLike::Test->new(array_maybe_a_hash_of_int => [{b => 'x'}]) }, 
+    qr/is not an Int/,
+    'a Str is an exception when we want a Maybe[HashRef[Int]]'
 );
 done_testing;

@@ -70,6 +70,12 @@ my $type_definitions = [
     test => sub { "$_[0]" =~ /^-?[0-9]+$/ },
     message => sub { "$_[0] is not an Integer!" },
   },
+  # Maybe has no test for itself, rather only the parameter type does
+  {
+    name => 'Maybe',
+    test => sub { 1 },
+    message => sub { 'Maybe only uses its parameterized type message' },
+  },
   {
     name => 'ScalarRef',
     test => sub { ref($_[0]) eq 'SCALAR' },

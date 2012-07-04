@@ -71,16 +71,23 @@ sub make_type {
         my $coderef = $_[0]->[0]; 
         sub {
              $isa->(@_);
+             my $type = $type_definition->{name};
              my @values;
-             if ($type_definition->{name} eq 'ArrayRef'){
+             if ($type eq 'ArrayRef'){
                  @values = @{$_[0]};
              }
-             elsif ($type_definition->{name} eq 'HashRef'){
+             elsif ($type eq 'HashRef'){
                  @values = values %{$_[0]};
              }
-             elsif ($type_definition->{name} eq 'ScalarRef'){
+             elsif ($type eq 'ScalarRef'){
                  @values = (${$_[0]});
              }
+             elsif ($type eq 'Maybe'){
+                 # We allow undef with the Maybe type
+                 return if (not defined $_[0]);
+                 @values = $_[0];
+             }
+             # Run the type coderef on each value
              foreach my $value (@values) {
                 $coderef->($value);
              }
