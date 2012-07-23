@@ -110,7 +110,7 @@ __END__
 
 =head1 NAME
 
-MooX::Types::MooseLike - some Moosish types and a typer builder
+MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 SYNOPSIS
 
