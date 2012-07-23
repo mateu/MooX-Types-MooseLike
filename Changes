@@ -1,3 +1,8 @@
+0.09 - 2012-07-23
+       - Preserve attribute properties defined after 'isa'
+         [github issue #7]
+         Failing tests (xsawyerx)
+
 0.08 - 2012-07-03
        - Support for parameterized type: Maybe
          For example,  isa => Maybe[Int]
