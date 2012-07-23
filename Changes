@@ -1,4 +1,3 @@
-0.09 - 2012-07-23
        - Preserve attribute properties defined after 'isa'
          [github issue #7]
          Failing tests (xsawyerx)

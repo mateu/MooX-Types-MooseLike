@@ -14,9 +14,9 @@ use Test::More;
 use Test::Fatal;
 ok(MyObject->new(required_parameterized_hashref => {a => {}}), 'Required paramterized type');
 like(
-    exception { MyObject->new }, 
-    qr/Missing required arguments/,
-    'A required parameterized type must exist'
+  exception { MyObject->new }, 
+  qr/Missing required arguments/,
+  'A required parameterized type must exist'
 );
 
 done_testing;
