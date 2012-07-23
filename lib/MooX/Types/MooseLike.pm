@@ -69,7 +69,7 @@ sub make_type {
         && (ref($_[0]->[0]) eq 'CODE')
       ) {
         my $coderef = $_[0]->[0]; 
-        sub {
+        my $parameterized_isa = sub {
              $isa->(@_);
              my $type = $type_definition->{name};
              my @values;
@@ -92,9 +92,13 @@ sub make_type {
                 $coderef->($value);
              }
         };
+        # Remove old $isa, but return the rest of the arguments
+        # so any specs defined after 'isa' don't get lost
+        shift;
+        return ($parameterized_isa, @_);
       }
       else {
-          $isa;
+          return $isa;
       }
     },
     is_type => sub { $full_test->($_[0]) },
