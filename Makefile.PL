@@ -6,7 +6,6 @@ use ExtUtils::MakeMaker;
 
 my %RUN_DEPS = (
   'Moo' => 0.091006,
-  'strictures' => 1.001001,
   'Module::Runtime' => 0.012,
 );
 my %BUILD_DEPS = (
@@ -25,16 +24,9 @@ WriteMakefile(
   },
   META_ADD => {
     resources => {
+      repository  => 'git://github.com/mateu/MooX-Types-MooseLike.git',
+      bugtracker  => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooX-Types-MooseLike',
       IRC         => 'irc://irc.perl.org/#web-simple',
-      repository  => {
-        url  => 'git://github.com/mateu/MooX-Types-MooseLike.git',
-        web  => 'http://github.com/mateu/MooX-Types-MooseLike',
-        type => 'git',
-      },
-      bugtracker  => {
-        web    => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooX-Types-MooseLike',
-        mailto => 'bug-MooX-Types-MooseLike@rt.cpan.org',
-      },
     },
   },
   LICENSE => 'perl',
