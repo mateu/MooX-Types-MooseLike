@@ -1,6 +1,6 @@
-use strictures 1;
-
 package MooX::Types::MooseLike::Numeric;
+use strict;
+use warnings FATAL => 'all';
 use MooX::Types::MooseLike::Base;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
@@ -71,12 +71,11 @@ my $type_definitions = [
   },
 ];
 
-MooX::Types::MooseLike::register_types(
-  $type_definitions, __PACKAGE__, 'MooseX::Types::Common::Numeric'
-);
+MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__,
+  'MooseX::Types::Common::Numeric');
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
-1
+1;
 
 __END__
 

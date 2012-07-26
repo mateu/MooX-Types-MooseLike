@@ -1,6 +1,6 @@
 package MooX::Types::MooseLike;
-
-use strictures 1;
+use strict;
+use warnings FATAL => 'all';
 use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
 use Carp qw(confess);
@@ -13,17 +13,18 @@ sub register_types {
     my $coderefs = make_type($type_def, $moose_namespace);
     install_type($type_def->{name}, $coderefs, $into);
   }
+  return;
 }
 
 sub install_type {
   my ($type_name, $coderefs, $namespace) = @_;
-  my $is_type_name          = 'is_' . $type_name;
-  my $type_full_name        = $namespace . '::' . $type_name;
-  my $is_type_full_name     = $namespace . '::' . $is_type_name;
+  my $is_type_name      = 'is_' . $type_name;
+  my $type_full_name    = $namespace . '::' . $type_name;
+  my $is_type_full_name = $namespace . '::' . $is_type_name;
 
   {
     no strict 'refs';    ## no critic
-    *{$type_full_name} = $coderefs->{type};
+    *{$type_full_name}    = $coderefs->{type};
     *{$is_type_full_name} = $coderefs->{is_type};
     push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name;
   }
@@ -33,14 +34,15 @@ sub install_type {
 sub make_type {
   my ($type_definition, $moose_namespace) = @_;
   my $test = $type_definition->{test};
- 
-  my $full_test = $test; 
+
+  my $full_test = $test;
   if (my $subtype_of = $type_definition->{subtype_of}) {
-    my $from = $type_definition->{from} || die "Must define a 'from' namespace for the parent type: $subtype_of
- when defining type: $type_definition->{name}";
+    my $die_message =
+"Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
+    my $from = $type_definition->{from} || die $die_message;
     my $subtype_test = $from . '::is_' . $subtype_of;
     no strict 'refs';    ## no critic
-    $full_test = sub {return (&{$subtype_test}(@_) && $test->(@_)); };
+    $full_test = sub { return (&{$subtype_test}(@_) && $test->(@_)); };
   }
 
   my $isa = sub {
@@ -49,9 +51,10 @@ sub make_type {
     confess $type_definition->{message}->(@_);
   };
 
-  my $full_name = $moose_namespace
-                    ? "${moose_namespace}::".$type_definition->{name}
-                    : $type_definition->{name};
+  my $full_name =
+    $moose_namespace
+    ? "${moose_namespace}::" . $type_definition->{name}
+    : $type_definition->{name};
 
   $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
     require_module($moose_namespace) if $moose_namespace;
@@ -59,46 +62,49 @@ sub make_type {
   };
 
   return {
-    type    =>  sub { 
+    type => sub {
 
       # If we have a parameterized type we want to check its values
-      if (
-            $_[0] 
-        &&  $_[0]->[0] 
-        &&  ref($_[0]->[0]) 
-        && (ref($_[0]->[0]) eq 'CODE')
-      ) {
-        my $coderef = $_[0]->[0]; 
+      if ( $_[0]
+        && $_[0]->[0]
+        && ref($_[0]->[0])
+        && (ref($_[0]->[0]) eq 'CODE'))
+      {
+        my $coderef           = $_[0]->[0];
         my $parameterized_isa = sub {
-             $isa->(@_);
-             my $type = $type_definition->{name};
-             my @values;
-             if ($type eq 'ArrayRef'){
-                 @values = @{$_[0]};
-             }
-             elsif ($type eq 'HashRef'){
-                 @values = values %{$_[0]};
-             }
-             elsif ($type eq 'ScalarRef'){
-                 @values = (${$_[0]});
-             }
-             elsif ($type eq 'Maybe'){
-                 # We allow undef with the Maybe type
-                 return if (not defined $_[0]);
-                 @values = $_[0];
-             }
-             # Run the type coderef on each value
-             foreach my $value (@values) {
-                $coderef->($value);
-             }
+          $isa->(@_);
+          my $type = $type_definition->{name};
+          my @values;
+          if ($type eq 'ArrayRef') {
+            @values = @{ $_[0] };
+          }
+          elsif ($type eq 'HashRef') {
+            @values = values %{ $_[0] };
+          }
+          elsif ($type eq 'ScalarRef') {
+            @values = (${ $_[0] });
+          }
+          elsif ($type eq 'Maybe') {
+
+            # We allow undef with the Maybe type
+            return if (not defined $_[0]);
+            @values = $_[0];
+          }
+          else { }
+
+          # Run the type coderef on each value
+          foreach my $value (@values) {
+            $coderef->($value);
+          }
         };
+
         # Remove old $isa, but return the rest of the arguments
         # so any specs defined after 'isa' don't get lost
         shift;
         return ($parameterized_isa, @_);
       }
       else {
-          return $isa;
+        return $isa;
       }
     },
     is_type => sub { $full_test->($_[0]) },

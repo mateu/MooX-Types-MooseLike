@@ -1,6 +1,6 @@
-use strictures 1;
-
 package MooX::Types::MooseLike::Base;
+use strict;
+use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
 use MooX::Types::MooseLike;
@@ -28,7 +28,7 @@ my $type_definitions = [
     message => sub { "$_[0] is not undef" }
   },
 
-# Note the single quotes so $_[0] is not interpreted because undef and strictures => FATAL
+# Note the single quotes so $_[0] is not interpreted because undef and FATAL => 'all'
   {
     name    => 'Defined',
     test    => sub { defined($_[0]) },
@@ -38,9 +38,9 @@ my $type_definitions = [
     name => 'Bool',
 
     #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
-    test =>
-      sub { !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0' }
-    ,
+    test => sub {
+      !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0';
+    },
     message => sub { "$_[0] is not a Boolean" },
   },
   {
@@ -67,13 +67,14 @@ my $type_definitions = [
     name => 'Int',
 
 #  	test    => sub { Scalar::Util::looks_like_number($_[0]) && ($_[0] == int $_[0]) },
-    test => sub { "$_[0]" =~ /^-?[0-9]+$/ },
+    test => sub { "$_[0]" =~ /^-?[0-9]+$/x },
     message => sub { "$_[0] is not an Integer!" },
   },
+
   # Maybe has no test for itself, rather only the parameter type does
   {
-    name => 'Maybe',
-    test => sub { 1 },
+    name    => 'Maybe',
+    test    => sub { 1 },
     message => sub { 'Maybe only uses its parameterized type message' },
   },
   {
@@ -133,7 +134,7 @@ my $type_definitions = [
 MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
-1
+1;
 
 __END__ 
 
