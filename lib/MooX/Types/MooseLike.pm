@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
-use Carp qw(confess);
+use Carp qw(confess croak);
 
 our $VERSION = '0.09';
 
@@ -23,7 +23,7 @@ sub install_type {
   my $is_type_full_name = $namespace . '::' . $is_type_name;
 
   {
-    no strict 'refs';    ## no critic
+    no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
     *{$type_full_name}    = $coderefs->{type};
     *{$is_type_full_name} = $coderefs->{is_type};
     push @{"${namespace}::EXPORT_OK"}, $type_name, $is_type_name;
@@ -38,18 +38,19 @@ sub make_type {
   my $full_test = $test;
   if (my $subtype_of = $type_definition->{subtype_of}) {
     my $die_message =
-"Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
-    my $from = $type_definition->{from} || die $die_message;
+      "Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
+    my $from = $type_definition->{from}
+      || croak $die_message; ## no critic qw(ErrorHandling::RequireUseOfExceptions)
     my $subtype_test = $from . '::is_' . $subtype_of;
-    no strict 'refs';    ## no critic
+    no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
     $full_test = sub { return (&{$subtype_test}(@_) && $test->(@_)); };
   }
 
   my $isa = sub {
     return if $full_test->(@_);
-    local $Carp::Internal{"MooX::Types::MooseLike"} = 1;
-    confess $type_definition->{message}->(@_);
-  };
+    local $Carp::Internal{"MooX::Types::MooseLike"} = 1;  ## no critic qw(Variables::ProhibitPackageVars)
+    confess $type_definition->{message}->(@_) ;  ## no critic qw(ErrorHandling::RequireUseOfExceptions)
+    };
 
   my $full_name =
     $moose_namespace
@@ -59,7 +60,7 @@ sub make_type {
   $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
     require_module($moose_namespace) if $moose_namespace;
     Moose::Util::TypeConstraints::find_type_constraint($full_name);
-  };
+    };
 
   return {
     type => sub {
@@ -73,30 +74,21 @@ sub make_type {
         my $coderef           = $_[0]->[0];
         my $parameterized_isa = sub {
           $isa->(@_);
-          my $type = $type_definition->{name};
-          my @values;
-          if ($type eq 'ArrayRef') {
-            @values = @{ $_[0] };
-          }
-          elsif ($type eq 'HashRef') {
-            @values = values %{ $_[0] };
-          }
-          elsif ($type eq 'ScalarRef') {
-            @values = (${ $_[0] });
-          }
-          elsif ($type eq 'Maybe') {
 
-            # We allow undef with the Maybe type
-            return if (not defined $_[0]);
-            @values = $_[0];
-          }
-          else { }
+          # A dispatch table that gets the values for each parameterized type
+          my %parameter_values = (
+            ArrayRef  => sub { @{ $_[0] } },
+            HashRef   => sub { values %{ $_[0] } },
+            ScalarRef => sub { ${ $_[0] } },
+            Maybe     => sub { return if (not defined $_[0]); $_[0] },
+            );
+          my @values = $parameter_values{ $type_definition->{name} }->(@_);
 
           # Run the type coderef on each value
           foreach my $value (@values) {
             $coderef->($value);
           }
-        };
+          };
 
         # Remove old $isa, but return the rest of the arguments
         # so any specs defined after 'isa' don't get lost
@@ -106,9 +98,9 @@ sub make_type {
       else {
         return $isa;
       }
-    },
+      },
     is_type => sub { $full_test->($_[0]) },
-  };
+    };
 }
 
 1;
