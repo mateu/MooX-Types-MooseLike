@@ -132,6 +132,9 @@ my $type_definitions = [
 ];
 
 MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
+
+# Export an 'all' tag so one can easily import all types like so:
+# use MooX::Types::MooseLike::Base qw(:all) 
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 1;

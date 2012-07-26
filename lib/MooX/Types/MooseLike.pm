@@ -65,7 +65,7 @@ sub make_type {
   return {
     type => sub {
 
-      # If we have a parameterized type we want to check its values
+      # If we have a parameterized type then we want to check its values
       if ( $_[0]
         && $_[0]->[0]
         && ref($_[0]->[0])
@@ -112,21 +112,33 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 SYNOPSIS
 
-    # The Base and Numeric types are stable
-    # but the API to build new types is Experimental
     package MyApp::Types;
     use MooX::Types::MooseLike::Base;
     use base qw(Exporter);
     our @EXPORT_OK = ();
+
+    # Define some types
     my $defs = [{ 
       name => 'MyType', 
       test => sub { predicate($_[0]) }, 
       message => sub { "$_[0] is not the type we want!" }
     }];
+
+    # Make the types available
     MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
-    # optionally add an 'all' tag so one can:
-    # use MyApp::Types qw/:all/; # to import all types
-    our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
+    
+    ...
+    
+    # Somewhere in code that uses the type
+    package MyApp::Foo;
+    use Moo;
+    use MyApp::Types qw(MyType);
+    has attribute => (
+      is  => 'ro',
+      isa => MyType,
+    );
+    
+
 
 =head1 DESCRIPTION
 
