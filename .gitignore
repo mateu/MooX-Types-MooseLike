@@ -12,6 +12,8 @@ README
 blib/
 pm_to_blib
 Distar/
+.tidyall.d/
+tidyall.ini
 
 # yes that's right, distar makes it for us
 MANIFEST.SKIP
