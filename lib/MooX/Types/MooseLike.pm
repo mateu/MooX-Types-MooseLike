@@ -67,6 +67,7 @@ sub make_type {
 
       # If we have a parameterized type then we want to check its values
       if ( $_[0]
+        && ref($_[0]) eq 'ARRAY'
         && $_[0]->[0]
         && ref($_[0]->[0])
         && (ref($_[0]->[0]) eq 'CODE'))
