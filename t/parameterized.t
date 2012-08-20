@@ -1,41 +1,86 @@
-package MooX::Types::MooseLike::Test;
-use strict;
-use warnings FATAL => 'all';
-use Moo;
-use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe /;
+{
+  package MooX::Types::MooseLike::Test::Types;
 
-has an_array_of_integers => (
-  is  => 'ro',
-  isa => ArrayRef [Int],
-);
-has an_array_of_hash => (
-  is  => 'ro',
-  isa => ArrayRef [HashRef],
-);
-has a_hash_of_strings => (
-  is  => 'ro',
-  isa => HashRef [Str],
-);
-has an_array_of_hash_of_int => (
-  is  => 'ro',
-  isa => ArrayRef [ HashRef [Int] ],
-);
-has a_scalar_ref_of_int => (
-  is  => 'ro',
-  isa => ScalarRef [Int],
-);
-has maybe_an_int => (
-  is  => 'ro',
-  isa => Maybe [Int],
-);
-has array_maybe_a_hash => (
-  is  => 'ro',
-  isa => ArrayRef [ Maybe [HashRef] ],
-);
-has array_maybe_a_hash_of_int => (
-  is  => 'ro',
-  isa => ArrayRef [ Maybe [ HashRef [Int] ] ],
-);
+  use Test::More;
+  use MooX::Types::MooseLike::Base;
+  use base qw(Exporter);
+  our @EXPORT_OK = ();
+
+# Define some types
+  my $defs = [
+      {
+          name    => 'ScalarParamType',
+          test    => sub {
+            my ($value, @params) = @_;
+            is(scalar @params, 2, 'correct params passed to test sub');
+            is($params[0], 'param1', 'ScalarParam first param passed correctly to test()');
+            is($params[1], 'param2', 'ScalarParam second param passed correctly to test()');
+
+            return $value;
+          },
+          message => sub {
+            my ($value, @params) = @_;
+            is(scalar @params, 2, 'correct params passed to message sub');
+            is($params[0], 'param1', 'ScalarParam first param passed correctly to message()');
+            is($params[1], 'param2', 'ScalarParm second param passed correctly to message()');
+
+            return "Error message";
+          }
+      }
+  ];
+
+# Make the types available
+  MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
+
+  1;
+}
+
+{
+  package MooX::Types::MooseLike::Test;
+  use strict;
+  use warnings FATAL => 'all';
+  use Moo;
+  use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe /;
+  MooX::Types::MooseLike::Test::Types->import(qw/ScalarParamType/);
+
+  has an_array_of_integers => (
+    is  => 'ro',
+    isa => ArrayRef [Int],
+  );
+  has an_array_of_hash => (
+    is  => 'ro',
+    isa => ArrayRef [HashRef],
+  );
+  has a_hash_of_strings => (
+    is  => 'ro',
+    isa => HashRef [Str],
+  );
+  has an_array_of_hash_of_int => (
+    is  => 'ro',
+    isa => ArrayRef [ HashRef [Int] ],
+  );
+  has a_scalar_ref_of_int => (
+    is  => 'ro',
+    isa => ScalarRef [Int],
+  );
+  has maybe_an_int => (
+    is  => 'ro',
+    isa => Maybe [Int],
+  );
+  has array_maybe_a_hash => (
+    is  => 'ro',
+    isa => ArrayRef [ Maybe [HashRef] ],
+  );
+  has array_maybe_a_hash_of_int => (
+    is  => 'ro',
+    isa => ArrayRef [ Maybe [ HashRef [Int] ] ],
+  );
+  has 'scalar_param_passed_to_type' => (
+    is  => 'ro',
+    isa => ScalarParamType('param1', 'param2')
+  );
+
+}
 
 package main;
 use strict;
@@ -162,4 +207,21 @@ like(
   qr/is not an Int/,
   'a Str is an exception when we want a Maybe[HashRef[Int]]'
 );
+
+ok(
+  MooX::Types::MooseLike::Test->new(
+    scalar_param_passed_to_type  => 1
+  ),
+  'scalar_param_passed_to_type validated with true value'
+);
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(
+      scalar_param_passed_to_type  => 0);
+  },
+  qr/Error message/,
+  'scalarParam eror mesage is triggered when validation fails'
+);
+
+
 done_testing;
