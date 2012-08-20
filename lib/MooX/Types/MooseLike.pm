@@ -98,7 +98,7 @@ sub make_type {
       }
       else {
         my @args = @_;
-        return sub { $isa->(@_, @args); };
+        return (sub { $isa->(@_, @args); }, @_);
       }
     },
     is_type => sub { $full_test->(@_) },
