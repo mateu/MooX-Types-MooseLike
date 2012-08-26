@@ -134,12 +134,12 @@ my $type_definitions = [
 MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
 
 # Export an 'all' tag so one can easily import all types like so:
-# use MooX::Types::MooseLike::Base qw(:all) 
+# use MooX::Types::MooseLike::Base qw(:all)
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 1;
 
-__END__ 
+__END__
 
 =head1 NAME
 
@@ -150,18 +150,18 @@ MooX::Types::MooseLike::Base - Moose like types for Moo
     package MyPackage;
     use Moo;
     use MooX::Types::MooseLike::Base qw(:all);
-    
+
     has "beers_by_day_of_week" => (
         isa => HashRef
     );
     has "current_BAC" => (
         isa => Num
     );
-    
+
     # Also supporting is_$type.  For example, is_Int() can be used as follows
     has 'legal_age' => (
         is => 'ro',
-        isa => sub { die "$_[0] is not of legal age" 
+        isa => sub { die "$_[0] is not of legal age"
         	           unless (is_Int($_[0]) && $_[0] > 17) },
     );
 
@@ -203,7 +203,7 @@ Any type (test is always true)
 
 =head2 Item
 
-Synonymous with Any type 
+Synonymous with Any type
 
 =head2 Undef
 
@@ -277,7 +277,7 @@ Mateu Hunter C<hunter@missoula.org>
 
 =head1 THANKS
 
-mst has provided critical guidance on the design 
+mst has provided critical guidance on the design
 
 =head1 COPYRIGHT
 
