@@ -167,7 +167,9 @@ mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
 =head1 CONTRIBUTORS
 
 mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+
 Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
+
 Matt Phillips (cpan:MATTP) <mattp@cpan.org>
 
 =head1 COPYRIGHT
