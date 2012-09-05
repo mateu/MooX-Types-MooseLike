@@ -1,4 +1,11 @@
 {
+
+  package S::O;
+  use Moo;
+  has _guts => ( is => 'ro' );
+  sub members { @{$_[0]->_guts} }
+  sub BUILDARGS { shift; +{ _guts => [@_] } }
+
   package MooX::Types::MooseLike::Test::Types;
 
   use Test::More;
@@ -26,7 +33,15 @@
 
             return "Error message";
           }
-      }
+      }, {
+      name => 'Set_Object',
+      test => sub {
+         require Scalar::Util;
+         Scalar::Util::blessed($_[0]) && $_[0]->isa('S::O')
+      },
+      message => sub { "$_[0] is not a S::O!" },
+      parameterizable => sub { $_[0]->members },
+    },
   ];
 
 # Make the types available
@@ -41,8 +56,12 @@
   use warnings FATAL => 'all';
   use Moo;
   use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe /;
-  MooX::Types::MooseLike::Test::Types->import(qw/ScalarParamType/);
+  MooX::Types::MooseLike::Test::Types->import(qw/ScalarParamType Set_Object/);
 
+  has s_o => (
+    is  => 'ro',
+    isa => Set_Object([Int]),
+  );
   has an_array_of_integers => (
     is  => 'ro',
     isa => ArrayRef [Int],
@@ -221,6 +240,23 @@ like(
   },
   qr/Error message/,
   'scalarParam eror mesage is triggered when validation fails'
+);
+
+# S_O
+ok(
+  MooX::Types::MooseLike::Test->new(
+    s_o => S::O->new(1,2,3),
+  ),
+  'correct s_o'
+);
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(
+       s_o => S::O->new('fREW'),
+    )
+  },
+  qr(fREW is not an Integer),
+  'Int eror mesage is triggered when validation fails'
 );
 
 
