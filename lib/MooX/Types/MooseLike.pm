@@ -76,14 +76,7 @@ sub make_type {
         my $parameterized_isa = sub {
           $isa->(@_);
 
-          # A dispatch table that gets the values for each parameterized type
-          my %parameter_values = (
-            ArrayRef  => sub { @{ $_[0] } },
-            HashRef   => sub { values %{ $_[0] } },
-            ScalarRef => sub { ${ $_[0] } },
-            Maybe     => sub { return if (not defined $_[0]); $_[0] },
-            );
-          my @values = $parameter_values{ $type_definition->{name} }->(@_);
+          my @values = $type_definition->{parameterizable}->(@_);
 
           # Run the type coderef on each value
           foreach my $value (@values) {
@@ -126,6 +119,15 @@ MooX::Types::MooseLike - some Moosish types and a type builder
       message => sub { "$_[0] is not the type we want!" }
     },
     {
+      name => 'Set_Object',
+      test => sub {
+         require Scalar::Util;
+         Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object")
+      },
+      message => sub { "$_[0] is not a Set::Object!" }
+      parameterizable => sub { $_[0]->members },
+    },
+    {
       name => 'MyLengthTypeWithParam',
       test => sub {
         my ($value, $param) = @_;
@@ -150,9 +152,14 @@ MooX::Types::MooseLike - some Moosish types and a type builder
     );
 
     has string => (
+      is  => 'ro',
       isa => MyLengthTypeWithParam(25)
     );
 
+    has gadgets => (
+      is  => 'ro',
+      isa => Set_Object([MyType]),
+    );
 
 =head1 DESCRIPTION
 
@@ -167,8 +174,12 @@ mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
 =head1 CONTRIBUTORS
 
 mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+
 Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
+
 Matt Phillips (cpan:MATTP) <mattp@cpan.org>
+
+Arthur Axel fREW Schmidt (cpan:FREW) <frioux@gmail.com>
 
 =head1 COPYRIGHT
 

@@ -76,21 +76,25 @@ my $type_definitions = [
     name    => 'Maybe',
     test    => sub { 1 },
     message => sub { 'Maybe only uses its parameterized type message' },
+    parameterizable => sub { return if (not defined $_[0]); $_[0] },
   },
   {
     name => 'ScalarRef',
     test => sub { ref($_[0]) eq 'SCALAR' },
     message => sub { "$_[0] is not an ScalarRef!" },
+    parameterizable => sub { ${ $_[0] } },
   },
   {
     name => 'ArrayRef',
     test => sub { ref($_[0]) eq 'ARRAY' },
     message => sub { "$_[0] is not an ArrayRef!" },
+    parameterizable => sub { @{ $_[0] } },
   },
   {
     name => 'HashRef',
     test => sub { ref($_[0]) eq 'HASH' },
     message => sub { "$_[0] is not a HashRef!" },
+    parameterizable => sub { values %{ $_[0] } },
   },
   {
     name => 'CodeRef',
