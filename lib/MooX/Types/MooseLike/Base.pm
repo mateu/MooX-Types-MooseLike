@@ -133,6 +133,36 @@ my $type_definitions = [
     },
     message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
   },
+  {
+    name => 'InstanceOf',
+    test => sub {
+      my ($instance, $class) = (shift, shift);
+      blessed($instance) && (ref($instance) eq $class);
+    },
+    message => sub { "$_[0] is not an instance of $_[1]!" },
+  },
+  {
+    name => 'ConsumerOf',
+    test => sub {
+      my ($instance, $role) = (shift, shift);
+      $instance->can('does') && $instance->does($role);
+    },
+    message => sub { "$_[0] is not a consumer of the role: $_[1]!" },
+  },
+  {
+    name => 'HasMethods',
+    test => sub {
+      my ($instance, @methods) = (shift, @_);
+      my @missing_methods = grep { !$instance->can($_) } @methods;
+      return (scalar @missing_methods ? 0 : 1);
+    },
+    message => sub { 
+      my $instance = shift;
+      my @missing_methods = grep { !$instance->can($_) } @_;
+      my $missing_methods = join ' ', @missing_methods;
+      return "$instance does not have the required methods: $missing_methods";
+    },
+  },
 ];
 
 MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);

@@ -1,0 +1,46 @@
+package MooX::Types::SetObject;
+use strict;
+use warnings FATAL => 'all';
+use MooX::Types::MooseLike;
+use Set::Object;
+use Scalar::Util qw(blessed);
+use Exporter 5.57 'import';
+our @EXPORT_OK = ();
+use Data::Dumper::Concise;
+
+my $type_definitions = [
+  {
+    name => 'SetObject',
+    test => sub {
+      require Scalar::Util;
+      Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object");
+    },
+    message         => sub { warn Dumper $_[0], " is not a Set::Object!" },
+    parameterizable => sub { $_[0]->members },
+  },
+];
+
+MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__,
+  'MooseX::Types::Set::Object');
+our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
+
+1;
+
+__END__
+
+=head1 NAME
+
+MooX::Types::SetObject - Set::Object type
+
+=head1 SYNOPSIS
+
+    package MyPackage;
+    use Moo;
+    use MooX::Types::MooseLike::Base qw(Int);
+    use MooX::Types::SetObject qw(SetObject);
+
+    # a Set::Object of integers
+    has "int_objects" => (
+        isa => SetObject[Int],
+    );
+

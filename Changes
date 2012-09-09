@@ -1,3 +1,7 @@
+       - Generalize parameterizable (fREW)
+       - Rework Type() string arguments (mattp)
+       - Added types: InstanceOf, ConsumerOf and HasMethods
+
 0.10 - 2012-08-26
        - Allow Type() arguments (mattp)
        - Improve error handling for parameterized types (mattp)

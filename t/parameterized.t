@@ -1,67 +1,18 @@
 {
-
-  package S::O;
-  use Moo;
-  has _guts => ( is => 'ro' );
-  sub members { @{$_[0]->_guts} }
-  sub BUILDARGS { shift; +{ _guts => [@_] } }
-
-  package MooX::Types::MooseLike::Test::Types;
-
-  use Test::More;
-  use MooX::Types::MooseLike::Base;
-  use base qw(Exporter);
-  our @EXPORT_OK = ();
-
-# Define some types
-  my $defs = [
-      {
-          name    => 'ScalarParamType',
-          test    => sub {
-            my ($value, @params) = @_;
-            is(scalar @params, 2, 'correct params passed to test sub');
-            is($params[0], 'param1', 'ScalarParam first param passed correctly to test()');
-            is($params[1], 'param2', 'ScalarParam second param passed correctly to test()');
-
-            return $value;
-          },
-          message => sub {
-            my ($value, @params) = @_;
-            is(scalar @params, 2, 'correct params passed to message sub');
-            is($params[0], 'param1', 'ScalarParam first param passed correctly to message()');
-            is($params[1], 'param2', 'ScalarParm second param passed correctly to message()');
-
-            return "Error message";
-          }
-      }, {
-      name => 'Set_Object',
-      test => sub {
-         require Scalar::Util;
-         Scalar::Util::blessed($_[0]) && $_[0]->isa('S::O')
-      },
-      message => sub { "$_[0] is not a S::O!" },
-      parameterizable => sub { $_[0]->members },
-    },
-  ];
-
-# Make the types available
-  MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
-
-  1;
+  package MooX::Types::MooseLike::Test::Role;
+  use Role::Tiny;
+  sub foo { 'ja' };
+  sub bar { 'ara' };
 }
-
 {
   package MooX::Types::MooseLike::Test;
   use strict;
   use warnings FATAL => 'all';
   use Moo;
-  use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe /;
-  MooX::Types::MooseLike::Test::Types->import(qw/ScalarParamType Set_Object/);
+  use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe InstanceOf ConsumerOf HasMethods /;
+  use MooX::Types::SetObject qw/ SetObject /;
+  with 'MooX::Types::MooseLike::Test::Role';
 
-  has s_o => (
-    is  => 'ro',
-    isa => Set_Object([Int]),
-  );
   has an_array_of_integers => (
     is  => 'ro',
     isa => ArrayRef [Int],
@@ -94,11 +45,22 @@
     is  => 'ro',
     isa => ArrayRef [ Maybe [ HashRef [Int] ] ],
   );
-  has 'scalar_param_passed_to_type' => (
+  has set_object_of_ints => (
     is  => 'ro',
-    isa => ScalarParamType('param1', 'param2')
+    isa => SetObject[Int],
   );
-
+  has instance_of_IO_Handle => (
+    is  => 'ro',
+    isa => InstanceOf['IO::Handle'],
+  );
+  has consumer_of => (
+    is  => 'ro',
+    isa => ConsumerOf['MooX::Types::MooseLike::Test::Role'],
+  );
+  has has_methods => (
+    is  => 'ro',
+    isa => HasMethods['foo', 'bar'],
+);
 }
 
 package main;
@@ -106,8 +68,9 @@ use strict;
 use warnings FATAL => 'all';
 use Test::More;
 use Test::Fatal;
+use IO::Handle;
 
-# Test ArrayRef[Int]
+# ArrayRef[Int]
 ok(MooX::Types::MooseLike::Test->new(an_array_of_integers => [ 6, 7, 10, -1 ]),
   'ArrayRef[Int]');
 like(
@@ -118,7 +81,7 @@ like(
   'an ArrayRef of Floats is an exception when we want an ArrayRef[Int]'
 );
 
-# Test ArrayRef[HashRef]
+# ArrayRef[HashRef]
 ok(
   MooX::Types::MooseLike::Test->new(
     an_array_of_hash => [ { a => 1 }, { b => 2 } ]
@@ -140,7 +103,7 @@ like(
   'an ArrayRef of Integers is an exception when we want an ArrayRef[HashRef]'
 );
 
-# Test HashRef[Str]
+# HashRef[Str]
 ok(MooX::Types::MooseLike::Test->new(a_hash_of_strings => { a => 1, b => 'x' }),
   'HashRef[Str]');
 like(
@@ -152,7 +115,7 @@ like(
   'an HashRef with Objects is an exception when we want an HashRef[Str]'
 );
 
-# Test ArrayRef[HashRef[Int]]
+# ArrayRef[HashRef[Int]]
 ok(
   MooX::Types::MooseLike::Test->new(
     an_array_of_hash_of_int => [ { a => 1 }, { b => 2 } ]
@@ -168,7 +131,7 @@ like(
 'an ArrayRef of HashRef of Floats is an exception when we want an ArrayRef[HashRef[Int]]'
 );
 
-# Test ScalarRef[Int]
+# ScalarRef[Int]
 ok(MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \1),
   'ScalarRef[Int]');
 like(
@@ -177,7 +140,7 @@ like(
   'a ScalarRef of Str is an exception when we want an ScalarRef[Int]'
 );
 
-# Test ScalarRef[Int]
+# ScalarRef[Int]
 ok(MooX::Types::MooseLike::Test->new(maybe_an_int => 41),
   'Maybe[Int] as an integer');
 ok(MooX::Types::MooseLike::Test->new(maybe_an_int => undef),
@@ -190,7 +153,7 @@ like(
   'a Str is an exception when we want a Maybe[Int]'
 );
 
-# Test ArrayRef[Maybe[HashRef]]
+# ArrayRef[Maybe[HashRef]]
 ok(MooX::Types::MooseLike::Test->new(array_maybe_a_hash => [ { a => 41 } ]),
   'ArrayRef[Maybe[HashRef]] as an HashRef');
 ok(
@@ -205,7 +168,7 @@ like(
   'a Str is an exception when we want a Maybe[HashRef]'
 );
 
-# Test ArrayRef[Maybe[HashRef[Int]]]
+# ArrayRef[Maybe[HashRef[Int]]]
 ok(
   MooX::Types::MooseLike::Test->new(
     array_maybe_a_hash_of_int => [ { a => 41 } ]
@@ -227,37 +190,54 @@ like(
   'a Str is an exception when we want a Maybe[HashRef[Int]]'
 );
 
+# Set::Object
 ok(
   MooX::Types::MooseLike::Test->new(
-    scalar_param_passed_to_type  => 1
+    set_object_of_ints => Set::Object->new(1,2,3),
   ),
-  'scalar_param_passed_to_type validated with true value'
+  'Set::Object of Int'
 );
 like(
   exception {
     MooX::Types::MooseLike::Test->new(
-      scalar_param_passed_to_type  => 0);
-  },
-  qr/Error message/,
-  'scalarParam eror mesage is triggered when validation fails'
-);
-
-# S_O
-ok(
-  MooX::Types::MooseLike::Test->new(
-    s_o => S::O->new(1,2,3),
-  ),
-  'correct s_o'
-);
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(
-       s_o => S::O->new('fREW'),
+       set_object_of_ints => Set::Object->new('fREW'),
     )
   },
   qr(fREW is not an Integer),
   'Int eror mesage is triggered when validation fails'
 );
 
+# InstanceOf
+ok(MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => IO::Handle->new ), 'instance of IO::Handle');
+my $false_instance = {};
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
+  },
+  qr/is not an instance of IO::Handle/,
+  'a hashref is not an instance of IO::Handle'
+);
+
+# ConsumerOf
+ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a Moo Role');
+my $false_consumer = IO::Handle->new;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(consumer_of => $false_consumer);
+  },
+  qr/is not a consumer of the role/,
+  'an IO::Handle instance is not a consumer of our role'
+);
+
+# HasMethods
+ok(MooX::Types::MooseLike::Test->new(has_methods => MooX::Types::MooseLike::Test->new ), 'has methods of madness');
+my $false_has_methods = IO::Handle->new;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(has_methods => $false_has_methods);
+  },
+  qr/does not have the required methods/,
+  'an object instance does not have the required methods'
+);
 
 done_testing;

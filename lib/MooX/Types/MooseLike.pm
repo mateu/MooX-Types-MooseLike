@@ -5,7 +5,7 @@ use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
@@ -65,22 +65,21 @@ sub make_type {
   return {
     type => sub {
 
+      my $param = $_[0];
       # If we have a parameterized type then we want to check its values
-      if ( $_[0]
-        && ref($_[0]) eq 'ARRAY'
-        && $_[0]->[0]
-        && ref($_[0]->[0])
-        && (ref($_[0]->[0]) eq 'CODE'))
-      {
+      if (ref($param) eq 'ARRAY') {
         my $coderef           = $_[0]->[0];
         my $parameterized_isa = sub {
-          $isa->(@_);
-
-          my @values = $type_definition->{parameterizable}->(@_);
-
-          # Run the type coderef on each value
-          foreach my $value (@values) {
-            $coderef->($value);
+          if(ref($coderef) eq 'CODE') {
+            $isa->(@_);
+            # Run the type coderef on each value
+            my @values = $type_definition->{parameterizable}->(@_);
+            foreach my $value (@values) {
+              $coderef->($value);
+            }
+          }
+          else {
+            $isa->(@_, @{$param});
           }
         };
 
@@ -90,8 +89,7 @@ sub make_type {
         return ($parameterized_isa, @_);
       }
       else {
-        my @args = @_;
-        return (sub { $isa->(@_, @args); }, @_);
+        return $isa;
       }
     },
     is_type => sub { $full_test->(@_) },
@@ -117,15 +115,6 @@ MooX::Types::MooseLike - some Moosish types and a type builder
       name => 'MyType',
       test => sub { predicate($_[0]) },
       message => sub { "$_[0] is not the type we want!" }
-    },
-    {
-      name => 'Set_Object',
-      test => sub {
-         require Scalar::Util;
-         Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object")
-      },
-      message => sub { "$_[0] is not a Set::Object!" }
-      parameterizable => sub { $_[0]->members },
     },
     {
       name => 'MyLengthTypeWithParam',
@@ -156,16 +145,13 @@ MooX::Types::MooseLike - some Moosish types and a type builder
       isa => MyLengthTypeWithParam(25)
     );
 
-    has gadgets => (
-      is  => 'ro',
-      isa => Set_Object([MyType]),
-    );
-
 =head1 DESCRIPTION
 
 See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
+
+See L<MooX::Types::SetObject> for an example of how to build parameterized types.
 
 =head1 AUTHOR
 
