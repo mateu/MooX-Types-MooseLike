@@ -3,10 +3,9 @@ use strict;
 use warnings FATAL => 'all';
 use MooX::Types::MooseLike;
 use Set::Object;
-use Scalar::Util qw(blessed);
+use Scalar::Util;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
-use Data::Dumper::Concise;
 
 my $type_definitions = [
   {
@@ -14,11 +13,11 @@ my $type_definitions = [
     test => sub {
       require Scalar::Util;
       Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object");
-    },
-    message         => sub { warn Dumper $_[0], " is not a Set::Object!" },
+      },
+    message         => sub { "$_[0] is not a Set::Object!" },
     parameterizable => sub { $_[0]->members },
   },
-];
+  ];
 
 MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__,
   'MooseX::Types::Set::Object');
@@ -43,4 +42,3 @@ MooX::Types::SetObject - Set::Object type
     has "int_objects" => (
         isa => SetObject[Int],
     );
-

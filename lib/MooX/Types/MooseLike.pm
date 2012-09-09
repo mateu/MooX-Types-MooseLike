@@ -50,7 +50,7 @@ sub make_type {
     return if $full_test->(@_);
     local $Carp::Internal{"MooX::Types::MooseLike"} = 1;  ## no critic qw(Variables::ProhibitPackageVars)
     confess $type_definition->{message}->(@_) ;  ## no critic qw(ErrorHandling::RequireUseOfExceptions)
-  };
+    };
 
   my $full_name =
     $moose_namespace
@@ -60,18 +60,20 @@ sub make_type {
   $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
     require_module($moose_namespace) if $moose_namespace;
     Moose::Util::TypeConstraints::find_type_constraint($full_name);
-  };
+    };
 
   return {
     type => sub {
 
       my $param = $_[0];
+
       # If we have a parameterized type then we want to check its values
       if (ref($param) eq 'ARRAY') {
         my $coderef           = $_[0]->[0];
         my $parameterized_isa = sub {
           if(ref($coderef) eq 'CODE') {
             $isa->(@_);
+
             # Run the type coderef on each value
             my @values = $type_definition->{parameterizable}->(@_);
             foreach my $value (@values) {
@@ -81,7 +83,7 @@ sub make_type {
           else {
             $isa->(@_, @{$param});
           }
-        };
+          };
 
         # Remove old $isa, but return the rest of the arguments
         # so any specs defined after 'isa' don't get lost
@@ -91,9 +93,9 @@ sub make_type {
       else {
         return $isa;
       }
-    },
+      },
     is_type => sub { $full_test->(@_) },
-  };
+    };
 }
 
 1;
