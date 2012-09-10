@@ -1,6 +1,6 @@
        - Generalize parameterizable (fREW)
-       - Rework Type() string arguments (mattp)
-       - Added types: InstanceOf, ConsumerOf and HasMethods
+       - Rework type string arguments to follow ['Str'] pattern (mattp)
+       - New types: InstanceOf, ConsumerOf and HasMethods
 
 0.10 - 2012-08-26
        - Allow Type() arguments (mattp)

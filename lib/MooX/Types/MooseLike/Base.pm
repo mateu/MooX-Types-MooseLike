@@ -305,6 +305,11 @@ ArrayRef, HashRef and ScalarRef can be parameterized
 
 For example, ArrayRef[HashRef]
 
+In addition, we have the parameterized types: InstanceOf, ConsumerOf, HasMethods
+
+For example, InstanceOf['MyClass'], ConsumerOf['My::Role'], 
+and HasMethods[qw/foo bar baz/]
+
 =head1 AUTHOR
 
 Mateu Hunter C<hunter@missoula.org>
