@@ -149,7 +149,9 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 DESCRIPTION
 
-See L<MooX::Types::MooseLike::Base> for an example of how to build base types.
+See L<MooX::Types::MooseLike::Base> for a list of available base types.  
+Its source also provides an example of how to build base types, both 
+parameterizable and non-parameterizable.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 

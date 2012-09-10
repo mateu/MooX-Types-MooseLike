@@ -229,8 +229,6 @@ of hash references.
 
 =head1 TYPES (subroutines)
 
-All available types are listed below.
-
 =head2 Any
 
 Any type (test is always true)
@@ -299,16 +297,39 @@ A type that is either a builtin perl filehandle or an IO::Handle object
 
 A type that is an object (think blessed)
 
-=head2 -Parameterized Types-
+=head1 PARAMETERIZED TYPES
 
-ArrayRef, HashRef and ScalarRef can be parameterized
+=head2 Parameterizing Types With Other Types
+
+The following types can be parameterized with other types.
+
+=head3 ArrayRef
 
 For example, ArrayRef[HashRef]
 
-In addition, we have the parameterized types: InstanceOf, ConsumerOf, HasMethods
+=head3 HashRef
 
-For example, InstanceOf['MyClass'], ConsumerOf['My::Role'], 
-and HasMethods[qw/foo bar baz/]
+=head3 ScalarRef 
+
+=head3 Maybe
+
+For example, Maybe[Int] would be an integer or undef
+ 
+=head2 Parameterizing Types With Strings
+
+In addition, we have some parameterized types that take string arguments.
+
+=head3 InstanceOf
+
+For example, InstanceOf['MyClass']
+
+=head3 ConsumerOf
+
+ConsumerOf['My::Role'] 
+
+=head3 HasMethods
+
+HasMethods[qw/foo bar baz/]
 
 =head1 AUTHOR
 
