@@ -108,7 +108,7 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 =head1 SYNOPSIS
 
     package MyApp::Types;
-    use MooX::Types::MooseLike::Base;
+    use MooX::Types::MooseLike;
     use base qw(Exporter);
     our @EXPORT_OK = ();
 
@@ -136,7 +136,7 @@ MooX::Types::MooseLike - some Moosish types and a type builder
     # Somewhere in code that uses the type
     package MyApp::Foo;
     use Moo;
-    use MyApp::Types qw(MyType);
+    use MyApp::Types qw(MyType MyLengthTypeWithParam);
     has attribute => (
       is  => 'ro',
       isa => MyType,
