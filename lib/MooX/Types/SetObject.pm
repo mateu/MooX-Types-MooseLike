@@ -2,7 +2,6 @@ package MooX::Types::SetObject;
 use strict;
 use warnings FATAL => 'all';
 use MooX::Types::MooseLike;
-use Set::Object;
 use Scalar::Util;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
@@ -19,8 +18,7 @@ my $type_definitions = [
   },
   ];
 
-MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__,
-  'MooseX::Types::Set::Object');
+MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
 1;
