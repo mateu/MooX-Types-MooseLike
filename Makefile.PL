@@ -9,8 +9,9 @@ my %RUN_DEPS = (
   'Module::Runtime' => 0.012,
 );
 my %BUILD_DEPS = (
-  'Test::More' => 0.96,
+  'Test::More'  => 0.96,
   'Test::Fatal' => 0.003,
+  'Set::Object' => 1.000,
 );
 
 WriteMakefile(
