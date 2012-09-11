@@ -5,13 +5,24 @@
   sub bar { 'ara' };
 }
 {
+  package MooX::Types::MooseLike::Test::AnotherRole;
+  use Role::Tiny;
+  sub que { 'dius' };
+  sub quoi { 'dieu' };
+}
+{
   package MooX::Types::MooseLike::Test;
   use strict;
   use warnings FATAL => 'all';
   use Moo;
-  use MooX::Types::MooseLike::Base qw/ ArrayRef Int HashRef Str ScalarRef Maybe InstanceOf ConsumerOf HasMethods /;
+  use MooX::Types::MooseLike::Base qw/ 
+    ArrayRef Int HashRef Str ScalarRef Maybe InstanceOf ConsumerOf HasMethods 
+  /;
   use MooX::Types::SetObject qw/ SetObject /;
-  with 'MooX::Types::MooseLike::Test::Role';
+  with (
+    'MooX::Types::MooseLike::Test::Role', 
+    'MooX::Types::MooseLike::Test::AnotherRole'
+  );
 
   has an_array_of_integers => (
     is  => 'ro',
@@ -55,7 +66,10 @@
     );
   has consumer_of => (
     is  => 'ro',
-    isa => ConsumerOf['MooX::Types::MooseLike::Test::Role'],
+    isa => ConsumerOf[
+      'MooX::Types::MooseLike::Test::Role',
+      'MooX::Types::MooseLike::Test::AnotherRole'
+    ],
     );
   has has_methods => (
     is  => 'ro',
@@ -220,14 +234,14 @@ like(
   );
 
 # ConsumerOf
-ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a Moo Role');
+ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a some roles');
 my $false_consumer = IO::Handle->new;
 like(
   exception {
     MooX::Types::MooseLike::Test->new(consumer_of => $false_consumer);
   },
-  qr/is not a consumer of the role/,
-  'an IO::Handle instance is not a consumer of our role'
+  qr/is not a consumer of roles/,
+  'an IO::Handle instance is not a consumer of roles'
   );
 
 # HasMethods
