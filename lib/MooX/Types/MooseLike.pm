@@ -119,14 +119,13 @@ MooX::Types::MooseLike - some Moosish types and a type builder
       message => sub { "$_[0] is not the type we want!" }
     },
     {
-      name => 'MyLengthTypeWithParam',
+      name => 'VarChar',
       test => sub {
         my ($value, $param) = @_;
-        length($value) < $param;
+        length($value) <= $param;
       },
-      message => sub { "$_[0] is too large! It should be less than $_[1]." }
-    }
-  ];
+      message => sub { "$_[0] is too large! It should be less than or equal to $_[1]." }
+    }];
 
     # Make the types available - this adds them to @EXPORT_OK automatically.
     MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
@@ -136,7 +135,7 @@ MooX::Types::MooseLike - some Moosish types and a type builder
     # Somewhere in code that uses the type
     package MyApp::Foo;
     use Moo;
-    use MyApp::Types qw(MyType MyLengthTypeWithParam);
+    use MyApp::Types qw(MyType VarChar);
     has attribute => (
       is  => 'ro',
       isa => MyType,
@@ -144,14 +143,14 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
     has string => (
       is  => 'ro',
-      isa => MyLengthTypeWithParam(25)
+      isa => VarChar[25]
     );
 
 =head1 DESCRIPTION
 
 See L<MooX::Types::MooseLike::Base> for a list of available base types.  
-Its source also provides an example of how to build base types, both 
-parameterizable and non-parameterizable.
+Its source also provides an example of how to build base types, along 
+with both parameterizable and non-parameterizable.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
