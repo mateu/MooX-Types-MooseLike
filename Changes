@@ -1,3 +1,7 @@
+       - Improve POD
+       - Add testing dependency
+       - Correct SetObject
+
 0.11 - 2012-09-10
        - Generalize parameterizable (fREW)
        - Rework type string arguments to follow ['Str'] pattern (mattp)
