@@ -78,7 +78,6 @@ use warnings FATAL => 'all';
 use Test::More;
 use Test::Fatal;
 use IO::Handle;
-use Set::Object;
 
 # ArrayRef[Int]
 ok(MooX::Types::MooseLike::Test->new(an_array_of_integers => [ 6, 7, 10, -1 ]),
