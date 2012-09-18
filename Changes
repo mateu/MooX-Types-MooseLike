@@ -1,3 +1,5 @@
+      - Only test SetObject when Set::Object is already installed
+
 0.12 - 2012-09-11
        Release Name: Independence for Catalunya
        - Improve POD

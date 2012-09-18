@@ -5,7 +5,7 @@ use Exporter 5.57 'import';
 use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
