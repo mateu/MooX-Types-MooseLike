@@ -11,7 +11,6 @@ my %RUN_DEPS = (
 my %BUILD_DEPS = (
   'Test::More'  => 0.96,
   'Test::Fatal' => 0.003,
-  'Set::Object' => 1.000,
 );
 
 WriteMakefile(
