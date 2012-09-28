@@ -1,3 +1,4 @@
+0.14 - 2012-09-28
       - Relax InstanceOf definition to use isa()
 
 0.14 - 2012-09-19
