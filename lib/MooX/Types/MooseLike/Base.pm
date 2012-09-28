@@ -136,10 +136,20 @@ my $type_definitions = [
   {
     name => 'InstanceOf',
     test => sub {
-      my ($instance, $class) = (shift, shift);
-      blessed($instance) && (ref($instance) eq $class);
+      my ($instance, @classes) = (shift, @_);
+      return if not blessed($instance);
+      my @missing_classes = grep { !$instance->isa($_) } @classes;
+      return (scalar @missing_classes ? 0 : 1);
       },
     message => sub { "$_[0] is not an instance of $_[1]!" },
+    message => sub { 
+      my $instance = shift;
+      return "$instance is not blessed" if not blessed($instance);
+      my @missing_classes = grep { !$instance->isa($_) } @_;
+      my $s = (scalar @missing_classes) > 1 ? 'es' : '';
+      my $missing_classes = join ' ', @missing_classes;
+      return "$instance is not an instance of the class${s}: $missing_classes";
+    },
   },
   {
     name => 'ConsumerOf',

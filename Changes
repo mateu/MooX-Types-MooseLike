@@ -1,3 +1,5 @@
+      - Relax InstanceOf definition to use isa()
+
 0.14 - 2012-09-19
       - Remove pesky Set::Object from build requirements
 

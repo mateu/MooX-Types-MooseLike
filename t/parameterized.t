@@ -11,6 +11,19 @@
   sub quoi { 'dieu' };
 }
 {
+    package A;
+    use Moo;
+    has fun => (is => 'ro');
+    1;
+}
+{
+    package B;
+    use Moo;
+    extends 'A';
+    has funner => (is => 'ro');
+    1;
+}
+{
   package MooX::Types::MooseLike::Test;
   use strict;
   use warnings FATAL => 'all';
@@ -58,6 +71,10 @@
   has instance_of_IO_Handle => (
     is  => 'ro',
     isa => InstanceOf['IO::Handle'],
+    );
+  has instance_of_A_and_B => (
+    is  => 'ro',
+    isa => InstanceOf['A', 'B'],
     );
   has consumer_of => (
     is  => 'ro',
@@ -206,9 +223,18 @@ like(
   exception {
     MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
   },
-  qr/is not an instance of IO::Handle/,
+  qr/is not blessed/,
   'a hashref is not an instance of IO::Handle'
   );
+$false_instance = bless {}, 'Foo';
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
+  },
+  qr/is not an instance of the class.*IO::Handle/,
+  'a Foo instance is not an instance of IO::Handle'
+  );
+ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => B->new ), 'instance of A and B');
 
 # ConsumerOf
 ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a some roles');
