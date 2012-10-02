@@ -1,16 +1,4 @@
 {
-  package MooX::Types::MooseLike::Test::Role;
-  use Role::Tiny;
-  sub foo { 'ja' };
-  sub bar { 'ara' };
-}
-{
-  package MooX::Types::MooseLike::Test::AnotherRole;
-  use Role::Tiny;
-  sub que { 'dius' };
-  sub quoi { 'dieu' };
-}
-{
     package A;
     use Moo;
     has fun => (is => 'ro');
@@ -29,12 +17,8 @@
   use warnings FATAL => 'all';
   use Moo;
   use MooX::Types::MooseLike::Base qw/ 
-    ArrayRef Int HashRef Str ScalarRef Maybe InstanceOf ConsumerOf HasMethods 
+    ArrayRef Int HashRef Str ScalarRef Maybe 
   /;
-  with (
-    'MooX::Types::MooseLike::Test::Role', 
-    'MooX::Types::MooseLike::Test::AnotherRole'
-  );
 
   has an_array_of_integers => (
     is  => 'ro',
@@ -67,25 +51,6 @@
   has array_maybe_a_hash_of_int => (
     is  => 'ro',
     isa => ArrayRef [ Maybe [ HashRef [Int] ] ],
-    );
-  has instance_of_IO_Handle => (
-    is  => 'ro',
-    isa => InstanceOf['IO::Handle'],
-    );
-  has instance_of_A_and_B => (
-    is  => 'ro',
-    isa => InstanceOf['A', 'B'],
-    );
-  has consumer_of => (
-    is  => 'ro',
-    isa => ConsumerOf[
-      'MooX::Types::MooseLike::Test::Role',
-      'MooX::Types::MooseLike::Test::AnotherRole'
-    ],
-    );
-  has has_methods => (
-    is  => 'ro',
-    isa => HasMethods['foo', 'bar'],
     );
 }
 
@@ -214,48 +179,6 @@ like(
   },
   qr/is not an Int/,
   'a Str is an exception when we want a Maybe[HashRef[Int]]'
-  );
-
-# InstanceOf
-ok(MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => IO::Handle->new ), 'instance of IO::Handle');
-my $false_instance = {};
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
-  },
-  qr/is not blessed/,
-  'a hashref is not an instance of IO::Handle'
-  );
-$false_instance = bless {}, 'Foo';
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
-  },
-  qr/is not an instance of the class.*IO::Handle/,
-  'a Foo instance is not an instance of IO::Handle'
-  );
-ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => B->new ), 'instance of A and B');
-
-# ConsumerOf
-ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a some roles');
-my $false_consumer = IO::Handle->new;
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(consumer_of => $false_consumer);
-  },
-  qr/is not a consumer of roles/,
-  'an IO::Handle instance is not a consumer of roles'
-  );
-
-# HasMethods
-ok(MooX::Types::MooseLike::Test->new(has_methods => MooX::Types::MooseLike::Test->new ), 'has methods of madness');
-my $false_has_methods = IO::Handle->new;
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(has_methods => $false_has_methods);
-  },
-  qr/does not have the required methods/,
-  'an object instance does not have the required methods'
   );
 
 done_testing;

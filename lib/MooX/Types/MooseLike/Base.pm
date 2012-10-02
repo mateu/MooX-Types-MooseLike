@@ -155,12 +155,14 @@ my $type_definitions = [
     name => 'ConsumerOf',
     test => sub {
       my ($instance, @roles) = (shift, @_);
+      return if not blessed($instance);
       return if (!$instance->can('does'));
       my @missing_roles = grep { !$instance->does($_) } @roles;
       return (scalar @missing_roles ? 0 : 1);
       },
     message => sub { 
       my $instance = shift;
+      return "$instance is not blessed" if not blessed($instance);
       return "$instance is not a consumer of roles" if (!$instance->can('does'));
       my @missing_roles = grep { !$instance->does($_) } @_;
       my $s = (scalar @missing_roles) > 1 ? 's' : '';
@@ -172,11 +174,13 @@ my $type_definitions = [
     name => 'HasMethods',
     test => sub {
       my ($instance, @methods) = (shift, @_);
+      return if not blessed($instance);
       my @missing_methods = grep { !$instance->can($_) } @methods;
       return (scalar @missing_methods ? 0 : 1);
       },
     message => sub {
       my $instance = shift;
+      return "$instance is not blessed" if not blessed($instance);
       my @missing_methods = grep { !$instance->can($_) } @_;
       my $s = (scalar @missing_methods) > 1 ? 's' : '';
       my $missing_methods = join ' ', @missing_methods;
