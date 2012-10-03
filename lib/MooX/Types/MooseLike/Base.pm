@@ -141,7 +141,6 @@ my $type_definitions = [
       my @missing_classes = grep { !$instance->isa($_) } @classes;
       return (scalar @missing_classes ? 0 : 1);
       },
-    message => sub { "$_[0] is not an instance of $_[1]!" },
     message => sub { 
       my $instance = shift;
       return "$instance is not blessed" if not blessed($instance);
