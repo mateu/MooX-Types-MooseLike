@@ -7,6 +7,8 @@ use MooX::Types::MooseLike;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
+our $VERSION = 0.16;
+
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
 my $type_definitions = [
