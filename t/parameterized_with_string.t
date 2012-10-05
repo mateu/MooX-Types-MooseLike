@@ -66,7 +66,15 @@ use IO::Handle;
 
 # InstanceOf
 ok(MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => IO::Handle->new ), 'instance of IO::Handle');
-my $false_instance = {};
+my $false_instance;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
+  },
+  qr/No instance given/,
+  'undef is not an instance of IO::Handle'
+  );
+$false_instance = {};
 like(
   exception {
     MooX::Types::MooseLike::Test->new(instance_of_IO_Handle => $false_instance);
@@ -86,7 +94,15 @@ ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => B->new ), 'instance 
 
 # ConsumerOf
 ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a some roles');
-my $false_consumer = IO::Handle->new;
+my $false_consumer;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(consumer_of => $false_consumer);
+  },
+  qr/No instance given/,
+  'undef is not a consumer of roles'
+  );
+$false_consumer = IO::Handle->new;
 like(
   exception {
     MooX::Types::MooseLike::Test->new(consumer_of => $false_consumer);
@@ -105,7 +121,15 @@ like(
 
 # HasMethods
 ok(MooX::Types::MooseLike::Test->new(has_methods => MooX::Types::MooseLike::Test->new ), 'has methods of madness');
-my $false_has_methods = IO::Handle->new;
+my $false_has_methods;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(has_methods => $false_has_methods);
+  },
+  qr/No instance given/,
+  'undef does not have the required methods'
+  );
+$false_has_methods = IO::Handle->new;
 like(
   exception {
     MooX::Types::MooseLike::Test->new(has_methods => $false_has_methods);
