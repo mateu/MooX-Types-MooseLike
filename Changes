@@ -1,3 +1,4 @@
+      - Restrict ConsumerOf and HashMethods to something blessed (i.e. an instance)
       - Bump Moo requirements (better role composition and isa builder check) 
 
 0.15 - 2012-09-28
