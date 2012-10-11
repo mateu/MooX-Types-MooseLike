@@ -11,6 +11,7 @@ our $VERSION = 0.16;
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
+my $false_message = 'A value that is false: undef, \"\" or 0';
 my $type_definitions = [
   {
     name => 'Any',
@@ -25,18 +26,6 @@ my $type_definitions = [
       sub { "If you get here you've achieved the impossible, congrats" }
   },
   {
-    name    => 'Undef',
-    test    => sub { !defined($_[0]) },
-    message => sub { "$_[0] is not undef" }
-  },
-
-# Note the single quotes so $_[0] is not interpreted because undef and FATAL => 'all'
-  {
-    name    => 'Defined',
-    test    => sub { defined($_[0]) },
-    message => sub { '$_[0] is not defined' }
-  },
-  {
     name => 'Bool',
 
     #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
@@ -45,34 +34,7 @@ my $type_definitions = [
       },
     message => sub { "$_[0] is not a Boolean" },
   },
-  {
-    name    => 'Value',
-    test    => sub { !ref($_[0]) },
-    message => sub { "$_[0] is not a value" }
-  },
-  {
-    name    => 'Ref',
-    test    => sub { ref($_[0]) },
-    message => sub { "$_[0] is not a reference" }
-  },
-  {
-    name => 'Str',
-    test => sub { ref(\$_[0]) eq 'SCALAR' },
-    message => sub { "$_[0] is not a string" }
-  },
-  {
-    name    => 'Num',
-    test    => sub { Scalar::Util::looks_like_number($_[0]) },
-    message => sub { "$_[0] is not a Number!" },
-  },
-  {
-    name => 'Int',
-
-#  	test    => sub { Scalar::Util::looks_like_number($_[0]) && ($_[0] == int $_[0]) },
-    test => sub { "$_[0]" =~ /^-?[0-9]+$/x },
-    message => sub { "$_[0] is not an Integer!" },
-  },
-
+  
   # Maybe has no test for itself, rather only the parameter type does
   {
     name    => 'Maybe',
@@ -81,59 +43,115 @@ my $type_definitions = [
     parameterizable => sub { return if (not defined $_[0]); $_[0] },
   },
   {
+    name    => 'Undef',
+    test    => sub { !defined($_[0]) },
+    message => sub { "$_[0] is not undef" }
+  },
+  {
+    name    => 'Defined',
+    test    => sub { defined($_[0]) },
+    message => sub { 'undef is not defined' }
+  },
+  {
+    name    => 'Value',
+    test    => sub { defined $_[0] and !ref($_[0]) },
+    message => sub { "${\($_[0]||'undef')} is not a value" }
+  },
+  {
+    name => 'Str',
+    test => sub { defined $_[0] and (ref(\$_[0]) eq 'SCALAR') },
+    message => sub { "${\($_[0]||'undef')} is not a string" }
+  },
+  {
+    name    => 'Num',
+    test    => sub { defined $_[0] and Scalar::Util::looks_like_number($_[0]) },
+    message => sub { 
+      my $nbr = shift; 
+      if (not defined $nbr) {
+        $nbr = 'undef';
+      } 
+      elsif (not (length $nbr)) {
+        $nbr = 'The empty string';
+      }
+      return "${nbr} is not a Number!";
+    },
+  },
+  {
+    name    => 'Int',
+    test    => sub { defined $_[0] and ("$_[0]" =~ /^-?[0-9]+$/x) },
+    message => sub { 
+      my $nbr = shift; 
+      if (not defined $nbr) {
+        $nbr = 'undef';
+      } 
+      elsif (not (length $nbr)) {
+        $nbr = 'The empty string';
+      }
+      return "${nbr} is not an Integer!";
+    },
+  },
+  {
+    name    => 'Ref',
+    test    => sub { defined $_[0] and ref($_[0]) },
+    message => sub { "${\($_[0]||$false_message)} is not a reference" }
+  },
+
+  {
     name => 'ScalarRef',
-    test => sub { ref($_[0]) eq 'SCALAR' },
-    message => sub { "$_[0] is not an ScalarRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
+    message => sub { "${\($_[0]||$false_message)} is not an ScalarRef!" },
     parameterizable => sub { ${ $_[0] } },
   },
   {
     name => 'ArrayRef',
-    test => sub { ref($_[0]) eq 'ARRAY' },
-    message => sub { "$_[0] is not an ArrayRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
+    message => sub { "${\($_[0]||$false_message)} is not an ArrayRef!" },
     parameterizable => sub { @{ $_[0] } },
   },
   {
     name => 'HashRef',
-    test => sub { ref($_[0]) eq 'HASH' },
-    message => sub { "$_[0] is not a HashRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
+    message => sub { "${\($_[0]||$false_message)} is not a HashRef!" },
     parameterizable => sub { values %{ $_[0] } },
   },
   {
     name => 'CodeRef',
-    test => sub { ref($_[0]) eq 'CODE' },
-    message => sub { "$_[0] is not a CodeRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'CODE' },
+    message => sub { "${\($_[0]||$false_message)} is not a CodeRef!" },
   },
   {
     name => 'RegexpRef',
-    test => sub { ref($_[0]) eq 'Regexp' },
-    message => sub { "$_[0] is not a RegexpRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'Regexp' },
+    message => sub { "${\($_[0]||$false_message)} is not a RegexpRef!" },
   },
   {
     name => 'GlobRef',
-    test => sub { ref($_[0]) eq 'GLOB' },
-    message => sub { "$_[0] is not a GlobRef!" },
+    test => sub { defined $_[0] and ref($_[0]) eq 'GLOB' },
+    message => sub { "${\($_[0]||$false_message)} is not a GlobRef!" },
   },
   {
     name => 'FileHandle',
-    test => sub {
-      Scalar::Util::openhandle($_[0])
-        || (blessed($_[0]) && $_[0]->isa("IO::Handle"));
+    test => sub { 
+      defined $_[0]
+          and Scalar::Util::openhandle($_[0])
+           or (blessed($_[0]) && $_[0]->isa("IO::Handle"));
       },
-    message => sub { "$_[0] is not a FileHandle!" },
+    message => sub { "${\($_[0]||$false_message)} is not a FileHandle!" },
   },
   {
     name => 'Object',
-    test => sub { blessed($_[0]) && blessed($_[0]) ne 'Regexp' },
-    message => sub { "$_[0] is not an Object!" },
+    test => sub { defined $_[0] and blessed($_[0]) and blessed($_[0]) ne 'Regexp' },
+    message => sub { "${\($_[0]||$false_message)} is not an Object!" },
   },
   {
     name => 'AHRef',
     test => sub {
+      defined $_[0] and
       (ref($_[0]) eq 'ARRAY')
         && ($_[0]->[0])
         && (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
       },
-    message => sub { "$_[0] is not an ArrayRef[HashRef]!" },
+    message => sub { "${\($_[0]||$false_message)} is not an ArrayRef[HashRef]!" },
   },
   {
     name => 'InstanceOf',

@@ -4,21 +4,25 @@ use warnings FATAL => 'all';
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 
-has 'a_defined' => (
+has 'a_bool' => (
   is  => 'ro',
-  isa => Defined,
+  isa => Bool,
   );
 has 'an_undef' => (
   is  => 'ro',
   isa => Undef,
   );
+has 'a_defined' => (
+  is  => 'ro',
+  isa => Defined,
+  );
 has 'a_value' => (
   is  => 'ro',
   isa => Value,
   );
-has 'a_bool' => (
+has 'a_string' => (
   is  => 'ro',
-  isa => Bool,
+  isa => Str,
   );
 has 'a_number' => (
   is  => 'ro',
@@ -27,6 +31,10 @@ has 'a_number' => (
 has 'an_integer' => (
   is  => 'ro',
   isa => Int,
+  );
+has 'a_ref' => (
+  is  => 'ro',
+  isa => Ref,
   );
 has 'an_array' => (
   is  => 'ro',
@@ -97,6 +105,18 @@ ok(!is_CodeRef({}),            'is_CodeRef fails on {}');
 ok(is_Object(IO::Handle->new), 'Object');
 ok(!is_Object({}),             'is_Object fails on HashRef');
 
+# Test Bool
+ok(MooX::Types::MooseLike::Test->new(a_bool => undef), 'undef is a Bool');
+ok(MooX::Types::MooseLike::Test->new(a_bool => 0), '0 is a Bool');
+my $false_boolean_value = 0.001;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(a_bool => $false_boolean_value);
+  },
+  qr/$false_boolean_value is not a Boolean/,
+  'a non-boolean is an exception when we want a Bool'
+  );
+
 # Undef
 ok(MooX::Types::MooseLike::Test->new(an_undef => undef), 'Undef');
 like(
@@ -113,32 +133,108 @@ like(
   'undef is an exception when we want a Defined type'
   );
 
-# Test Num
-ok(MooX::Types::MooseLike::Test->new(an_integer => -1), 'Int');
+# Test Value
+ok(MooX::Types::MooseLike::Test->new(a_value => ''), 'empty string Value');
+ok(MooX::Types::MooseLike::Test->new(a_value => 0), 'zero Value');
+ok(MooX::Types::MooseLike::Test->new(a_value => 'yarn'), 'word Value');
 like(
-  exception { MooX::Types::MooseLike::Test->new(an_integer => 1.01) },
-  qr/is not an Integer/,
-  'a non-integer is an exception when we want an Integer'
+  exception { MooX::Types::MooseLike::Test->new(a_value => undef) },
+  qr/undef is not a value/,
+  'undef is an exception when we want a Value'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_value => []) },
+  qr/ARRAY.*?is not a value/,
+  'an ArrayRef is an exception when we want a Value'
+  );
+
+# Test Str
+ok(MooX::Types::MooseLike::Test->new(a_string => ''), 'Empty string');
+ok(MooX::Types::MooseLike::Test->new(a_string => '0'), 'Zero as a string');
+ok(MooX::Types::MooseLike::Test->new(a_string => 'barn'), 'Word string');
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_string => undef) },
+  qr/undef is not a string/,
+  'undef is an exception when we want a Str'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_string => []) },
+  qr/ARRAY.*?is not a string/,
+  'an ArrayRef is an exception when we want a Str'
   );
 
 # Test Num
+ok(MooX::Types::MooseLike::Test->new(a_number => 0), 'Num zero');
 ok(MooX::Types::MooseLike::Test->new(a_number => 3.14), 'Num');
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_number => undef) },
+  qr/undef is not a Number/,
+  'undef is an exception when we want a Number'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_number => '') },
+  qr/The empty string is not a Number/,
+  'The empty string is an exception when we want a Number'
+  );
 like(
   exception { MooX::Types::MooseLike::Test->new(a_number => '5x5') },
   qr/is not a Number/,
   'a non number is an exception when we want a Number'
   );
 
-# Test Num
+# Test Int
 ok(MooX::Types::MooseLike::Test->new(an_integer => -1), 'Int');
+like(
+  exception { MooX::Types::MooseLike::Test->new(an_integer => undef) },
+  qr/undef is not an Integer/,
+  'undef is an exception when we want an Integer'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(an_integer => '') },
+  qr/The empty string is not an Integer/,
+  'The empty string is an exception when we want an Integer'
+  );
 like(
   exception { MooX::Types::MooseLike::Test->new(an_integer => 1.01) },
   qr/is not an Integer/,
   'a non-integer is an exception when we want an Integer'
   );
 
+# Test Ref
+ok(MooX::Types::MooseLike::Test->new(a_ref => []), 'Ref: ArrayRef');
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_ref => undef) },
+  qr/is not a reference/,
+  'undef is an exception when we want a reference'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_ref => '') },
+  qr/is not a reference/,
+  'The empty string is an exception when we want a reference'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_ref => 0) },
+  qr/is not a reference/,
+  'zero is an exception when we want an reference'
+  );
+
 # Test ArrayRef
 ok(MooX::Types::MooseLike::Test->new(an_array => []), 'ArrayRef');
+like(
+  exception { MooX::Types::MooseLike::Test->new(an_array => undef) },
+  qr/is not an ArrayRef/,
+  'undef is an exception when we want an ArrayRef'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(an_array => '') },
+  qr/is not an ArrayRef/,
+  'The empty string is an exception when we want an ArrayRef'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(an_array => 0) },
+  qr/is not an ArrayRef/,
+  'zero is an exception when we want an ArrayRef'
+  );
 like(
   exception { MooX::Types::MooseLike::Test->new(an_array => {}) },
   qr/HASH.*?is not an ArrayRef/,
@@ -152,6 +248,16 @@ like(
 
 # Test HashRef
 ok(MooX::Types::MooseLike::Test->new(a_hash => {}), 'HashRef');
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_hash => undef) },
+  qr/is not a HashRef/,
+  'undef is an exception when we want a HashRef'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_hash => '') },
+  qr/is not a HashRef/,
+  'The empty string is an exception when we want a HashRef'
+  );
 like(
   exception { MooX::Types::MooseLike::Test->new(a_hash => []) },
   qr/ARRAY.*?is not a HashRef/,
@@ -214,25 +320,6 @@ like(
   'an ArrayRef is an exception when we want an AHRef'
   );
 
-# Test Value
-ok(MooX::Types::MooseLike::Test->new(a_value => 'yarn'), 'Value');
-like(
-  exception { MooX::Types::MooseLike::Test->new(a_value => []) },
-  qr/ARRAY.*?is not a value/,
-  'an ArrayRef is an exception when we want a Value'
-  );
-
-# Test Bool
-ok(MooX::Types::MooseLike::Test->new(a_bool => 0), 'Bool');
-my $false_boolean_value = 0.001;
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(a_bool => $false_boolean_value);
-  },
-  qr/$false_boolean_value is not a Boolean/,
-  'a non-boolean is an exception when we want a Bool'
-  );
-
 # Test legal_age attribute which has an 'isa' that uses 'is_Int'
 ok(MooX::Types::MooseLike::Test->new(legal_age => 18), 'Legal Age');
 my $minor_age = 17;
@@ -245,7 +332,7 @@ like(
 like(
   exception { MooX::Types::MooseLike::Test->new(an_undef => '') },
   qr/is not undef.*\n.*MooX::Types::MooseLike::Test::new.*basic\.t/,
-  'error looks like useful stacktrace'
+  'The error looks like a useful stacktrace'
   );
 
 done_testing;

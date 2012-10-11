@@ -77,6 +77,13 @@
     'PositiveNum');
   like(
     exception {
+      MooX::Types::MooseLike::Numeric::Test->new(a_positive_number => undef);
+    },
+    qr/is not a positive number/,
+    'undef is an exception when we want a positive number'
+  );
+  like(
+    exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_positive_number => '');
     },
     qr/is not a positive number/,
@@ -89,7 +96,7 @@
     exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_number => -1);
     },
-    qr/is not a non-negative number/,
+    qr/is not a positive number or zero/,
     '-1 is an exception when we want a non-negative number'
   );
 
@@ -110,7 +117,7 @@
     exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_integer => -1);
     },
-    qr/is not a non-negative integer/,
+    qr/is not a positive integer or zero/,
     '-1 is an exception when we want a non-negative integer'
   );
 
@@ -131,7 +138,7 @@
     exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_number => 1);
     },
-    qr/is not a non-positive number/,
+    qr/is not a negative number or zero/,
     '1 is an exception when we want a non-negative number'
   );
 
@@ -152,7 +159,7 @@
     exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_integer => 1);
     },
-    qr/is not a non-positive integer/,
+    qr/is not a negative integer or zero/,
     '1 is an exception when we want a non-positive integer'
   );
 ## SingleDigit

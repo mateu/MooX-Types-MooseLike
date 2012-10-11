@@ -5,69 +5,75 @@ use MooX::Types::MooseLike::Base;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
+sub exception_message {
+  my ($subject, $type) = @_;
+  $subject = defined $subject ? $subject : 'undef';
+  return "${subject} is not ${type}!";
+} 
+
 my $type_definitions = [
   {
     name       => 'PositiveNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] > 0 },
-    message    => sub { "$_[0] is not a positive number!" },
+    test       => sub { defined $_[0] and $_[0] > 0 },
+    message    => sub { return exception_message($_[0], 'a positive number') },
   },
   {
     name       => 'PositiveOrZeroNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] >= 0 },
-    message    => sub { "$_[0] is not a non-negative number!" },
+    test       => sub { defined $_[0] and $_[0] >= 0 },
+    message    => sub { return exception_message($_[0], 'a positive number or zero') },
   },
   {
     name       => 'PositiveInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] > 0 },
-    message    => sub { "$_[0] is not a positive integer!" },
+    test       => sub { defined $_[0] and $_[0] > 0 },
+    message    => sub { return exception_message($_[0], 'a positive integer') }, 
   },
   {
     name       => 'PositiveOrZeroInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] >= 0 },
-    message    => sub { "$_[0] is not a non-negative integer!" },
+    test       => sub { defined $_[0] and $_[0] >= 0 },
+    message    => sub { return exception_message($_[0], 'a positive integer or zero') }, 
   },
   {
     name       => 'NegativeNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] < 0 },
-    message    => sub { "$_[0] is not a negative number!" },
+    test       => sub { defined $_[0] and $_[0] < 0 },
+    message    => sub { return exception_message($_[0], 'a negative number') }, 
   },
   {
     name       => 'NegativeOrZeroNum',
     subtype_of => 'Num',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] <= 0 },
-    message    => sub { "$_[0] is not a non-positive number!" },
+    test       => sub { defined $_[0] and $_[0] <= 0 },
+    message    => sub { return exception_message($_[0], 'a negative number or zero') }, 
   },
   {
     name       => 'NegativeInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] < 0 },
-    message    => sub { "$_[0] is not a negative integer!" },
+    test       => sub { defined $_[0] and $_[0] < 0 },
+    message    => sub { return exception_message($_[0], 'a negative integer') }, 
   },
   {
     name       => 'NegativeOrZeroInt',
     subtype_of => 'Int',
     from       => 'MooX::Types::MooseLike::Base',
-    test       => sub { $_[0] <= 0 },
-    message    => sub { "$_[0] is not a non-positive integer!" },
+    test       => sub { defined $_[0] and $_[0] <= 0 },
+    message    => sub { return exception_message($_[0], 'a negative integer or zero') }, 
   },
   {
     name       => 'SingleDigit',
     subtype_of => 'PositiveOrZeroInt',
     from       => 'MooX::Types::MooseLike::Numeric',
-    test       => sub { $_[0] < 10 },
-    message    => sub { "$_[0] is not a single digit!" },
+    test       => sub { defined $_[0] and $_[0] < 10 },
+    message    => sub { return exception_message($_[0], 'a single digit') }, 
   },
 ];
 
