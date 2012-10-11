@@ -6,14 +6,21 @@ use Scalar::Util;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
+sub exception_message {
+  my ($attribute_value, $type) = @_;
+  $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
+  return "${attribute_value} is not ${type}!";
+} 
+
 my $type_definitions = [
   {
     name => 'SetObject',
     test => sub {
       require Scalar::Util;
+      defined $_[0] and
       Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object");
       },
-    message         => sub { "$_[0] is not a Set::Object!" },
+    message         => sub { return exception_message($_[0], 'a Set::Object') },
     parameterizable => sub { $_[0]->members },
   },
   ];
