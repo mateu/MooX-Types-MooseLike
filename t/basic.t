@@ -168,35 +168,35 @@ ok(MooX::Types::MooseLike::Test->new(a_number => 0), 'Num zero');
 ok(MooX::Types::MooseLike::Test->new(a_number => 3.14), 'Num');
 like(
   exception { MooX::Types::MooseLike::Test->new(a_number => undef) },
-  qr/undef is not a Number/,
-  'undef is an exception when we want a Number'
+  qr/undef is not a number/,
+  'undef is an exception when we want a number'
   );
 like(
   exception { MooX::Types::MooseLike::Test->new(a_number => '') },
-  qr/The empty string is not a Number/,
-  'The empty string is an exception when we want a Number'
+  qr/The empty string is not a number/,
+  'The empty string is an exception when we want a number'
   );
 like(
   exception { MooX::Types::MooseLike::Test->new(a_number => '5x5') },
-  qr/is not a Number/,
-  'a non number is an exception when we want a Number'
+  qr/is not a number/,
+  'a non number is an exception when we want a number'
   );
 
 # Test Int
 ok(MooX::Types::MooseLike::Test->new(an_integer => -1), 'Int');
 like(
   exception { MooX::Types::MooseLike::Test->new(an_integer => undef) },
-  qr/undef is not an Integer/,
+  qr/undef is not an integer/,
   'undef is an exception when we want an Integer'
   );
 like(
   exception { MooX::Types::MooseLike::Test->new(an_integer => '') },
-  qr/The empty string is not an Integer/,
+  qr/The empty string is not an integer/,
   'The empty string is an exception when we want an Integer'
   );
 like(
   exception { MooX::Types::MooseLike::Test->new(an_integer => 1.01) },
-  qr/is not an Integer/,
+  qr/is not an integer/,
   'a non-integer is an exception when we want an Integer'
   );
 

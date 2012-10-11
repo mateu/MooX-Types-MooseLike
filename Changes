@@ -1,5 +1,5 @@
       - Handle undef with grace (github issues 13 and 14)
-      - Restrict ConsumerOf and HashMethods to something blessed (i.e. an instance)
+      - Restrict ConsumerOf and HasMethods to something blessed (i.e. an instance)
       - Bump Moo requirements (better role composition and isa builder check) 
 
 0.15 - 2012-09-28

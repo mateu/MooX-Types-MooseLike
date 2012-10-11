@@ -9,6 +9,12 @@ our @EXPORT_OK = ();
 
 our $VERSION = 0.16;
 
+sub exception_message {
+  my ($attribute_value, $type) = @_;
+  $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
+  return "${attribute_value} is not ${type}!";
+} 
+
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
 my $false_message = 'A value that is false: undef, \"\" or 0';
@@ -32,7 +38,7 @@ my $type_definitions = [
     test => sub {
       !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0';
       },
-    message => sub { "$_[0] is not a Boolean" },
+    message => sub { return exception_message($_[0], 'a Boolean') },
   },
   
   # Maybe has no test for itself, rather only the parameter type does
@@ -45,22 +51,22 @@ my $type_definitions = [
   {
     name    => 'Undef',
     test    => sub { !defined($_[0]) },
-    message => sub { "$_[0] is not undef" }
+    message => sub { return exception_message($_[0], 'undef') },
   },
   {
     name    => 'Defined',
     test    => sub { defined($_[0]) },
-    message => sub { 'undef is not defined' }
+    message => sub { return exception_message($_[0], 'defined') },
   },
   {
     name    => 'Value',
     test    => sub { defined $_[0] and !ref($_[0]) },
-    message => sub { "${\($_[0]||'undef')} is not a value" }
+    message => sub { return exception_message($_[0], 'a value') },
   },
   {
     name => 'Str',
     test => sub { defined $_[0] and (ref(\$_[0]) eq 'SCALAR') },
-    message => sub { "${\($_[0]||'undef')} is not a string" }
+    message => sub { return exception_message($_[0], 'a string') },
   },
   {
     name    => 'Num',
@@ -73,7 +79,7 @@ my $type_definitions = [
       elsif (not (length $nbr)) {
         $nbr = 'The empty string';
       }
-      return "${nbr} is not a Number!";
+      return exception_message($nbr, 'a number');
     },
   },
   {
@@ -87,47 +93,47 @@ my $type_definitions = [
       elsif (not (length $nbr)) {
         $nbr = 'The empty string';
       }
-      return "${nbr} is not an Integer!";
+      return exception_message($nbr, 'an integer');
     },
   },
   {
     name    => 'Ref',
     test    => sub { defined $_[0] and ref($_[0]) },
-    message => sub { "${\($_[0]||$false_message)} is not a reference" }
+    message => sub { return exception_message($_[0], 'a reference') },
   },
 
   {
     name => 'ScalarRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
-    message => sub { "${\($_[0]||$false_message)} is not an ScalarRef!" },
+    message => sub { return exception_message($_[0], 'a ScalarRef') },
     parameterizable => sub { ${ $_[0] } },
   },
   {
     name => 'ArrayRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
-    message => sub { "${\($_[0]||$false_message)} is not an ArrayRef!" },
+    message => sub { return exception_message($_[0], 'an ArrayRef') },
     parameterizable => sub { @{ $_[0] } },
   },
   {
     name => 'HashRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
-    message => sub { "${\($_[0]||$false_message)} is not a HashRef!" },
+    message => sub { return exception_message($_[0], 'a HashRef') },
     parameterizable => sub { values %{ $_[0] } },
   },
   {
     name => 'CodeRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'CODE' },
-    message => sub { "${\($_[0]||$false_message)} is not a CodeRef!" },
+    message => sub { return exception_message($_[0], 'a CodeRef') },
   },
   {
     name => 'RegexpRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'Regexp' },
-    message => sub { "${\($_[0]||$false_message)} is not a RegexpRef!" },
+    message => sub { return exception_message($_[0], 'a RegexpRef') },
   },
   {
     name => 'GlobRef',
     test => sub { defined $_[0] and ref($_[0]) eq 'GLOB' },
-    message => sub { "${\($_[0]||$false_message)} is not a GlobRef!" },
+    message => sub { return exception_message($_[0], 'a GlobRef') },
   },
   {
     name => 'FileHandle',
@@ -136,12 +142,12 @@ my $type_definitions = [
           and Scalar::Util::openhandle($_[0])
            or (blessed($_[0]) && $_[0]->isa("IO::Handle"));
       },
-    message => sub { "${\($_[0]||$false_message)} is not a FileHandle!" },
+    message => sub { return exception_message($_[0], 'a FileHandle') },
   },
   {
     name => 'Object',
     test => sub { defined $_[0] and blessed($_[0]) and blessed($_[0]) ne 'Regexp' },
-    message => sub { "${\($_[0]||$false_message)} is not an Object!" },
+    message => sub { return exception_message($_[0], 'an Object') },
   },
   {
     name => 'AHRef',
@@ -151,7 +157,7 @@ my $type_definitions = [
         && ($_[0]->[0])
         && (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
       },
-    message => sub { "${\($_[0]||$false_message)} is not an ArrayRef[HashRef]!" },
+    message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
   },
   {
     name => 'InstanceOf',
