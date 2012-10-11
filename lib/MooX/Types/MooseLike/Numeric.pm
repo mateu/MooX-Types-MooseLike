@@ -1,15 +1,10 @@
 package MooX::Types::MooseLike::Numeric;
 use strict;
 use warnings FATAL => 'all';
+use MooX::Types::MooseLike qw(exception_message);
 use MooX::Types::MooseLike::Base;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
-
-sub exception_message {
-  my ($subject, $type) = @_;
-  $subject = defined $subject ? $subject : 'undef';
-  return "${subject} is not ${type}!";
-} 
 
 my $type_definitions = [
   {

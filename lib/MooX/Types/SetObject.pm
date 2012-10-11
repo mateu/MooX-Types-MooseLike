@@ -1,16 +1,10 @@
 package MooX::Types::SetObject;
 use strict;
 use warnings FATAL => 'all';
-use MooX::Types::MooseLike;
+use MooX::Types::MooseLike qw(exception_message);
 use Scalar::Util;
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
-
-sub exception_message {
-  my ($attribute_value, $type) = @_;
-  $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
-  return "${attribute_value} is not ${type}!";
-} 
 
 my $type_definitions = [
   {

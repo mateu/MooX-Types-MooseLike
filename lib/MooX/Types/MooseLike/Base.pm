@@ -3,17 +3,11 @@ use strict;
 use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
-use MooX::Types::MooseLike;
+use MooX::Types::MooseLike qw(exception_message);
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
 our $VERSION = 0.16;
-
-sub exception_message {
-  my ($attribute_value, $type) = @_;
-  $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
-  return "${attribute_value} is not ${type}!";
-} 
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
