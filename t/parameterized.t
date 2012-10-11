@@ -68,7 +68,7 @@ like(
   exception {
     MooX::Types::MooseLike::Test->new(an_array_of_integers => [ 1.5, 2 ]);
   },
-  qr/is not an Integer/,
+  qr/is not an integer/,
   'an ArrayRef of Floats is an exception when we want an ArrayRef[Int]'
   );
 
@@ -91,7 +91,7 @@ like(
       an_array_of_hash => [ { x => 1 }, [ 1, 2, 3 ] ]);
   },
   qr/is not a HashRef/,
-  'an ArrayRef of Integers is an exception when we want an ArrayRef[HashRef]'
+  'an ArrayRef of integers is an exception when we want an ArrayRef[HashRef]'
   );
 
 # HashRef[Str]
@@ -118,7 +118,7 @@ like(
     MooX::Types::MooseLike::Test->new(
       an_array_of_hash_of_int => [ { x => 1 }, { x => 1.1 } ]);
   },
-  qr/is not an Integer/,
+  qr/is not an integer/,
   'an ArrayRef of HashRef of Floats is an exception when we want an ArrayRef[HashRef[Int]]'
   );
 
@@ -127,7 +127,7 @@ ok(MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \1),
   'ScalarRef[Int]');
 like(
   exception { MooX::Types::MooseLike::Test->new(a_scalar_ref_of_int => \'x') },
-  qr/is not an Integer/,
+  qr/is not an integer/,
   'a ScalarRef of Str is an exception when we want an ScalarRef[Int]'
   );
 
@@ -140,7 +140,7 @@ ok(MooX::Types::MooseLike::Test->new(maybe_an_int => -24),
   'Maybe[Int] as undef');
 like(
   exception { MooX::Types::MooseLike::Test->new(maybe_an_int => 'x') },
-  qr/is not an Integer/,
+  qr/is not an integer/,
   'a Str is an exception when we want a Maybe[Int]'
   );
 
@@ -177,7 +177,7 @@ like(
     MooX::Types::MooseLike::Test->new(
       array_maybe_a_hash_of_int => [ { b => 'x' } ]);
   },
-  qr/is not an Int/,
+  qr/is not an integer/,
   'a Str is an exception when we want a Maybe[HashRef[Int]]'
   );
 

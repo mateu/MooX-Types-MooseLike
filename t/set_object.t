@@ -30,14 +30,14 @@ ok(
   MooX::Types::MooseLike::Test->new(
     set_object_of_ints => Set::Object->new(1, 2, 3),
   ),
-  'Set::Object of Int'
+  'Set::Object of integers'
 );
 like(
   exception {
     MooX::Types::MooseLike::Test->new(
       set_object_of_ints => Set::Object->new('fREW'),);
   },
-  qr(fREW is not an Integer),
+  qr(fREW is not an integer),
   'Int eror mesage is triggered when validation fails'
 );
 
