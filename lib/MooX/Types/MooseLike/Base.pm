@@ -370,18 +370,24 @@ In addition, we have some parameterized types that take string arguments.
 
 =head3 InstanceOf
 
-Takes a class name as the argument. For example:
+Check if the attribute is an object instance of one or more classes.  
+Uses C<blessed> and C<isa> to do so.
+Takes a list of class names as the argument. For example:
 
-  isa => InstanceOf['MyClass']
+  isa => InstanceOf['MyClass','MyOtherClass']
 
 =head3 ConsumerOf
 
+Check if the attribute is blessed and consumes one or more roles.
+Uses C<blessed> and C<does> to do so.
 Takes a list of role names as the arguments. For example:
 
   isa => ConsumerOf['My::Role', 'My::AnotherRole'] 
 
 =head3 HasMethods
 
+Check if the attribute is blessed and has one or more methods.
+Uses C<blessed> and C<can> to do so.
 Takes a list of method names as the arguments. For example:
 
   isa => HasMethods[qw/postulate contemplate liberate/]
