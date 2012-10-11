@@ -1,4 +1,5 @@
       - Handle undef with grace (github issues 13 and 14)
+      - Improve POD for: InstanceOf, ConsumerOf, HasMethods
       - Restrict ConsumerOf and HasMethods to something blessed (i.e. an instance)
       - Bump Moo requirements (better role composition and isa builder check) 
 
