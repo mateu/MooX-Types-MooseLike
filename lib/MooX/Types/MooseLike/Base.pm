@@ -11,7 +11,7 @@ our $VERSION = 0.16;
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
-sub base_type_definitions {
+sub some_basic_type_definitions {
   return
     (
     {
@@ -242,7 +242,7 @@ sub blessed_type_definitions {
 sub type_definitions {
   return
     [
-    base_type_definitions()
+    some_basic_type_definitions()
     ,defined_type_definitions()
     ,ref_type_definitions()
     ,filehandle_type_definitions()
