@@ -7,7 +7,7 @@
     is      => 'ro',
     isa     => ArrayRef [CodeRef],
     builder => '_build_attribute_properties',
-  );
+    );
 
   sub _build_attribute_properties {
     [ sub { 'pie' } ];

@@ -12,7 +12,7 @@ my $type_definitions = [
     test => sub {
       require Scalar::Util;
       defined $_[0] and
-      Scalar::Util::blessed($_[0]) && $_[0]->isa("Set::Object");
+        Scalar::Util::blessed($_[0]) and $_[0]->isa("Set::Object");
       },
     message         => sub { return exception_message($_[0], 'a Set::Object') },
     parameterizable => sub { $_[0]->members },

@@ -8,7 +8,7 @@
     is       => "ro",
     isa      => HashRef [HashRef],
     required => 1,
-  );
+    );
 }
 use Test::More;
 use Test::Fatal;
@@ -18,6 +18,6 @@ like(
   exception { MyObject->new },
   qr/Missing required arguments/,
   'A required parameterized type must exist'
-);
+  );
 
 done_testing;

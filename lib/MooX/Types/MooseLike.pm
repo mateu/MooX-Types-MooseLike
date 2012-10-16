@@ -104,7 +104,7 @@ sub exception_message {
   my ($attribute_value, $type) = @_;
   $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
   return "${attribute_value} is not ${type}!";
-} 
+}
 
 1;
 __END__

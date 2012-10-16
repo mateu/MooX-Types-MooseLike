@@ -1,24 +1,24 @@
 {
-    package A;
-    use Moo;
-    has fun => (is => 'ro');
-    1;
+  package A;
+  use Moo;
+  has fun => (is => 'ro');
+  1;
 }
 {
-    package B;
-    use Moo;
-    extends 'A';
-    has funner => (is => 'ro');
-    1;
+  package B;
+  use Moo;
+  extends 'A';
+  has funner => (is => 'ro');
+  1;
 }
 {
   package MooX::Types::MooseLike::Test;
   use strict;
   use warnings FATAL => 'all';
   use Moo;
-  use MooX::Types::MooseLike::Base qw/ 
-    ArrayRef Int HashRef Str ScalarRef Maybe 
-  /;
+  use MooX::Types::MooseLike::Base qw/
+    ArrayRef Int HashRef Str ScalarRef Maybe
+    /;
 
   has an_array_of_integers => (
     is  => 'ro',

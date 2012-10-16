@@ -11,17 +11,17 @@
   sub quoi { 'dieu' };
 }
 {
-    package A;
-    use Moo;
-    has fun => (is => 'ro');
-    1;
+  package A;
+  use Moo;
+  has fun => (is => 'ro');
+  1;
 }
 {
-    package B;
-    use Moo;
-    extends 'A';
-    has funner => (is => 'ro');
-    1;
+  package B;
+  use Moo;
+  extends 'A';
+  has funner => (is => 'ro');
+  1;
 }
 
 {
@@ -29,13 +29,13 @@
   use strict;
   use warnings FATAL => 'all';
   use Moo;
-  use MooX::Types::MooseLike::Base qw/ 
-    InstanceOf ConsumerOf HasMethods 
-  /;
+  use MooX::Types::MooseLike::Base qw/
+    InstanceOf ConsumerOf HasMethods
+    /;
   with (
-    'MooX::Types::MooseLike::Test::Role', 
+    'MooX::Types::MooseLike::Test::Role',
     'MooX::Types::MooseLike::Test::AnotherRole'
-  );
+    );
 
   has instance_of_IO_Handle => (
     is  => 'ro',
@@ -50,7 +50,7 @@
     isa => ConsumerOf[
       'MooX::Types::MooseLike::Test::Role',
       'MooX::Types::MooseLike::Test::AnotherRole'
-    ],
+      ],
     );
   has has_methods => (
     is  => 'ro',
@@ -117,7 +117,6 @@ like(
   qr/is not blessed/,
   'a class name is not a consumer of roles'
   );
-
 
 # HasMethods
 ok(MooX::Types::MooseLike::Test->new(has_methods => MooX::Types::MooseLike::Test->new ), 'has methods of madness');

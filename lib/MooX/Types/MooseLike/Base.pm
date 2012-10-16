@@ -53,7 +53,7 @@ my $type_definitions = [
   },
   {
     name    => 'Value',
-    test    => sub { defined $_[0] and !ref($_[0]) },
+    test    => sub { defined $_[0] and not ref($_[0]) },
     message => sub { return exception_message($_[0], 'a value') },
   },
   {
@@ -147,8 +147,8 @@ my $type_definitions = [
     test => sub {
       defined $_[0] and
       (ref($_[0]) eq 'ARRAY')
-        && ($_[0]->[0])
-        && (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
+        and ($_[0]->[0])
+        and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
       },
     message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
   },

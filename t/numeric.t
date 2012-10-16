@@ -9,39 +9,39 @@
   has 'a_positive_number' => (
     is  => 'ro',
     isa => PositiveNum,
-  );
+    );
   has 'a_nonnegative_number' => (
     is  => 'ro',
     isa => PositiveOrZeroNum,
-  );
+    );
   has 'a_positive_integer' => (
     is  => 'ro',
     isa => PositiveInt,
-  );
+    );
   has 'a_nonnegative_integer' => (
     is  => 'ro',
     isa => PositiveOrZeroInt,
-  );
+    );
   has 'a_negative_number' => (
     is  => 'ro',
     isa => NegativeNum,
-  );
+    );
   has 'a_nonpositive_number' => (
     is  => 'ro',
     isa => NegativeOrZeroNum,
-  );
+    );
   has 'a_negative_integer' => (
     is  => 'ro',
     isa => NegativeInt,
-  );
+    );
   has 'a_nonpositive_integer' => (
     is  => 'ro',
     isa => NegativeOrZeroInt,
-  );
+    );
   has 'a_single_digit' => (
     is  => 'ro',
     isa => SingleDigit,
-  );
+    );
 
 }
 {
@@ -81,14 +81,14 @@
     },
     qr/is not a positive number/,
     'undef is an exception when we want a positive number'
-  );
+    );
   like(
     exception {
       MooX::Types::MooseLike::Numeric::Test->new(a_positive_number => '');
     },
     qr/is not a positive number/,
     'empty string is an exception when we want a positive number'
-  );
+    );
 ## PositiveOrZeroNum
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_number => 0),
     'PositiveOrZeroNum');
@@ -98,7 +98,7 @@
     },
     qr/is not a positive number or zero/,
     '-1 is an exception when we want a non-negative number'
-  );
+    );
 
 ## PositiveInt
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_positive_integer => 1),
@@ -109,7 +109,7 @@
     },
     qr/is not a positive integer/,
     'empty string is an exception when we want a positive integer'
-  );
+    );
 ## PositiveOrZeroInt
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonnegative_integer => 0),
     'PositiveOrZeroInt');
@@ -119,7 +119,7 @@
     },
     qr/is not a positive integer or zero/,
     '-1 is an exception when we want a non-negative integer'
-  );
+    );
 
 ## NegativeNum
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_negative_number => -11),
@@ -130,7 +130,7 @@
     },
     qr/is not a negative number/,
     'empty string is an exception when we want a negative number'
-  );
+    );
 ## NegativeOrZeroNum
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_number => 0),
     'NegativeOrZeroNum');
@@ -140,7 +140,7 @@
     },
     qr/is not a negative number or zero/,
     '1 is an exception when we want a non-negative number'
-  );
+    );
 
 ## NegativeInt
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_negative_integer => -1),
@@ -151,7 +151,7 @@
     },
     qr/is not a negative integer/,
     'empty string is an exception when we want a negative integer'
-  );
+    );
 ## NegativeOrZeroInt
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_nonpositive_integer => 0),
     'NegativeOrZeroInt');
@@ -161,7 +161,7 @@
     },
     qr/is not a negative integer or zero/,
     '1 is an exception when we want a non-positive integer'
-  );
+    );
 ## SingleDigit
   ok(MooX::Types::MooseLike::Numeric::Test->new(a_single_digit => 0),
     'SingleDigit');
@@ -171,7 +171,7 @@
     },
     qr/is not a single digit/,
     '10 is an exception when we want a single digit'
-  );
+    );
 
   done_testing;
 }

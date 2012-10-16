@@ -10,7 +10,7 @@
   has set_object_of_ints => (
     is  => 'ro',
     isa => SetObject[Int],
-  );
+    );
 }
 
 package main;
@@ -29,9 +29,9 @@ BEGIN {
 ok(
   MooX::Types::MooseLike::Test->new(
     set_object_of_ints => Set::Object->new(1, 2, 3),
-  ),
+    ),
   'Set::Object of integers'
-);
+  );
 like(
   exception {
     MooX::Types::MooseLike::Test->new(
@@ -39,6 +39,6 @@ like(
   },
   qr(fREW is not an integer),
   'Int eror mesage is triggered when validation fails'
-);
+  );
 
 done_testing;
