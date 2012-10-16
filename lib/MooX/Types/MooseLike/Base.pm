@@ -11,7 +11,6 @@ our $VERSION = 0.16;
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
-my $false_message = 'A value that is false: undef, \"\" or 0';
 my $type_definitions = [
   {
     name => 'Any',
