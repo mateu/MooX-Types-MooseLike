@@ -11,209 +11,246 @@ our $VERSION = 0.16;
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
-my $type_definitions = [
-  {
-    name => 'Any',
-    test => sub { 1 },
-    message =>
-      sub { "If you get here you've achieved the impossible, congrats." }
-  },
-  {
-    name => 'Item',
-    test => sub { 1 },
-    message =>
-      sub { "If you get here you've achieved the impossible, congrats" }
-  },
-  {
-    name => 'Bool',
-
-    #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
-    test => sub {
-      !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0';
-      },
-    message => sub { return exception_message($_[0], 'a Boolean') },
-  },
-  
-  # Maybe has no test for itself, rather only the parameter type does
-  {
-    name    => 'Maybe',
-    test    => sub { 1 },
-    message => sub { 'Maybe only uses its parameterized type message' },
-    parameterizable => sub { return if (not defined $_[0]); $_[0] },
-  },
-  {
-    name    => 'Undef',
-    test    => sub { !defined($_[0]) },
-    message => sub { return exception_message($_[0], 'undef') },
-  },
-  {
-    name    => 'Defined',
-    test    => sub { defined($_[0]) },
-    message => sub { return exception_message($_[0], 'defined') },
-  },
-  {
-    name    => 'Value',
-    test    => sub { defined $_[0] and not ref($_[0]) },
-    message => sub { return exception_message($_[0], 'a value') },
-  },
-  {
-    name => 'Str',
-    test => sub { defined $_[0] and (ref(\$_[0]) eq 'SCALAR') },
-    message => sub { return exception_message($_[0], 'a string') },
-  },
-  {
-    name    => 'Num',
-    test    => sub { defined $_[0] and Scalar::Util::looks_like_number($_[0]) },
-    message => sub { 
-      my $nbr = shift; 
-      if (not defined $nbr) {
-        $nbr = 'undef';
-      } 
-      elsif (not (length $nbr)) {
-        $nbr = 'The empty string';
-      }
-      return exception_message($nbr, 'a number');
+sub base_type_definitions {
+  return
+    (
+    {
+      name => 'Any',
+      test => sub { 1 },
+      message =>
+        sub { "If you get here you've achieved the impossible, congrats." }
     },
-  },
-  {
-    name    => 'Int',
-    test    => sub { defined $_[0] and ("$_[0]" =~ /^-?[0-9]+$/x) },
-    message => sub { 
-      my $nbr = shift; 
-      if (not defined $nbr) {
-        $nbr = 'undef';
-      } 
-      elsif (not (length $nbr)) {
-        $nbr = 'The empty string';
-      }
-      return exception_message($nbr, 'an integer');
+    {
+      name => 'Item',
+      test => sub { 1 },
+      message =>
+        sub { "If you get here you've achieved the impossible, congrats" }
     },
-  },
-  {
-    name    => 'Ref',
-    test    => sub { defined $_[0] and ref($_[0]) },
-    message => sub { return exception_message($_[0], 'a reference') },
-  },
+    {
+      name => 'Bool',
 
-  {
-    name => 'ScalarRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
-    message => sub { return exception_message($_[0], 'a ScalarRef') },
-    parameterizable => sub { ${ $_[0] } },
-  },
-  {
-    name => 'ArrayRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
-    message => sub { return exception_message($_[0], 'an ArrayRef') },
-    parameterizable => sub { @{ $_[0] } },
-  },
-  {
-    name => 'HashRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
-    message => sub { return exception_message($_[0], 'a HashRef') },
-    parameterizable => sub { values %{ $_[0] } },
-  },
-  {
-    name => 'CodeRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'CODE' },
-    message => sub { return exception_message($_[0], 'a CodeRef') },
-  },
-  {
-    name => 'RegexpRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'Regexp' },
-    message => sub { return exception_message($_[0], 'a RegexpRef') },
-  },
-  {
-    name => 'GlobRef',
-    test => sub { defined $_[0] and ref($_[0]) eq 'GLOB' },
-    message => sub { return exception_message($_[0], 'a GlobRef') },
-  },
-  {
-    name => 'FileHandle',
-    test => sub { 
-      defined $_[0]
+      #  	test    => sub { $_[0] == 0 || $_[0] == 1 },
+      test => sub {
+        !defined($_[0]) || $_[0] eq "" || "$_[0]" eq '1' || "$_[0]" eq '0';
+        },
+      message => sub { return exception_message($_[0], 'a Boolean') },
+    },
+
+    # Maybe has no test for itself, rather only the parameter type does
+    {
+      name    => 'Maybe',
+      test    => sub { 1 },
+      message => sub { 'Maybe only uses its parameterized type message' },
+      parameterizable => sub { return if (not defined $_[0]); $_[0] },
+    },
+    {
+      name    => 'Undef',
+      test    => sub { !defined($_[0]) },
+      message => sub { return exception_message($_[0], 'undef') },
+    },
+    );
+}
+
+sub defined_type_definitions {
+  return
+    ({
+      name    => 'Defined',
+      test    => sub { defined($_[0]) },
+      message => sub { return exception_message($_[0], 'defined') },
+    },
+    {
+      name    => 'Value',
+      test    => sub { defined $_[0] and not ref($_[0]) },
+      message => sub { return exception_message($_[0], 'a value') },
+    },
+    {
+      name => 'Str',
+      test => sub { defined $_[0] and (ref(\$_[0]) eq 'SCALAR') },
+      message => sub { return exception_message($_[0], 'a string') },
+    },
+    {
+      name    => 'Num',
+      test    => sub { defined $_[0] and Scalar::Util::looks_like_number($_[0]) },
+      message => sub {
+        my $nbr = shift;
+        if (not defined $nbr) {
+          $nbr = 'undef';
+        }
+        elsif (not (length $nbr)) {
+          $nbr = 'The empty string';
+        }
+        return exception_message($nbr, 'a number');
+        },
+    },
+    {
+      name    => 'Int',
+      test    => sub { defined $_[0] and ("$_[0]" =~ /^-?[0-9]+$/x) },
+      message => sub {
+        my $nbr = shift;
+        if (not defined $nbr) {
+          $nbr = 'undef';
+        }
+        elsif (not (length $nbr)) {
+          $nbr = 'The empty string';
+        }
+        return exception_message($nbr, 'an integer');
+        },
+    },
+    );
+}
+
+sub ref_type_definitions {
+  return
+    (
+    {
+      name    => 'Ref',
+      test    => sub { defined $_[0] and ref($_[0]) },
+      message => sub { return exception_message($_[0], 'a reference') },
+    },
+
+    {
+      name => 'ScalarRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
+      message => sub { return exception_message($_[0], 'a ScalarRef') },
+      parameterizable => sub { ${ $_[0] } },
+    },
+    {
+      name => 'ArrayRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
+      message => sub { return exception_message($_[0], 'an ArrayRef') },
+      parameterizable => sub { @{ $_[0] } },
+    },
+    {
+      name => 'HashRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
+      message => sub { return exception_message($_[0], 'a HashRef') },
+      parameterizable => sub { values %{ $_[0] } },
+    },
+    {
+      name => 'CodeRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'CODE' },
+      message => sub { return exception_message($_[0], 'a CodeRef') },
+    },
+    {
+      name => 'RegexpRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'Regexp' },
+      message => sub { return exception_message($_[0], 'a RegexpRef') },
+    },
+    {
+      name => 'GlobRef',
+      test => sub { defined $_[0] and ref($_[0]) eq 'GLOB' },
+      message => sub { return exception_message($_[0], 'a GlobRef') },
+    },
+    {
+      name => 'AHRef',
+      test => sub {
+        defined $_[0] and
+          (ref($_[0]) eq 'ARRAY')
+          and ($_[0]->[0])
+          and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
+        },
+      message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
+    },
+    );
+}
+
+sub filehandle_type_definitions {
+  return
+    (
+    {
+      name => 'FileHandle',
+      test => sub {
+        defined $_[0]
           and Scalar::Util::openhandle($_[0])
-           or (blessed($_[0]) && $_[0]->isa("IO::Handle"));
-      },
-    message => sub { return exception_message($_[0], 'a FileHandle') },
-  },
-  {
-    name => 'Object',
-    test => sub { defined $_[0] and blessed($_[0]) and blessed($_[0]) ne 'Regexp' },
-    message => sub { return exception_message($_[0], 'an Object') },
-  },
-  {
-    name => 'AHRef',
-    test => sub {
-      defined $_[0] and
-      (ref($_[0]) eq 'ARRAY')
-        and ($_[0]->[0])
-        and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
-      },
-    message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
-  },
-  {
-    name => 'InstanceOf',
-    test => sub {
-      my ($instance, @classes) = (shift, @_);
-      return if not $instance;
-      return if not blessed($instance);
-      my @missing_classes = grep { !$instance->isa($_) } @classes;
-      return (scalar @missing_classes ? 0 : 1);
-      },
-    message => sub { 
-      my $instance = shift;
-      return "No instance given" if not $instance;
-      return "$instance is not blessed" if not blessed($instance);
-      my @missing_classes = grep { !$instance->isa($_) } @_;
-      my $s = (scalar @missing_classes) > 1 ? 'es' : '';
-      my $missing_classes = join ' ', @missing_classes;
-      return "$instance is not an instance of the class${s}: $missing_classes";
+          or (blessed($_[0]) && $_[0]->isa("IO::Handle"));
+        },
+      message => sub { return exception_message($_[0], 'a FileHandle') },
     },
-  },
-  {
-    name => 'ConsumerOf',
-    test => sub {
-      my ($instance, @roles) = (shift, @_);
-      return if not $instance;
-      return if not blessed($instance);
-      return if (!$instance->can('does'));
-      my @missing_roles = grep { !$instance->does($_) } @roles;
-      return (scalar @missing_roles ? 0 : 1);
-      },
-    message => sub { 
-      my $instance = shift;
-      return "No instance given" if not $instance;
-      return "$instance is not blessed" if not blessed($instance);
-      return "$instance is not a consumer of roles" if (!$instance->can('does'));
-      my @missing_roles = grep { !$instance->does($_) } @_;
-      my $s = (scalar @missing_roles) > 1 ? 's' : '';
-      my $missing_roles = join ' ', @missing_roles;
-      return "$instance does not consume the required role${s}: $missing_roles";
-    },
-  },
-  {
-    name => 'HasMethods',
-    test => sub {
-      my ($instance, @methods) = (shift, @_);
-      return if not $instance;
-      return if not blessed($instance);
-      my @missing_methods = grep { !$instance->can($_) } @methods;
-      return (scalar @missing_methods ? 0 : 1);
-      },
-    message => sub {
-      my $instance = shift;
-      return "No instance given" if not $instance;
-      return "$instance is not blessed" if not blessed($instance);
-      my @missing_methods = grep { !$instance->can($_) } @_;
-      my $s = (scalar @missing_methods) > 1 ? 's' : '';
-      my $missing_methods = join ' ', @missing_methods;
-      return "$instance does not have the required method${s}: $missing_methods";
-      },
-  },
-  ];
+    );
+}
 
-MooX::Types::MooseLike::register_types($type_definitions, __PACKAGE__);
+sub blessed_type_definitions {
+  return
+    (
+    {
+      name => 'Object',
+      test => sub { defined $_[0] and blessed($_[0]) and blessed($_[0]) ne 'Regexp' },
+      message => sub { return exception_message($_[0], 'an Object') },
+    },
+    {
+      name => 'InstanceOf',
+      test => sub {
+        my ($instance, @classes) = (shift, @_);
+        return if not $instance;
+        return if not blessed($instance);
+        my @missing_classes = grep { !$instance->isa($_) } @classes;
+        return (scalar @missing_classes ? 0 : 1);
+        },
+      message => sub {
+        my $instance = shift;
+        return "No instance given" if not $instance;
+        return "$instance is not blessed" if not blessed($instance);
+        my @missing_classes = grep { !$instance->isa($_) } @_;
+        my $s = (scalar @missing_classes) > 1 ? 'es' : '';
+        my $missing_classes = join ' ', @missing_classes;
+        return "$instance is not an instance of the class${s}: $missing_classes";
+        },
+    },
+    {
+      name => 'ConsumerOf',
+      test => sub {
+        my ($instance, @roles) = (shift, @_);
+        return if not $instance;
+        return if not blessed($instance);
+        return if (!$instance->can('does'));
+        my @missing_roles = grep { !$instance->does($_) } @roles;
+        return (scalar @missing_roles ? 0 : 1);
+        },
+      message => sub {
+        my $instance = shift;
+        return "No instance given" if not $instance;
+        return "$instance is not blessed" if not blessed($instance);
+        return "$instance is not a consumer of roles" if (!$instance->can('does'));
+        my @missing_roles = grep { !$instance->does($_) } @_;
+        my $s = (scalar @missing_roles) > 1 ? 's' : '';
+        my $missing_roles = join ' ', @missing_roles;
+        return "$instance does not consume the required role${s}: $missing_roles";
+        },
+    },
+    {
+      name => 'HasMethods',
+      test => sub {
+        my ($instance, @methods) = (shift, @_);
+        return if not $instance;
+        return if not blessed($instance);
+        my @missing_methods = grep { !$instance->can($_) } @methods;
+        return (scalar @missing_methods ? 0 : 1);
+        },
+      message => sub {
+        my $instance = shift;
+        return "No instance given" if not $instance;
+        return "$instance is not blessed" if not blessed($instance);
+        my @missing_methods = grep { !$instance->can($_) } @_;
+        my $s = (scalar @missing_methods) > 1 ? 's' : '';
+        my $missing_methods = join ' ', @missing_methods;
+        return "$instance does not have the required method${s}: $missing_methods";
+        },
+    },
+    );
+}
+
+sub type_definitions {
+  return
+    [
+    base_type_definitions()
+    ,defined_type_definitions()
+    ,ref_type_definitions()
+    ,filehandle_type_definitions()
+    ,blessed_type_definitions()
+    ];
+}
+
+MooX::Types::MooseLike::register_types(type_definitions(), __PACKAGE__);
 
 # Export an 'all' tag so one can easily import all types like so:
 # use MooX::Types::MooseLike::Base qw(:all)
