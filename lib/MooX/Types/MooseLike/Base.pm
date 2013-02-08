@@ -239,6 +239,31 @@ sub blessed_type_definitions {
     );
 }
 
+sub logic_type_definitions {
+  return
+    (
+    {
+      name => 'AnyOf',
+      test => sub {
+        my ($value, @types) = @_;
+        return if not defined $value;
+        foreach my $type (@types) {
+            my $is_type = 'is_' . $type;
+            {
+              no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
+              return 1 if &{$is_type}($value);
+            }
+        }
+        return;
+        },
+      message => sub {
+        my ($value, @types) = @_;
+        return "No value given" if not defined $value;
+        return "Value: $value is not any of ", join(', ', @types);
+        },
+    },
+    );
+}
 sub type_definitions {
   return
     [
@@ -247,6 +272,7 @@ sub type_definitions {
     ,ref_type_definitions()
     ,filehandle_type_definitions()
     ,blessed_type_definitions()
+    ,logic_type_definitions()
     ];
 }
 

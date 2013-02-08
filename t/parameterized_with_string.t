@@ -30,7 +30,7 @@
   use warnings FATAL => 'all';
   use Moo;
   use MooX::Types::MooseLike::Base qw/
-    InstanceOf ConsumerOf HasMethods
+    InstanceOf ConsumerOf HasMethods AnyOf
     /;
   with (
     'MooX::Types::MooseLike::Test::Role',
@@ -55,6 +55,10 @@
   has has_methods => (
     is  => 'ro',
     isa => HasMethods['foo', 'bar'],
+    );
+  has any_of => (
+    is  => 'ro',
+    isa => AnyOf['Object', 'Int'],
     );
 }
 package main;
