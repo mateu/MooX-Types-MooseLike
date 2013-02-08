@@ -454,6 +454,13 @@ Takes a list of method names as the arguments. For example:
 
   isa => HasMethods[qw/postulate contemplate liberate/]
 
+=head3 AnyOf
+
+Check if the attribute is any of the listed types (think union)
+Takes a list of (non-parameterized) types as the argument. For example:
+
+  isa => AnyOf['Str','CodeRef']
+
 =head1 AUTHOR
 
 Mateu Hunter C<hunter@missoula.org>
