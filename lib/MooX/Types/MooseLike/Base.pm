@@ -169,7 +169,7 @@ sub filehandle_type_definitions {
     );
 }
 
-sub blessed_type_definitions {
+sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplexity)
   return
     (
     {
@@ -247,7 +247,7 @@ sub logic_type_definitions {
       test => sub {
         my ($value, @types) = @_;
         foreach my $type (@types) {
-          return 1 if (eval {my $value = $type->($value); 1;});
+          return 1 if (eval {$type->($value); 1;});
         }
         return;
         },
@@ -258,7 +258,7 @@ sub logic_type_definitions {
       test => sub { return 1; },
       message => sub { 'AllOf only uses its parameterized type messages' },
       parameterizable => sub { $_[0] },
-    },    
+    },
     );
 }
 sub type_definitions {

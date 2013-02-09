@@ -60,7 +60,7 @@ like(
   );
 
 # AllOf
-ok(MooX::Types::MooseLike::Test->new(all_of => IO::Handle->new ), 
+ok(MooX::Types::MooseLike::Test->new(all_of => IO::Handle->new ),
   "value is AllOf[InstanceOf('IO::Handle'), HasMethods['print']]");
 $false_value = undef;
 like(

@@ -72,17 +72,20 @@ sub make_type {
       if (ref($_[0]) eq 'ARRAY') {
         my @params = @{$_[0]};
         my $parameterized_isa = sub {
+
           # Check if all params are coderefs
           if (my $parameterizer = $type_definition->{parameterizable}) {
+
             # Can we assume @params is a list of coderefs?
             if(first { (ref($_) ne 'CODE') } @params) {
               croak "Invalid parameterized type! All parameters must be coderefs";
             }
 
-            # Check the containing type. We could pass @_, but it is meant to 
-            # always be such that: scalar @_ = 1 in this context.  In other words, 
-            # we have only one thing to type check at a time.
+          # Check the containing type. We could pass @_, but it is meant to
+          # always be such that: scalar @_ = 1 in this context.  In other words,
+          # we have only one thing to type check at a time.
             $isa->($_[0]);
+
             # Run the nested type coderefs on each value
             foreach my $coderef (@params) {
               foreach my $value ($parameterizer->($_[0])) {
