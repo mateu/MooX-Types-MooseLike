@@ -434,6 +434,8 @@ Uses C<blessed> and C<isa> to do so.
 Takes a list of class names as the argument. For example:
 
   isa => InstanceOf['MyClass','MyOtherClass']
+  
+Note: InstanceOf is passed an ArrayRef[Str]
 
 =head3 ConsumerOf
 
@@ -458,6 +460,8 @@ Takes a list of types as the argument. For example:
 
   isa => AnyOf[Int, ArrayRef[Int], HashRef[Int]]
 
+Note: AnyOf is passed an ArrayRef[CodeRef]
+
 =head3 AllOf
 
 Check if the attribute is all of the listed types (think intersection)
@@ -465,8 +469,8 @@ Takes a list of types as the argument. For example:
 
   isa => AllOf[
     InstanceOf['Human'], 
-    ConsumerOf['Compassion'], 
-    HashMethods['sing', 'dance', 'care_for']
+    ConsumerOf['Air'], 
+    HasMethods['breath', 'dance']
   ],
 
 =head1 AUTHOR
@@ -479,7 +483,7 @@ mst has provided critical guidance on the design
 
 =head1 COPYRIGHT
 
-Copyright 2011, 2012, 2013 Mateu Hunter
+Copyright 2011-2013 Mateu Hunter
 
 =head1 LICENSE
 
