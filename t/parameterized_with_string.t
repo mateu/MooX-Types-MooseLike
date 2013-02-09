@@ -148,26 +148,4 @@ like(
   'a class name is does not have methods'
   );
 
-# AnyOf
-ok(MooX::Types::MooseLike::Test->new(any_of => IO::Handle->new ), 'value is AnyOf["Object", "Int"]');
-ok(MooX::Types::MooseLike::Test->new(any_of => 108 ), 'value is AnyOf["Object", "Int"]');
-my $false_value;
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(any_of => $false_value);
-  },
-  qr/No value given/,
-  'undef is not an any of "Object" or "Int"'
-  );
-$false_value = 'peace_treaty';
-like(
-  exception {
-    MooX::Types::MooseLike::Test->new(any_of => $false_value);
-  },
-  qr/is not any of/,
-  'a string is neither an object nor an integer'
-  );
-
-
-
 done_testing;

@@ -6,6 +6,7 @@ our @EXPORT_OK = ();
 push @EXPORT_OK, 'exception_message';
 use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
+use List::Util qw(first);
 
 our $VERSION = '0.17';
 
@@ -67,23 +68,29 @@ sub make_type {
   return {
     type => sub {
 
-      my $param = $_[0];
-
       # If we have a parameterized type then we want to check its values
-      if (ref($param) eq 'ARRAY') {
-        my $coderef           = $_[0]->[0];
+      if (ref($_[0]) eq 'ARRAY') {
+        my @params = @{$_[0]};
         my $parameterized_isa = sub {
-          if(ref($coderef) eq 'CODE') {
-            $isa->(@_);
-
-            # Run the type coderef on each value
-            my @values = $type_definition->{parameterizable}->(@_);
-            foreach my $value (@values) {
-              $coderef->($value);
+          # Check if all params are coderefs
+          if(not first { (ref($_) ne 'CODE') } @params) {
+            # Handle AnyOf case separately since we need only one constraint to pass
+            if ($type_definition->{name} eq 'AnyOf') {
+              $isa->(\@_, \@params);
+            }
+            else {
+              my @values = $type_definition->{parameterizable}->(@_);
+              $isa->(@_);
+              # Run the type coderef on each value
+              foreach my $coderef (@params) {
+                foreach my $value (@values) {
+                  $coderef->($value);
+                }
+              }
             }
           }
           else {
-            $isa->(@_, @{$param});
+            $isa->(@_, @params);
           }
           };
 

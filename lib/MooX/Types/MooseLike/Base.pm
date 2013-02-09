@@ -245,21 +245,21 @@ sub logic_type_definitions {
     {
       name => 'AnyOf',
       test => sub {
-        my ($value, @types) = @_;
-        return if not defined $value;
-        foreach my $type (@types) {
-            my $is_type = 'is_' . $type;
+        my ($values, $types) = @_;
+        return if not scalar @{$values};
+        return if not defined $values->[0];
+        foreach my $type (@{$types}) {
             {
               no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
-              return 1 if &{$is_type}($value);
+              return 1 if (eval {my $value = $type->(@{$values}); 1;});
             }
         }
         return;
         },
       message => sub {
-        my ($value, @types) = @_;
-        return "No value given" if not defined $value;
-        return "Value: $value is not any of ", join(', ', @types);
+        my ($values, $types) = @_;
+        return "No value given" if not scalar @{$values};
+        return "Value is not any of the types given";
         },
     },
     );
