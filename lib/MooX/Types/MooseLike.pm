@@ -79,7 +79,13 @@ sub make_type {
               $isa->(\@_, \@params);
             }
             else {
-              my @values = $type_definition->{parameterizable}->(@_);
+              my @values;
+              if ($type_definition->{name} eq 'AllOf') {
+                @values = @_;
+              }
+              else {
+                @values = $type_definition->{parameterizable}->(@_);
+              }
               $isa->(@_);
               # Run the type coderef on each value
               foreach my $coderef (@params) {

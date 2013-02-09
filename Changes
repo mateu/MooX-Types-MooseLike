@@ -1,3 +1,9 @@
+      - AnyOf now supports parameterized types
+        API CHANGE: AnyOf no longer takes types in a string
+                    This means AnyOf['Int', 'CodeRef'] 
+                    instead has to be written AnyOf[Int, CodeRef]
+      - New type: AllOf (intersection of defined types)
+
 0.17 - 2013-02-08
       - New type: AnyOf (union of defined types)
 

@@ -3,11 +3,15 @@
   use strict;
   use warnings FATAL => 'all';
   use Moo;
-  use MooX::Types::MooseLike::Base qw/ AnyOf Object Int ArrayRef HashRef /;
+  use MooX::Types::MooseLike::Base qw/ AnyOf AllOf Object Int ArrayRef HashRef InstanceOf HasMethods /;
 
   has any_of => (
     is  => 'ro',
     isa => AnyOf[Int, ArrayRef[Int], HashRef[Int], Object],
+    );
+  has all_of => (
+    is  => 'ro',
+    isa => AllOf[InstanceOf['IO::Handle'], HasMethods['print']],
     );
 }
 package main;
@@ -37,6 +41,26 @@ like(
   },
   qr/is not any of/,
   'a string is not any of the types given'
+  );
+
+# AllOf
+ok(MooX::Types::MooseLike::Test->new(all_of => IO::Handle->new ), 
+  "value is AllOf[InstanceOf('IO::Handle'), HasMethods['print']]");
+$false_value = undef;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(all_of => $false_value);
+  },
+  qr/No instance given/,
+  'undef is not an instance of IO::Handle"'
+  );
+$false_value = 'peace_treaty';
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(all_of => $false_value);
+  },
+  qr/is not blessed/,
+  'a string is not an instance of IO::Handle'
   );
 
 done_testing;

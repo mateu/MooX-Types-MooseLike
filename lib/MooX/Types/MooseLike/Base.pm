@@ -262,6 +262,12 @@ sub logic_type_definitions {
         return "Value is not any of the types given";
         },
     },
+    {
+      name => 'AllOf',
+      # The type tests within will handle things
+      test => sub { return 1; },
+      message => sub { 'AllOf only uses its parameterized type messages' },
+    },    
     );
 }
 sub type_definitions {
@@ -457,9 +463,20 @@ Takes a list of method names as the arguments. For example:
 =head3 AnyOf
 
 Check if the attribute is any of the listed types (think union)
-Takes a list of (non-parameterized) types as the argument. For example:
+Takes a list of types as the argument. For example:
 
-  isa => AnyOf['Str','CodeRef']
+  isa => AnyOf[Int, ArrayRef[Int], HashRef[Int]]
+
+=head3 AllOf
+
+Check if the attribute is all of the listed types (think intersection)
+Takes a list of types as the argument. For example:
+
+  isa => AllOf[
+    InstanceOf['Human'], 
+    ConsumerOf['Compassion'], 
+    HashMethods['sing', 'dance', 'care_for']
+  ],
 
 =head1 AUTHOR
 
@@ -471,7 +488,7 @@ mst has provided critical guidance on the design
 
 =head1 COPYRIGHT
 
-Copyright 2011, 2012 Mateu Hunter
+Copyright 2011, 2012, 2013 Mateu Hunter
 
 =head1 LICENSE
 
