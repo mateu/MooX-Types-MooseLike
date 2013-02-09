@@ -73,30 +73,25 @@ sub make_type {
         my @params = @{$_[0]};
         my $parameterized_isa = sub {
           # Check if all params are coderefs
-          if(not first { (ref($_) ne 'CODE') } @params) {
-            # Handle AnyOf case separately since we need only one constraint to pass
-            if ($type_definition->{name} eq 'AnyOf') {
-              $isa->(\@_, \@params);
+          if (my $parameterizer = $type_definition->{parameterizable}) {
+            # Can we assume @params is a list of coderefs?
+            if(first { (ref($_) ne 'CODE') } @params) {
+              croak "Invalid parameterized type! All parameters must be coderefs";
             }
-            else {
-              my @values;
-              if ($type_definition->{name} eq 'AllOf') {
-                @values = @_;
-              }
-              else {
-                @values = $type_definition->{parameterizable}->(@_);
-              }
-              $isa->(@_);
-              # Run the type coderef on each value
-              foreach my $coderef (@params) {
-                foreach my $value (@values) {
-                  $coderef->($value);
-                }
+
+            # Check the containing type. We could pass @_, but it is meant to 
+            # always be such that: scalar @_ = 1 in this context.  In other words, 
+            # we have only one thing to type check at a time.
+            $isa->($_[0]);
+            # Run the nested type coderefs on each value
+            foreach my $coderef (@params) {
+              foreach my $value ($parameterizer->($_[0])) {
+                $coderef->($value);
               }
             }
           }
           else {
-            $isa->(@_, @params);
+            $isa->($_[0], @params);
           }
           };
 

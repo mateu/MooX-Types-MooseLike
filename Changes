@@ -3,6 +3,7 @@
                     This means AnyOf['Int', 'CodeRef'] 
                     instead has to be written AnyOf[Int, CodeRef]
       - New type: AllOf (intersection of defined types)
+      - Simplify new make_type() code (haarg)
 
 0.17 - 2013-02-08
       - New type: AnyOf (union of defined types)

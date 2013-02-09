@@ -245,28 +245,19 @@ sub logic_type_definitions {
     {
       name => 'AnyOf',
       test => sub {
-        my ($values, $types) = @_;
-        return if not scalar @{$values};
-        return if not defined $values->[0];
-        foreach my $type (@{$types}) {
-            {
-              no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
-              return 1 if (eval {my $value = $type->(@{$values}); 1;});
-            }
+        my ($value, @types) = @_;
+        foreach my $type (@types) {
+          return 1 if (eval {my $value = $type->($value); 1;});
         }
         return;
         },
-      message => sub {
-        my ($values, $types) = @_;
-        return "No value given" if not scalar @{$values};
-        return "Value is not any of the types given";
-        },
+      message => sub { return exception_message($_[0], 'any of the types') },
     },
     {
       name => 'AllOf',
-      # The type tests within will handle things
       test => sub { return 1; },
       message => sub { 'AllOf only uses its parameterized type messages' },
+      parameterizable => sub { $_[0] },
     },    
     );
 }

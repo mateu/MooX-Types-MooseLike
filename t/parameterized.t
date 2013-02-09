@@ -97,6 +97,8 @@ like(
 # HashRef[Str]
 ok(MooX::Types::MooseLike::Test->new(a_hash_of_strings => { a => 1, b => 'x' }),
   'HashRef[Str]');
+ok(MooX::Types::MooseLike::Test->new(a_hash_of_strings => {}),
+  'Empty HashRef');
 like(
   exception {
     MooX::Types::MooseLike::Test->new(a_hash_of_strings =>

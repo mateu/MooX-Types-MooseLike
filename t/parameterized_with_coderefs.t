@@ -7,7 +7,7 @@
 
   has any_of => (
     is  => 'ro',
-    isa => AnyOf[Int, ArrayRef[Int], HashRef[Int], Object],
+    isa => AnyOf[Int, HashRef[Int], Object],
     );
   has all_of => (
     is  => 'ro',
@@ -24,8 +24,8 @@ use IO::Handle;
 # AnyOf
 ok(MooX::Types::MooseLike::Test->new(any_of => IO::Handle->new ), 'value is AnyOf[Int, ArrayRef[Int], HashRef[Int], Object]');
 ok(MooX::Types::MooseLike::Test->new(any_of =>  108  ), 'Int is AnyOf[Int, ArrayRef[Int], HashRef[Int], Object]');
-ok(MooX::Types::MooseLike::Test->new(any_of => [108] ), 'ArrayRef[Int] is AnyOf[Int, ArrayRef[Int], HashRef[Int], Object]');
 ok(MooX::Types::MooseLike::Test->new(any_of => {auspicious_number => 108} ), 'HashRef[Int] is AnyOf[Int, ArrayRef[Int], HashRef[Int], Object]');
+ok(MooX::Types::MooseLike::Test->new(any_of => {} ), 'HashRef is AnyOf[Int, ArrayRef[Int], HashRef[Int], Object]');
 my $false_value;
 like(
   exception {
@@ -33,6 +33,22 @@ like(
   },
   qr/is not any of/,
   'undef is not an any of the types given"'
+  );
+$false_value = { nada => undef };
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(any_of => $false_value);
+  },
+  qr/is not any of/,
+  'A HashRef with an undefined value is not an any of the types given'
+  );
+$false_value = [];
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(any_of => $false_value);
+  },
+  qr/is not any of/,
+  'ArrayRef is not an any of the types given'
   );
 $false_value = 'peace_treaty';
 like(
