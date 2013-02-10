@@ -30,7 +30,7 @@
   use warnings FATAL => 'all';
   use Moo;
   use MooX::Types::MooseLike::Base qw/
-    InstanceOf ConsumerOf HasMethods AnyOf
+    InstanceOf ConsumerOf HasMethods Enum
     /;
   with (
     'MooX::Types::MooseLike::Test::Role',
@@ -56,9 +56,9 @@
     is  => 'ro',
     isa => HasMethods['foo', 'bar'],
     );
-  has any_of => (
+  has enum_type => (
     is  => 'ro',
-    isa => AnyOf['Object', 'Int'],
+    isa => Enum['estrella', 'lluna', 'deessa'],
     );
 }
 package main;
@@ -146,6 +146,50 @@ like(
   },
   qr/is not blessed/,
   'a class name is does not have methods'
+  );
+
+# Enum
+ok(MooX::Types::MooseLike::Test->new(enum_type => 'estrella' ), 'has one of the possible values (enum)');
+ok(MooX::Types::MooseLike::Test->new(enum_type => 'deessa' ), 'has one of the possible values (enum)');
+my $false_enum = undef;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(enum_type => $false_enum);
+  },
+  qr/is not any of the possible values/,
+  'undef is not one of the enumerated values'
+  );
+$false_enum = IO::Handle->new;
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(enum_type => $false_enum);
+  },
+  qr/is not any of the possible values/,
+  'an object is not one of the enumerated values'
+  );
+$false_enum = {};
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(enum_type => $false_enum);
+  },
+  qr/is not any of the possible values/,
+  'a HashRef is not one of the enumerated values'
+  );  
+$false_enum = '';
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(enum_type => $false_enum);
+  },
+  qr/is not any of the possible values/,
+  'an empty string is not one of the enumerated values'
+  );
+$false_enum = 'Tot es possible';
+like(
+  exception {
+    MooX::Types::MooseLike::Test->new(enum_type => $false_enum);
+  },
+  qr/is not any of the possible values/,
+  'a different string is not one of the enumerated values'
   );
 
 done_testing;

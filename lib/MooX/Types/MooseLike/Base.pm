@@ -1,6 +1,6 @@
 package MooX::Types::MooseLike::Base;
 use strict;
-use warnings FATAL => 'all';
+#use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
 use MooX::Types::MooseLike qw(exception_message);
@@ -235,6 +235,19 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_methods = join ' ', @missing_methods;
         return "$instance does not have the required method${s}: $missing_methods";
         },
+    },
+    {
+      name => 'Enum',
+      test => sub {
+        my ($value, @possible_values) = @_;
+        return if not defined $value;
+        return List::Util::first { $value eq $_ } @possible_values;
+        },
+      message => sub {
+        my ($value, @possible_values) = @_;
+        my $possible_values = join(', ', @possible_values);
+        return exception_message($value, "any of the possible values: ${possible_values}");
+      },
     },
     );
 }
