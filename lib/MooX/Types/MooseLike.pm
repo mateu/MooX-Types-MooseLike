@@ -73,8 +73,8 @@ sub make_type {
         my @params = @{$_[0]};
         my $parameterized_isa = sub {
 
-          # Types that take other types as parameter have a parameterizable
-          # part with the one exception 'AnyOf'
+          # Types that take other types as a parameter have a parameterizable
+          # part with the one exception: 'AnyOf'
           if (my $parameterizer = $type_definition->{parameterizable}) {
 
             # Can we assume @params is a list of coderefs?

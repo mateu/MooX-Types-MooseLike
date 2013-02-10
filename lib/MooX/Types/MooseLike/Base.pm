@@ -420,7 +420,7 @@ A type that is an object (think blessed)
 
 =head1 PARAMETERIZED TYPES
 
-=head2 Parameterizing Types a Single Type
+=head2 Parameterizing Types With a Single Type
 
 The following types can be parameterized with other types.
 
