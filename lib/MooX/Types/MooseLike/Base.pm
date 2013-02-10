@@ -1,6 +1,6 @@
 package MooX::Types::MooseLike::Base;
 use strict;
-#use warnings FATAL => 'all';
+use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
 use MooX::Types::MooseLike qw(exception_message);
