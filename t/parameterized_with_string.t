@@ -174,7 +174,7 @@ like(
   },
   qr/is not any of the possible values/,
   'a HashRef is not one of the enumerated values'
-  );  
+  );
 $false_enum = '';
 like(
   exception {
