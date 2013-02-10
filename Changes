@@ -1,3 +1,5 @@
+      - New type: Enum
+
 0.18 - 2013-02-09
       - AnyOf now supports parameterized types
         API CHANGE: AnyOf no longer takes types in a string
