@@ -17,7 +17,7 @@
   use warnings FATAL => 'all';
   use Moo;
   use MooX::Types::MooseLike::Base qw/
-    ArrayRef Int HashRef Str ScalarRef Maybe
+    ArrayRef Int HashRef Str ScalarRef Maybe AnyOf Undef
     /;
 
   has an_array_of_integers => (
@@ -51,6 +51,10 @@
   has array_maybe_a_hash_of_int => (
     is  => 'ro',
     isa => ArrayRef [ Maybe [ HashRef [Int] ] ],
+    );
+  has maybe_an_int_or_hash => (
+    is  => 'ro',
+    isa => AnyOf[Int, HashRef, Undef],
     );
 }
 
@@ -133,7 +137,7 @@ like(
   'a ScalarRef of Str is an exception when we want an ScalarRef[Int]'
   );
 
-# ScalarRef[Int]
+# Maybe[Int]
 ok(MooX::Types::MooseLike::Test->new(maybe_an_int => 41),
   'Maybe[Int] as an integer');
 ok(MooX::Types::MooseLike::Test->new(maybe_an_int => undef),
@@ -144,6 +148,24 @@ like(
   exception { MooX::Types::MooseLike::Test->new(maybe_an_int => 'x') },
   qr/is not an integer/,
   'a Str is an exception when we want a Maybe[Int]'
+  );
+
+# AnyOf[Int, HashRef, Undef] - a stand in for Maybe[Int, HashRef]
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => {nbr => 41} ),
+  'Maybe[Int, HahsRef, Undef] as a HashRef');
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => 41 ),
+  'Maybe[Int, HahsRef, Undef] as an integer');
+ok(MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => undef ),
+  'Maybe[Int, HahsRef, Undef] as an undef');
+like(
+  exception { MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => [] ) },
+  qr/is not any of/,
+  'an ArrayRef is an exception when we want a AnyOf[Int, HashRef, Undef]'
+  );  
+like(
+  exception { MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => sub {} ) },
+  qr/is not any of/,
+  'a CodeRef is an exception when we want a AnyOf[Int, HashRef, Undef]'
   );
 
 # ArrayRef[Maybe[HashRef]]

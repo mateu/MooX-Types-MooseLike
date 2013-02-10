@@ -85,9 +85,6 @@ sub make_type {
             # Check the containing type. We could pass @_, but it is such that: 
             # scalar @_ = 1 always in this context.  In other words,
             # an $isa only type checks one thing at a time.
-            # Note however this does not exclude $isa from being passed additional
-            # parameters that can be used in the definition of the type as is 
-            # the case with InstanceOf and others. 
             $isa->($_[0]);
 
             # Run the nested type coderefs on each value
@@ -98,6 +95,10 @@ sub make_type {
             }
           }
           else {
+            # Note that while $isa only checks on value at a time
+            # We can pass it additional parameters as we do here.
+            # These additional parameters are then used in the type definition
+            # For example, see InstanceOf
             $isa->($_[0], @params);
           }
           };
