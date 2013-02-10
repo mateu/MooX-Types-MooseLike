@@ -348,7 +348,7 @@ These types provide a check that the contact attribute is a hash reference,
 that the guest_list is an array reference, and that the records are an array
 of hash references.
 
-=head1 TYPES (subroutines)
+=head1 TYPES (1st class functions - return a coderef)
 
 =head2 Any
 
@@ -420,7 +420,7 @@ A type that is an object (think blessed)
 
 =head1 PARAMETERIZED TYPES
 
-=head2 Parameterizing Types With Other Types
+=head2 Parameterizing Types a Single Type
 
 The following types can be parameterized with other types.
 
@@ -435,8 +435,31 @@ For example, ArrayRef[HashRef]
 =head3 Maybe
 
 For example, Maybe[Int] would be an integer or undef
+
+=head2 Parameterizing Types With Multiple Types
+
+=head3 AnyOf
+
+Check if the attribute is any of the listed types (think union)
+Takes a list of types as the argument. For example:
+
+  isa => AnyOf[Int, ArrayRef[Int], HashRef[Int]]
+
+Note: AnyOf is passed an ArrayRef[CodeRef]
+
+=head3 AllOf
+
+Check if the attribute is all of the listed types (think intersection)
+Takes a list of types as the argument. For example:
+
+  isa => AllOf[
+    InstanceOf['Human'], 
+    ConsumerOf['Air'], 
+    HasMethods['breath', 'dance']
+  ],
+
  
-=head2 Parameterizing Types With Strings
+=head2 Parameterizing Types With (Multiple) Strings
 
 In addition, we have some parameterized types that take string arguments.
 
@@ -466,25 +489,12 @@ Takes a list of method names as the arguments. For example:
 
   isa => HasMethods[qw/postulate contemplate liberate/]
 
-=head3 AnyOf
+=head3 Enum
 
-Check if the attribute is any of the listed types (think union)
-Takes a list of types as the argument. For example:
+Check if the attribute is one of the enumerated strings.
+Takes a list of possible string values. For example:
 
-  isa => AnyOf[Int, ArrayRef[Int], HashRef[Int]]
-
-Note: AnyOf is passed an ArrayRef[CodeRef]
-
-=head3 AllOf
-
-Check if the attribute is all of the listed types (think intersection)
-Takes a list of types as the argument. For example:
-
-  isa => AllOf[
-    InstanceOf['Human'], 
-    ConsumerOf['Air'], 
-    HasMethods['breath', 'dance']
-  ],
+  isa => Enum['rock', 'spock', 'paper', 'lizard', 'scissors']
 
 =head1 AUTHOR
 

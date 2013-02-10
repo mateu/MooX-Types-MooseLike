@@ -73,17 +73,21 @@ sub make_type {
         my @params = @{$_[0]};
         my $parameterized_isa = sub {
 
-          # Check if all params are coderefs
+          # Types that take other types as parameter have a parameterizable
+          # part with the one exception 'AnyOf'
           if (my $parameterizer = $type_definition->{parameterizable}) {
 
             # Can we assume @params is a list of coderefs?
-            if(first { (ref($_) ne 'CODE') } @params) {
-              croak "Invalid parameterized type! All parameters must be coderefs";
+            if(my $culprit = first { (ref($_) ne 'CODE') } @params) {
+              croak "Expect all parameters to be coderefs, but found: $culprit";
             }
 
-          # Check the containing type. We could pass @_, but it is meant to
-          # always be such that: scalar @_ = 1 in this context.  In other words,
-          # we have only one thing to type check at a time.
+            # Check the containing type. We could pass @_, but it is such that: 
+            # scalar @_ = 1 always in this context.  In other words,
+            # an $isa only type checks one thing at a time.
+            # Note however this does not exclude $isa from being passed additional
+            # parameters that can be used in the definition of the type as is 
+            # the case with InstanceOf and others. 
             $isa->($_[0]);
 
             # Run the nested type coderefs on each value
