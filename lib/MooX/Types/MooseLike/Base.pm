@@ -150,6 +150,7 @@ sub ref_type_definitions {
           and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
         },
       message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
+      inflate => 0,
     },
     );
 }
@@ -195,6 +196,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_classes = join ' ', @missing_classes;
         return "$instance is not an instance of the class${s}: $missing_classes";
         },
+      inflate => 0,
     },
     {
       name => 'ConsumerOf',
@@ -216,6 +218,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_roles = join ' ', @missing_roles;
         return "$instance does not consume the required role${s}: $missing_roles";
         },
+      inflate => 0,
     },
     {
       name => 'HasMethods',
@@ -235,6 +238,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_methods = join ' ', @missing_methods;
         return "$instance does not have the required method${s}: $missing_methods";
         },
+      inflate => 0,
     },
     {
       name => 'Enum',
@@ -248,6 +252,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $possible_values = join(', ', @possible_values);
         return exception_message($value, "any of the possible values: ${possible_values}");
       },
+      inflate => 0,
     },
     );
 }
@@ -265,12 +270,14 @@ sub logic_type_definitions {
         return;
         },
       message => sub { return exception_message($_[0], 'any of the types') },
+      inflate => 0,
     },
     {
       name => 'AllOf',
       test => sub { return 1; },
       message => sub { 'AllOf only uses its parameterized type messages' },
       parameterizable => sub { $_[0] },
+      inflate => 0,
     },
     );
 }

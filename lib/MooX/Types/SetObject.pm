@@ -16,6 +16,7 @@ my $type_definitions = [
       },
     message         => sub { return exception_message($_[0], 'a Set::Object') },
     parameterizable => sub { $_[0]->members },
+    inflate         => 0,
   },
   ];
 
