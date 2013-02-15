@@ -55,15 +55,23 @@ sub make_type {
     confess $type_definition->{message}->(@_) ;  ## no critic qw(ErrorHandling::RequireUseOfExceptions)
     };
 
-  my $full_name =
-    $moose_namespace
-    ? "${moose_namespace}::" . $type_definition->{name}
-    : $type_definition->{name};
+  if (ref $type_definition->{inflate}) {
+    $Moo::HandleMoose::TYPE_MAP{$isa} = $type_definition->{inflate};
+  }
+  elsif (exists $type_definition->{inflate} and not $type_definition->{inflate}) {
+    # no-op
+  }
+  else {
+    my $full_name =
+      defined $moose_namespace 
+      ? "${moose_namespace}::" . $type_definition->{name}
+      : $type_definition->{name};
 
-  $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
-    require_module($moose_namespace) if $moose_namespace;
-    Moose::Util::TypeConstraints::find_type_constraint($full_name);
-    };
+    $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
+      require_module($moose_namespace) if $moose_namespace;
+      Moose::Util::TypeConstraints::find_type_constraint($full_name);
+      };
+  }
 
   return {
     type => sub {
