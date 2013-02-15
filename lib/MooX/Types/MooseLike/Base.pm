@@ -252,7 +252,15 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $possible_values = join(', ', @possible_values);
         return exception_message($value, "any of the possible values: ${possible_values}");
       },
-      inflate => 0,
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Enum;
+        if (my $possible_values = shift) {
+          return Moose::Meta::TypeConstraint::Enum->new(values => $possible_values);
+        }
+        else {
+          die "Enum cannot be inflated to a Moose type without any possible values";
+        }
+      },
     },
     );
 }

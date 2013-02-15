@@ -111,6 +111,11 @@ sub make_type {
           }
           };
 
+        if (ref $type_definition->{inflate}) {
+          my $inflation = $type_definition->{inflate};
+          $Moo::HandleMoose::TYPE_MAP{$parameterized_isa} = sub { $inflation->(\@params) };
+        }
+
         # Remove old $isa, but return the rest of the arguments
         # so any specs defined after 'isa' don't get lost
         shift;
