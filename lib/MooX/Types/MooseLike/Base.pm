@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
-use MooX::Types::MooseLike qw(exception_message);
+use MooX::Types::MooseLike qw( exception_message inflate_type );
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
@@ -257,9 +257,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         if (my $possible_values = shift) {
           return Moose::Meta::TypeConstraint::Enum->new(values => $possible_values);
         }
-        else {
-          die "Enum cannot be inflated to a Moose type without any possible values";
-        }
+        die "Enum cannot be inflated to a Moose type without any possible values";
       },
     },
     );
@@ -278,7 +276,15 @@ sub logic_type_definitions {
         return;
         },
       message => sub { return exception_message($_[0], 'any of the types') },
-      inflate => 0,
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Union;
+        if (my $types = shift) {
+          return Moose::Meta::TypeConstraint::Union->new(
+            type_constraints => [ map inflate_type($_), @$types ],
+          );
+        }
+        die "AnyOf cannot be inflated to a Moose type without any possible types";
+        },
     },
     {
       name => 'AllOf',
