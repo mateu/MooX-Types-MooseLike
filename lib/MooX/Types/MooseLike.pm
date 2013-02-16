@@ -2,8 +2,8 @@ package MooX::Types::MooseLike;
 use strict;
 use warnings FATAL => 'all';
 use Exporter 5.57 'import';
-our @EXPORT_OK = ();
-push @EXPORT_OK, 'exception_message';
+our @EXPORT_OK;
+push @EXPORT_OK, qw( exception_message inflate_type );
 use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
 use List::Util qw(first);
@@ -55,15 +55,23 @@ sub make_type {
     confess $type_definition->{message}->(@_) ;  ## no critic qw(ErrorHandling::RequireUseOfExceptions)
     };
 
-  my $full_name =
-    $moose_namespace
-    ? "${moose_namespace}::" . $type_definition->{name}
-    : $type_definition->{name};
+  if (ref $type_definition->{inflate}) {
+    $Moo::HandleMoose::TYPE_MAP{$isa} = $type_definition->{inflate};
+  }
+  elsif (exists $type_definition->{inflate} and not $type_definition->{inflate}) {
+    # no-op
+  }
+  else {
+    my $full_name =
+      defined $moose_namespace 
+      ? "${moose_namespace}::" . $type_definition->{name}
+      : $type_definition->{name};
 
-  $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
-    require_module($moose_namespace) if $moose_namespace;
-    Moose::Util::TypeConstraints::find_type_constraint($full_name);
-    };
+    $Moo::HandleMoose::TYPE_MAP{$isa} = sub {
+      require_module($moose_namespace) if $moose_namespace;
+      Moose::Util::TypeConstraints::find_type_constraint($full_name);
+      };
+  }
 
   return {
     type => sub {
@@ -103,6 +111,11 @@ sub make_type {
           }
           };
 
+        if (ref $type_definition->{inflate}) {
+          my $inflation = $type_definition->{inflate};
+          $Moo::HandleMoose::TYPE_MAP{$parameterized_isa} = sub { $inflation->(\@params) };
+        }
+
         # Remove old $isa, but return the rest of the arguments
         # so any specs defined after 'isa' don't get lost
         shift;
@@ -120,6 +133,16 @@ sub exception_message {
   my ($attribute_value, $type) = @_;
   $attribute_value = defined $attribute_value ? $attribute_value : 'undef';
   return "${attribute_value} is not ${type}!";
+}
+
+sub inflate_type {
+  my $coderef = shift;
+  if (my $inflator = $Moo::HandleMoose::TYPE_MAP{$coderef}) {
+    return $inflator->();
+  }
+  return Moose::Meta::TypeConstraint->new(
+    constraint => sub { eval { &$coderef; 1 } }
+  );
 }
 
 1;
