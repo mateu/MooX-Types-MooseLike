@@ -6,9 +6,10 @@ use Test::Fatal;
 eval q{
 	package Local::TestClass;
 	use Moo;
-	use MooX::Types::MooseLike::Base qw( Enum AnyOf Str ArrayRef );
+	use MooX::Types::MooseLike::Base qw( Enum AnyOf Str ArrayRef ScalarRef HashRef HasMethods );
 	has chipmunk => (is => 'ro', isa => Enum[qw(Alvin Simon Theodore)]);
 	has songs    => (is => 'ro', isa => AnyOf[ Str, ArrayRef[Str] ]);
+	has complex  => (is => 'ro', isa => HashRef[ArrayRef[ScalarRef[HasMethods[qw/foo bar/]]]]);
 	1;
 } or die $@;
 
@@ -61,6 +62,31 @@ my $tc2 = do {
 	Local::TestClass->meta->get_attribute('songs')->type_constraint;
 };
 
-note explain($tc2);
+ok(
+	$tc2->name eq 'ArrayRef[Str]|Str' || $tc2->name eq 'Str|ArrayRef[Str]',
+	'complex type constraint (union of Str and ArrayRef[Str]) correctly inflated',
+);
+
+my $tc3 = do {
+	$SIG{__WARN__} = sub { 0 };
+	Local::TestClass->meta->get_attribute('complex')->type_constraint;
+};
+
+is(
+	$tc3->name,
+	'HashRef[ArrayRef[ScalarRef[__ANON__]]]',
+	'very complex type constraint correctly inflated',
+);
+
+isa_ok(
+	$tc3->type_parameter->type_parameter->type_parameter,
+	'Moose::Meta::TypeConstraint::DuckType',
+);
+
+is_deeply(
+	[sort @{$tc3->type_parameter->type_parameter->type_parameter->methods}],
+	[sort qw/foo bar/],
+	'duck type has correct methods'
+);
 
 done_testing;

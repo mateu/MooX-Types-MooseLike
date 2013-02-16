@@ -113,18 +113,48 @@ sub ref_type_definitions {
       test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
       message => sub { return exception_message($_[0], 'a ScalarRef') },
       parameterizable => sub { ${ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('ScalarRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('ScalarRef');
+        },
     },
     {
       name => 'ArrayRef',
       test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
       message => sub { return exception_message($_[0], 'an ArrayRef') },
       parameterizable => sub { @{ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('ArrayRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('ArrayRef');
+        },
     },
     {
       name => 'HashRef',
       test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
       message => sub { return exception_message($_[0], 'a HashRef') },
       parameterizable => sub { values %{ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('HashRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('HashRef');
+        },
     },
     {
       name => 'CodeRef',
@@ -196,7 +226,25 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_classes = join ' ', @missing_classes;
         return "$instance is not an instance of the class${s}: $missing_classes";
         },
-      inflate => 0,
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Class;
+        if (my $classes = shift) {
+          if (@$classes == 1) {
+            return Moose::Meta::TypeConstraint::Class->new(class => @$classes);
+          }
+          elsif (@$classes > 1) {
+            return Moose::Meta::TypeConstraint->new(
+              parent     => Moose::Util::TypeConstraints::find_type_constraint('Object'),
+              constraint => sub {
+                  my $instance = shift;
+                  my @missing_classes = grep { !$instance->isa($_) } @$classes;
+                  return (scalar @missing_classes ? 0 : 1);
+                },
+            );
+          }
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'ConsumerOf',
@@ -218,7 +266,26 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_roles = join ' ', @missing_roles;
         return "$instance does not consume the required role${s}: $missing_roles";
         },
-      inflate => 0,
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Role;
+        if (my $roles = shift) {
+          if (@$roles == 1) {
+            return Moose::Meta::TypeConstraint::Role->new(role => @$roles);
+          }
+          elsif (@$roles > 1) {
+            return Moose::Meta::TypeConstraint->new(
+              parent     => Moose::Util::TypeConstraints::find_type_constraint('Object'),
+              constraint => sub {
+                  my $instance = shift;
+                  return if (!$instance->can('does'));
+                  my @missing_roles = grep { !$instance->does($_) } @$roles;
+                  return (scalar @missing_roles ? 0 : 1);
+                },
+            );
+          }
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'HasMethods',
@@ -238,7 +305,13 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_methods = join ' ', @missing_methods;
         return "$instance does not have the required method${s}: $missing_methods";
         },
-      inflate => 0,
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::DuckType;
+        if (my $methods = shift) {
+          return Moose::Meta::TypeConstraint::DuckType->new(methods => $methods);
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'Enum',
