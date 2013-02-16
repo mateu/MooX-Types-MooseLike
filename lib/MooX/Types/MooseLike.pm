@@ -217,9 +217,11 @@ Matt Phillips (cpan:MATTP) <mattp@cpan.org>
 
 Arthur Axel fREW Schmidt (cpan:FREW) <frioux@gmail.com>
 
+Toby Inkster (cpan:TOBYINK) <tobyink@cpan.org>
+
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2012 the MooX::Types::MooseLike L</AUTHOR> and
+Copyright (c) 2011-2013 the MooX::Types::MooseLike L</AUTHOR> and
  L</CONTRIBUTORS> as listed above.
 
 =head1 LICENSE
