@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use Scalar::Util qw(blessed);
 use List::Util;
-use MooX::Types::MooseLike qw(exception_message);
+use MooX::Types::MooseLike qw( exception_message inflate_type );
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
@@ -113,18 +113,48 @@ sub ref_type_definitions {
       test => sub { defined $_[0] and ref($_[0]) eq 'SCALAR' },
       message => sub { return exception_message($_[0], 'a ScalarRef') },
       parameterizable => sub { ${ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('ScalarRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('ScalarRef');
+        },
     },
     {
       name => 'ArrayRef',
       test => sub { defined $_[0] and ref($_[0]) eq 'ARRAY' },
       message => sub { return exception_message($_[0], 'an ArrayRef') },
       parameterizable => sub { @{ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('ArrayRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('ArrayRef');
+        },
     },
     {
       name => 'HashRef',
       test => sub { defined $_[0] and ref($_[0]) eq 'HASH' },
       message => sub { return exception_message($_[0], 'a HashRef') },
       parameterizable => sub { values %{ $_[0] } },
+      inflate => sub {
+        require Moose::Util::TypeConstraints;
+        if (my $params = shift) {
+          return Moose::Util::TypeConstraints::_create_parameterized_type_constraint(
+            Moose::Util::TypeConstraints::find_type_constraint('HashRef'),
+            inflate_type(@$params),
+          );
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('HashRef');
+        },
     },
     {
       name => 'CodeRef',
@@ -150,6 +180,7 @@ sub ref_type_definitions {
           and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
         },
       message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
+      inflate => 0,
     },
     );
 }
@@ -195,6 +226,25 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_classes = join ' ', @missing_classes;
         return "$instance is not an instance of the class${s}: $missing_classes";
         },
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Class;
+        if (my $classes = shift) {
+          if (@$classes == 1) {
+            return Moose::Meta::TypeConstraint::Class->new(class => @$classes);
+          }
+          elsif (@$classes > 1) {
+            return Moose::Meta::TypeConstraint->new(
+              parent     => Moose::Util::TypeConstraints::find_type_constraint('Object'),
+              constraint => sub {
+                  my $instance = shift;
+                  my @missing_classes = grep { !$instance->isa($_) } @$classes;
+                  return (scalar @missing_classes ? 0 : 1);
+                },
+            );
+          }
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'ConsumerOf',
@@ -216,6 +266,26 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_roles = join ' ', @missing_roles;
         return "$instance does not consume the required role${s}: $missing_roles";
         },
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Role;
+        if (my $roles = shift) {
+          if (@$roles == 1) {
+            return Moose::Meta::TypeConstraint::Role->new(role => @$roles);
+          }
+          elsif (@$roles > 1) {
+            return Moose::Meta::TypeConstraint->new(
+              parent     => Moose::Util::TypeConstraints::find_type_constraint('Object'),
+              constraint => sub {
+                  my $instance = shift;
+                  return if (!$instance->can('does'));
+                  my @missing_roles = grep { !$instance->does($_) } @$roles;
+                  return (scalar @missing_roles ? 0 : 1);
+                },
+            );
+          }
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'HasMethods',
@@ -235,6 +305,13 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my $missing_methods = join ' ', @missing_methods;
         return "$instance does not have the required method${s}: $missing_methods";
         },
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::DuckType;
+        if (my $methods = shift) {
+          return Moose::Meta::TypeConstraint::DuckType->new(methods => $methods);
+        }
+        return Moose::Util::TypeConstraints::find_type_constraint('Object');
+      },
     },
     {
       name => 'Enum',
@@ -247,6 +324,13 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
         my ($value, @possible_values) = @_;
         my $possible_values = join(', ', @possible_values);
         return exception_message($value, "any of the possible values: ${possible_values}");
+      },
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Enum;
+        if (my $possible_values = shift) {
+          return Moose::Meta::TypeConstraint::Enum->new(values => $possible_values);
+        }
+        die "Enum cannot be inflated to a Moose type without any possible values";
       },
     },
     );
@@ -265,12 +349,22 @@ sub logic_type_definitions {
         return;
         },
       message => sub { return exception_message($_[0], 'any of the types') },
+      inflate => sub {
+        require Moose::Meta::TypeConstraint::Union;
+        if (my $types = shift) {
+          return Moose::Meta::TypeConstraint::Union->new(
+            type_constraints => [ map inflate_type($_), @$types ],
+          );
+        }
+        die "AnyOf cannot be inflated to a Moose type without any possible types";
+        },
     },
     {
       name => 'AllOf',
       test => sub { return 1; },
       message => sub { 'AllOf only uses its parameterized type messages' },
       parameterizable => sub { $_[0] },
+      inflate => 0,
     },
     );
 }
