@@ -37,7 +37,7 @@ sub install_type {
   return;
 }
 
-sub make_type {
+sub make_isa {
   my ($type_definition) = @_;
   my $test = $type_definition->{test};
 
@@ -86,61 +86,66 @@ sub make_type {
       Moose::Util::TypeConstraints::find_type_constraint($full_name);
       };
   }
+  return $isa;
+}
 
+sub make_param_isa {
+  my ($type_definition, $base_isa, $params) = @_;
+  # 'parameterizable' types take types (coderefs) as params
+  my $isa;
+  if (my $parameterizer = $type_definition->{parameterizable}) {
+    if(my $culprit = first { (ref($_) ne 'CODE') } @$params) {
+      croak "Expect all parameters to be coderefs, but found: $culprit";
+    }
+    $isa = sub {
+      # Check the containing type. We could pass @_, but it is such that: 
+      # scalar @_ = 1 always in this context.  In other words,
+      # an $isa only type checks one thing at a time.
+      $base_isa->($_[0]);
+
+      # Run the nested type coderefs on each value
+      foreach my $coderef (@$params) {
+        foreach my $value ($parameterizer->($_[0])) {
+          $coderef->($value);
+        }
+      }
+    };
+  }
+  else {
+    $isa = sub {
+      $base_isa->($_[0], @$params);
+    };
+  }
+
+  if (ref $type_definition->{inflate}) {
+    my $inflation = $type_definition->{inflate};
+    $Moo::HandleMoose::TYPE_MAP{$isa} = sub { $inflation->($params) };
+  }
+  return $isa;
+}
+
+sub make_type {
+  my ($type_def) = @_;
+  my $isa = make_isa($type_def);
+  my $is_type = sub {
+    my $value = shift;
+    local $@;
+    eval { $isa->($value); 1 };
+  };
   return {
+    is_type => $is_type,
     type => sub {
 
       # If we have a parameterized type then we want to check its values
       if (ref($_[0]) eq 'ARRAY') {
-        my @params = @{$_[0]};
-        my $parameterized_isa = sub {
-
-          # Types that take other types as a parameter have a parameterizable
-          # part with the one exception: 'AnyOf'
-          if (my $parameterizer = $type_definition->{parameterizable}) {
-
-            # Can we assume @params is a list of coderefs?
-            if(my $culprit = first { (ref($_) ne 'CODE') } @params) {
-              croak "Expect all parameters to be coderefs, but found: $culprit";
-            }
-
-            # Check the containing type. We could pass @_, but it is such that: 
-            # scalar @_ = 1 always in this context.  In other words,
-            # an $isa only type checks one thing at a time.
-            $isa->($_[0]);
-
-            # Run the nested type coderefs on each value
-            foreach my $coderef (@params) {
-              foreach my $value ($parameterizer->($_[0])) {
-                $coderef->($value);
-              }
-            }
-          }
-          else {
-            # Note that while $isa only checks on value at a time
-            # We can pass it additional parameters as we do here.
-            # These additional parameters are then used in the type definition
-            # For example, see InstanceOf
-            $isa->($_[0], @params);
-          }
-          };
-
-        if (ref $type_definition->{inflate}) {
-          my $inflation = $type_definition->{inflate};
-          $Moo::HandleMoose::TYPE_MAP{$parameterized_isa} = sub { $inflation->(\@params) };
-        }
-
-        # Remove old $isa, but return the rest of the arguments
-        # so any specs defined after 'isa' don't get lost
-        shift;
-        return ($parameterized_isa, @_);
+        my $params = shift;
+        return (make_param_isa($type_def, $isa, $params), @_);
       }
       else {
         return $isa;
       }
-      },
-    is_type => sub { $test->(@_) },
-    };
+    },
+  };
 }
 
 sub exception_message {
