@@ -13,7 +13,10 @@ our $VERSION = '0.21';
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
   foreach my $type_def (@{$type_definitions}) {
-    my $coderefs = make_type($type_def, $moose_namespace);
+    if ($moose_namespace) {
+      $type_def->{moose_namespace} ||= $moose_namespace;
+    }
+    my $coderefs = make_type($type_def);
     install_type($type_def->{name}, $coderefs, $into);
   }
   return;
@@ -35,7 +38,7 @@ sub install_type {
 }
 
 sub make_type {
-  my ($type_definition, $moose_namespace) = @_;
+  my ($type_definition) = @_;
   my $test = $type_definition->{test};
 
   if (my $subtype_of = $type_definition->{subtype_of}) {
@@ -72,6 +75,7 @@ sub make_type {
     # no-op
   }
   else {
+    my $moose_namespace = $type_definition->{moose_namespace};
     my $full_name =
       defined $moose_namespace 
       ? "${moose_namespace}::" . $type_definition->{name}
