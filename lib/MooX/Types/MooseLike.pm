@@ -38,19 +38,29 @@ sub make_type {
   my ($type_definition, $moose_namespace) = @_;
   my $test = $type_definition->{test};
 
-  my $full_test = $test;
   if (my $subtype_of = $type_definition->{subtype_of}) {
-    my $die_message =
-      "Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
-    my $from = $type_definition->{from}
-      || croak $die_message; ## no critic qw(ErrorHandling::RequireUseOfExceptions)
-    my $subtype_test = $from . '::is_' . $subtype_of;
-    no strict 'refs';    ## no critic qw(TestingAndDebugging::ProhibitNoStrict)
-    $full_test = sub { return (&{$subtype_test}(@_) && $test->(@_)); };
+    if (!ref $subtype_of) {
+      my $from = $type_definition->{from}
+        || croak "Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
+      $subtype_of = do {
+        no strict 'refs';
+        \&{$from . '::' . $subtype_of};
+      };
+    }
+    my $base_test = $test;
+    $test = sub {
+      my $value = shift;
+      local $@;
+      eval { $subtype_of->($value); 1 } or return;
+      if ($base_test) {
+        $base_test->($value) or return;
+      }
+      return 1;
+    };
   }
 
   my $isa = sub {
-    return if $full_test->(@_);
+    return if $test->(@_);
     local $Carp::Internal{"MooX::Types::MooseLike"} = 1;  ## no critic qw(Variables::ProhibitPackageVars)
     confess $type_definition->{message}->(@_) ;  ## no critic qw(ErrorHandling::RequireUseOfExceptions)
     };
@@ -125,7 +135,7 @@ sub make_type {
         return $isa;
       }
       },
-    is_type => sub { $full_test->(@_) },
+    is_type => sub { $test->(@_) },
     };
 }
 
