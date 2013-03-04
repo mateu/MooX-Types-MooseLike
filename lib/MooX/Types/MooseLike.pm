@@ -47,14 +47,14 @@ sub make_type {
         \&{$from . '::' . $subtype_of};
       };
     }
+    # Assume a (base) test always exists even if you must write: test => sub {1}
     my $base_test = $test;
     $test = sub {
       my $value = shift;
       local $@;
       eval { $subtype_of->($value); 1 } or return;
-      if ($base_test) {
-        $base_test->($value) or return;
-      }
+      # TODO implement: eval { $base_test->($value); 1 } paradigm
+      $base_test->($value) or return;
       return 1;
     };
   }
