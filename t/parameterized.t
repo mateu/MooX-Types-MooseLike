@@ -161,7 +161,7 @@ like(
   exception { MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => [] ) },
   qr/is not any of/,
   'an ArrayRef is an exception when we want a AnyOf[Int, HashRef, Undef]'
-  );  
+  );
 like(
   exception { MooX::Types::MooseLike::Test->new(maybe_an_int_or_hash => sub {} ) },
   qr/is not any of/,

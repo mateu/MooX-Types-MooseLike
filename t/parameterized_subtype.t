@@ -14,14 +14,14 @@ BEGIN {
         from       => 'MooX::Types::MooseLike::Base',
         test       => sub { ($_[0]->testosterone =~ /beaucou/) and ($_[0]->thought < 0.5) },
         message    => sub { return exception_message($_[0], 'a douche') },
-  }], __PACKAGE__);
+      }], __PACKAGE__);
   $INC{'Local/TypeLibrary.pm'} = __FILE__;
 }
 {
-    package Human;
-    use Moo;
-    use MooX::Types::MooseLike::Base qw/ Num /;
-    has thought => (is => 'ro', isa => Num);
+  package Human;
+  use Moo;
+  use MooX::Types::MooseLike::Base qw/ Num /;
+  has thought => (is => 'ro', isa => Num);
 }
 { package Woman; use Moo; extends 'Human'; sub sings {}; }
 { package Man;   use Moo; extends 'Human'; sub hunts {}; }
@@ -43,7 +43,7 @@ BEGIN {
   has brogrammer => (
     is  => 'ro',
     isa => Douche,
-  );
+    );
 }
 
 ok(MooX::Types::MooseLike::Test->new(brogrammer => Brogrammer->new(thought => 0)), 'A brogrammer is a douche');
@@ -53,6 +53,6 @@ like(
   },
   qr/is not a douche/,
   'Elk man is not a douche',
-);
+  );
 
 done_testing();
