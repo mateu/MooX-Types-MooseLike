@@ -1,3 +1,6 @@
+     - Allow subtyping of parameterized types (haarg)
+     - Extract SetObject and Numeric types into their own distributions
+
 0.21 - 2013-02-16
       - Allow type libraries more control over inflation to Moose types (tobyink)
 

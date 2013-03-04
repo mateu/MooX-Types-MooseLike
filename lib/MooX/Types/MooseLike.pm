@@ -8,7 +8,7 @@ use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
 use List::Util qw(first);
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;
@@ -228,6 +228,8 @@ Matt Phillips (cpan:MATTP) <mattp@cpan.org>
 Arthur Axel fREW Schmidt (cpan:FREW) <frioux@gmail.com>
 
 Toby Inkster (cpan:TOBYINK) <tobyink@cpan.org>
+
+Graham Knop (cpan:HAARG) <haarg@cpan.org>
 
 =head1 COPYRIGHT
 
