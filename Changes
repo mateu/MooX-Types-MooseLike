@@ -1,3 +1,4 @@
+0.22 - 2013-03-04
      - Allow subtyping of parameterized types (haarg)
      - Extract SetObject and Numeric types into their own distributions
 
