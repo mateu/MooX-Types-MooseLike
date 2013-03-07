@@ -44,7 +44,7 @@ sub make_type {
         || croak "Must define a 'from' namespace for the parent type: $subtype_of when defining type: $type_definition->{name}";
       $subtype_of = do {
         no strict 'refs';
-        \&{$from . '::' . $subtype_of};
+        &{$from . '::' . $subtype_of}();
       };
     }
     # Assume a (base) test always exists even if you must write: test => sub {1}

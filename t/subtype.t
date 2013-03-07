@@ -68,6 +68,13 @@ like(
   );
 like(
   exception {
+    MooX::Types::MooseLike::Test->new(string_w_length => {});
+  },
+  qr/not a string length > 0/,
+  'hashref is not a simple string',
+);
+like(
+  exception {
     MooX::Types::MooseLike::Test->new(true_string => '0');
   },
   qr/not a true value/,
