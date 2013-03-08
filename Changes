@@ -1,3 +1,5 @@
+    - Improve documentation
+
 0.23 - 2013-03-07
      - Fix regression in subtypes defined with a string (for the parent test)
 
