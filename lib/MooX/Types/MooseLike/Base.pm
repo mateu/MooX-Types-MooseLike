@@ -421,7 +421,7 @@ This module provides some basic types for this property.
 One can import all types with ':all' tag or import
 a list of types like:
 
-    use MooX::Types::MooseLike::Base qw/HashRef CodeRef/;
+    use MooX::Types::MooseLike::Base qw/HashRef ArrayRef/;
 
 so one could then declare some attributtes like:
 
@@ -431,16 +431,11 @@ so one could then declare some attributtes like:
 	);
 	has 'guest_list' => (
 	  is => 'ro',
-	  isa => ArrayRef,
-	);
-	has 'records' => (
-	  is => 'ro',
-	  isa => ArrayRef[Int],
+	  isa => ArrayRef[HashRef],
 	);
 
-These types provide a check that the contact attribute is a hash reference,
-that the guest_list is an array reference, and that the records are an array
-of hash references.
+These types provide a check that the I<contact> attribute is a C<hash> reference,
+and that the I<guest_list> is an C<array of hash> references.
 
 =head1 TYPES (1st class functions - return a coderef)
 
@@ -534,8 +529,8 @@ For example, Maybe[Int] would be an integer or undef
 
 =head3 AnyOf
 
-Check if the attribute is any of the listed types (think union)
-Takes a list of types as the argument. For example:
+Check if the attribute is any of the listed types (think union).
+Takes a list of types as the argument, for example:
 
   isa => AnyOf[Int, ArrayRef[Int], HashRef[Int]]
 
