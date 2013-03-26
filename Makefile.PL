@@ -14,7 +14,7 @@ my %BUILD_DEPS = (
 );
 
 WriteMakefile(
-  NAME => 'MooX-Types-MooseLike',
+  NAME => 'MooX::Types::MooseLike',
   VERSION_FROM => 'lib/MooX/Types/MooseLike.pm',
   PREREQ_PM => {
     %RUN_DEPS,
