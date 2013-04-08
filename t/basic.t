@@ -64,10 +64,6 @@ has 'an_object' => (
   is  => 'ro',
   isa => Object,
   );
-has 'a_ahref' => (
-  is  => 'ro',
-  isa => AHRef,
-  );
 has 'legal_age' => (
   is  => 'ro',
   isa => sub {
@@ -310,14 +306,6 @@ like(
   exception { MooX::Types::MooseLike::Test->new(an_object => []) },
   qr/ARRAY.*?is not an Object/,
   'an ArrayRef is an exception when we want an Object'
-  );
-
-# Test AHRef
-ok(MooX::Types::MooseLike::Test->new(a_ahref => [ {} ]), 'AHRef');
-like(
-  exception { MooX::Types::MooseLike::Test->new(a_ahref => []) },
-  qr/ARRAY.*?is not an ArrayRef\[HashRef\]/,
-  'an ArrayRef is an exception when we want an AHRef'
   );
 
 # Test legal_age attribute which has an 'isa' that uses 'is_Int'

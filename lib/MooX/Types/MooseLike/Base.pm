@@ -171,17 +171,6 @@ sub ref_type_definitions {
       test => sub { defined $_[0] and ref($_[0]) eq 'GLOB' },
       message => sub { return exception_message($_[0], 'a GlobRef') },
     },
-    {
-      name => 'AHRef',
-      test => sub {
-        defined $_[0] and
-          (ref($_[0]) eq 'ARRAY')
-          and ($_[0]->[0])
-          and (List::Util::first { ref($_) eq 'HASH' } @{ $_[0] });
-        },
-      message => sub { return exception_message($_[0], 'an ArrayRef[HashRef]') },
-      inflate => 0,
-    },
     );
 }
 
