@@ -70,7 +70,17 @@ sub defined_type_definitions {
     },
     {
       name    => 'Num',
-      test    => sub { defined $_[0] and Scalar::Util::looks_like_number($_[0]) },
+      test    => sub { 
+          my $val = $_[0];
+          defined $val and 
+        ($val =~ /\A[+-]?[0-9]+\z/) ||
+        ( $val =~ /\A(?:[+-]?)            # matches optional +- in the beginning
+          (?=[0-9]|\.[0-9])               # matches previous +- only if there is something like 3 or .3
+          [0-9]*                          # matches 0-9 zero or more times
+          (?:\.[0-9]+)?                   # matches optional .89 or nothing
+          (?:[Ee](?:[+-]?[0-9]+))?        # matches E1 or e1 or e-1 or e+1 etc
+          \z/x );
+      },
       message => sub {
         my $nbr = shift;
         if (not defined $nbr) {
