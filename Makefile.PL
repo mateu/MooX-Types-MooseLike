@@ -5,10 +5,10 @@ use ExtUtils::MakeMaker;
 (do 'maint/Makefile.PL.include' or die $@) unless -f 'META.yml';
 
 my %RUN_DEPS = (
-  'Moo' => 0.091010,
   'Module::Runtime' => 0.012,
 );
 my %BUILD_DEPS = (
+  'Moo' => 0.091010,
   'Test::More'  => 0.96,
   'Test::Fatal' => 0.003,
 );
