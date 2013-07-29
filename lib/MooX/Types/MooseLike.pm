@@ -8,7 +8,7 @@ use Module::Runtime qw(require_module);
 use Carp qw(confess croak);
 use List::Util qw(first);
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 sub register_types {
   my ($type_definitions, $into, $moose_namespace) = @_;

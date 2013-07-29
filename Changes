@@ -1,4 +1,5 @@
-    - don't trigger bool overrides when checking for object instance type
+    - Don't trigger bool overrides when checking for object instance type
+      [RT#87382] (Mithaldu)
     - Make Moo a build dep. instead of run dep.
 
 0.24 - 2013-07-10
@@ -78,8 +79,8 @@
          This means one can now write: isa => ArrayRef[HashRef]
 
 0.06 - 2012-06-27
-       - Make subtype use full test [#RT78074] (SineSwiper)
-       - Correct SingleDigit type definition [#RT78074] (SineSwiper)
+       - Make subtype use full test [RT#78074] (SineSwiper)
+       - Correct SingleDigit type definition [RT#78074] (SineSwiper)
        - Add Stack Trace on Exception [RT#77583] (Mithaldu)
 
 0.05 - 2012-05-16
