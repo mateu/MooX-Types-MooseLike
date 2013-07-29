@@ -1,3 +1,4 @@
+    - don't trigger bool overrides when checking for object instance type
     - Make Moo a build dep. instead of run dep.
 
 0.24 - 2013-07-10

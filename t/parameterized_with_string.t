@@ -1,4 +1,9 @@
 {
+  package NoBool;
+  use Moo;
+  use overload ('bool' => sub { die });
+}
+{
   package MooX::Types::MooseLike::Test::Role;
   use Role::Tiny;
   sub foo { 'ja' };
@@ -44,6 +49,10 @@
   has instance_of_A_and_B => (
     is  => 'ro',
     isa => InstanceOf['A', 'B'],
+    );
+  has instance_of_NoBool => (
+    is  => 'ro',
+    isa => InstanceOf['NoBool'],
     );
   has consumer_of => (
     is  => 'ro',
@@ -95,6 +104,7 @@ like(
   'a Foo instance is not an instance of IO::Handle'
   );
 ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => B->new ), 'instance of A and B');
+ok(MooX::Types::MooseLike::Test->new(instance_of_NoBool => NoBool->new ), 'instance of NoBool');
 
 # ConsumerOf
 ok(MooX::Types::MooseLike::Test->new(consumer_of => MooX::Types::MooseLike::Test->new ), 'consumer of a some roles');

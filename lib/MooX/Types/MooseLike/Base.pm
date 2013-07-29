@@ -211,7 +211,7 @@ sub blessed_type_definitions {## no critic qw(Subroutines::ProhibitExcessComplex
       name => 'InstanceOf',
       test => sub {
         my ($instance, @classes) = (shift, @_);
-        return if not $instance;
+        return if not defined $instance;
         return if not blessed($instance);
         my @missing_classes = grep { !$instance->isa($_) } @classes;
         return (scalar @missing_classes ? 0 : 1);
