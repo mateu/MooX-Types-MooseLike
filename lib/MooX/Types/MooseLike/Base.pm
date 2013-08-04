@@ -422,7 +422,7 @@ a list of types like:
 
     use MooX::Types::MooseLike::Base qw/HashRef ArrayRef/;
 
-so one could then declare some attributtes like:
+so one could then declare some attributes like:
 
 	has 'contact' => (
 	  is => 'ro',
