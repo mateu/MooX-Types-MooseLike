@@ -1,4 +1,4 @@
-    - Bugfix for recent versions of Moo changing error messages.
+    - Bugfix for recent versions of Moo changing error messages (skaufman)
 
 0.25 - 2013-07-29
     - Don't trigger bool overrides when checking for object instance type
