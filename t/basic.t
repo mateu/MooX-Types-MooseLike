@@ -319,7 +319,7 @@ like(
 
 like(
   exception { MooX::Types::MooseLike::Test->new(an_undef => '') },
-  qr/is not undef.*\n.*MooX::Types::MooseLike::Test::new.*basic\.t/,
+  qr/is not undef.*\n.*MooX::Types::MooseLike::Test::new.*basic\.t/s,
   'The error looks like a useful stacktrace'
   );
 
