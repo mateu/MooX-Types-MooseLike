@@ -16,15 +16,15 @@
   sub quoi { 'dieu' };
 }
 {
-  package A;
+  package ClassA;
   use Moo;
   has fun => (is => 'ro');
   1;
 }
 {
-  package B;
+  package ClassB;
   use Moo;
-  extends 'A';
+  extends 'ClassA';
   has funner => (is => 'ro');
   1;
 }
@@ -48,7 +48,7 @@
     );
   has instance_of_A_and_B => (
     is  => 'ro',
-    isa => InstanceOf['A', 'B'],
+    isa => InstanceOf['ClassA', 'ClassB'],
     );
   has instance_of_NoBool => (
     is  => 'ro',
@@ -103,7 +103,7 @@ like(
   qr/is not an instance of the class.*IO::Handle/,
   'a Foo instance is not an instance of IO::Handle'
   );
-ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => B->new ), 'instance of A and B');
+ok(MooX::Types::MooseLike::Test->new(instance_of_A_and_B => ClassB->new ), 'instance of ClassA and ClassB');
 ok(MooX::Types::MooseLike::Test->new(instance_of_NoBool => NoBool->new ), 'instance of NoBool');
 
 # ConsumerOf
