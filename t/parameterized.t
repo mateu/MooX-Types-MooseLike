@@ -1,17 +1,4 @@
 {
-  package A;
-  use Moo;
-  has fun => (is => 'ro');
-  1;
-}
-{
-  package B;
-  use Moo;
-  extends 'A';
-  has funner => (is => 'ro');
-  1;
-}
-{
   package MooX::Types::MooseLike::Test;
   use strict;
   use warnings FATAL => 'all';
