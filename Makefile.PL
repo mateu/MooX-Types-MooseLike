@@ -8,7 +8,7 @@ my %RUN_DEPS = (
   'Module::Runtime' => 0.012,
 );
 my %BUILD_DEPS = (
-  'Moo'         => 1.007000,
+  'Moo'         => 1.000007,
   'Test::More'  => 0.96,
   'Test::Fatal' => 0.003,
 );
