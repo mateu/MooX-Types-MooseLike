@@ -275,7 +275,7 @@ Graham Knop (cpan:HAARG) <haarg@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 the MooX::Types::MooseLike L</AUTHOR> and
+Copyright (c) 2011-2015 the MooX::Types::MooseLike L</AUTHOR> and
  L</CONTRIBUTORS> as listed above.
 
 =head1 LICENSE
