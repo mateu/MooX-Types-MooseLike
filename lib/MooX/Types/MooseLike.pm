@@ -208,9 +208,10 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 DESCRIPTION
 
-See L<MooX::Types::MooseLike::Base> for a list of available base types.  
-Its source also provides an example of how to build base types, along 
-with both parameterizable and non-parameterizable.
+This module provides a possibility to build your own set of Moose-like types. These custom types can then be used to describe fields in Moo-based classes.
+
+See L<MooX::Types::MooseLike::Base> for a list of available base types.
+Its source also provides an example of how to build base types, along with both parameterizable and non-parameterizable.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
