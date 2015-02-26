@@ -217,6 +217,44 @@ See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
 See L<MooX::Types::SetObject> for an example of how to build parameterized types.
 
+=head1 FUNCTIONS
+
+=head2 register_types
+
+B<register_types( types, package, moose_namespace )>
+
+Install the given types within the package. This makes the types automatically exportable by adding them to @EXPORT_OK of the package. Types are expected to be an array ref where every type is of the following format:
+
+  {
+    name            => 'MyType',
+    test            => sub { check_the_value_somehow($_[0]) },
+    message         => sub { "$_[0] is not the type we want!" },
+    parameterizable => sub { ... }, # Optional
+    inflate         => sub { ... }, # Optional
+  }
+
+=head2 exception_message
+
+B<exception_message( value, part_of_the_exception_string )>
+
+Helper function to be used in a type definition:
+
+  {
+    ...
+    message => sub { return exception_message($_[0], 'a HashRef' },
+    ...
+  }
+
+In the event of <value> mismatching the type constraints it produces the message:
+
+  "<value> is not a HashRef!"
+
+=head2 inflate_type
+
+B<inflate_type( coderef )>
+
+Inflates the type to a Moose type. Requires Moose.
+
 =head1 AUTHOR
 
 mateu - Mateu X. Hunter (cpan:MATEU) <hunter@missoula.org>
