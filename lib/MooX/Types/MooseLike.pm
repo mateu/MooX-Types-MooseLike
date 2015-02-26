@@ -166,44 +166,45 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 SYNOPSIS
 
-    package MyApp::Types;
-    use MooX::Types::MooseLike;
-    use base qw(Exporter);
-    our @EXPORT_OK = ();
+  package MyApp::Types;
+  use MooX::Types::MooseLike;
+  use base qw(Exporter);
+  our @EXPORT_OK = ();
 
-    # Define some types
-    my $defs = [{
-      name => 'MyType',
-      test => sub { predicate($_[0]) },
-      message => sub { "$_[0] is not the type we want!" }
+  # Define some types
+  my $defs = [{
+    name => 'MyType',
+    test => sub { predicate($_[0]) },
+    message => sub { "$_[0] is not the type we want!" }
+  },
+  {
+    name => 'VarChar',
+    test => sub {
+      my ($value, $param) = @_;
+      length($value) <= $param;
     },
-    {
-      name => 'VarChar',
-      test => sub {
-        my ($value, $param) = @_;
-        length($value) <= $param;
-      },
-      message => sub { "$_[0] is too large! It should be less than or equal to $_[1]." }
-    }];
+    message => sub { "$_[0] is too large! It should be less than or equal to $_[1]." }
+  }];
 
-    # Make the types available - this adds them to @EXPORT_OK automatically.
-    MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
+  # Make the types available - this adds them to @EXPORT_OK automatically.
+  MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
 
-    ...
+  ...
 
-    # Somewhere in code that uses the type
-    package MyApp::Foo;
-    use Moo;
-    use MyApp::Types qw(MyType VarChar);
-    has attribute => (
-      is  => 'ro',
-      isa => MyType,
-    );
+  # Somewhere in code that uses the type
+  package MyApp::Foo;
+  use Moo;
+  use MyApp::Types qw(MyType VarChar);
 
-    has string => (
-      is  => 'ro',
-      isa => VarChar[25]
-    );
+  has attribute => (
+    is  => 'ro',
+    isa => MyType,
+  );
+
+  has string => (
+    is  => 'ro',
+    isa => VarChar[25]
+  );
 
 =head1 DESCRIPTION
 
