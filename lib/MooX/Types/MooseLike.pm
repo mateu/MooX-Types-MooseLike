@@ -211,9 +211,15 @@ See L<MooX::Types::MooseLike::Base> for a list of available base types.
 Its source also provides an example of how to build base types, along 
 with both parameterizable and non-parameterizable.
 
-See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
+=head1 SEE ALSO
 
-See L<MooX::Types::SetObject> for an example of how to build parameterized types.
+L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
+
+L<MooX::Types::SetObject> - an example of building parameterized types.
+
+L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
+
+L<Type::Tiny> - another implementation of type constraints. Compatible with L<Moo>, L<Moose> and L<Mouse>.
 
 =head1 AUTHOR
 

@@ -585,6 +585,14 @@ Takes a list of possible string values. For example:
 
   isa => Enum['rock', 'spock', 'paper', 'lizard', 'scissors']
 
+=head1 SEE ALSO
+
+L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
+
+L<MooX::Types::SetObject> - an example of building parameterized types.
+
+L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
+
 =head1 AUTHOR
 
 Mateu Hunter C<hunter@missoula.org>
