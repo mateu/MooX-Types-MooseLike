@@ -70,9 +70,9 @@ sub defined_type_definitions {
     },
     {
       name    => 'Num',
-      test    => sub { 
+      test    => sub {
           my $val = $_[0];
-          defined $val and 
+          defined $val and
         ($val =~ /\A[+-]?[0-9]+\z/) ||
         ( $val =~ /\A(?:[+-]?)            # matches optional +- in the beginning
           (?=[0-9]|\.[0-9])               # matches previous +- only if there is something like 3 or .3
@@ -367,6 +367,7 @@ sub logic_type_definitions {
     },
     );
 }
+
 sub type_definitions {
   return
     [
@@ -395,23 +396,24 @@ MooX::Types::MooseLike::Base - Moose like types for Moo
 
 =head1 SYNOPSIS
 
-    package MyPackage;
-    use Moo;
-    use MooX::Types::MooseLike::Base qw(:all);
+  package MyPackage;
+  use Moo;
+  use MooX::Types::MooseLike::Base qw(:all);
 
-    has "beers_by_day_of_week" => (
-        isa => HashRef
-    );
-    has "current_BAC" => (
-        isa => Num
-    );
+  has "beers_by_day_of_week" => (
+      isa => HashRef
+  );
 
-    # Also supporting is_$type.  For example, is_Int() can be used as follows
-    has 'legal_age' => (
-        is => 'ro',
-        isa => sub { die "$_[0] is not of legal age"
-        	           unless (is_Int($_[0]) && $_[0] > 17) },
-    );
+  has "current_BAC" => (
+      isa => Num
+  );
+
+  # Also supporting is_$type.  For example, is_Int() can be used as follows
+  has 'legal_age' => (
+      is => 'ro',
+      isa => sub { die "$_[0] is not of legal age"
+      	           unless (is_Int($_[0]) && $_[0] > 17) },
+  );
 
 =head1 DESCRIPTION
 
@@ -420,18 +422,18 @@ This module provides some basic types for this property.
 One can import all types with ':all' tag or import
 a list of types like:
 
-    use MooX::Types::MooseLike::Base qw/HashRef ArrayRef/;
+  use MooX::Types::MooseLike::Base qw/HashRef ArrayRef/;
 
 so one could then declare some attributes like:
 
-	has 'contact' => (
-	  is => 'ro',
-	  isa => HashRef,
-	);
-	has 'guest_list' => (
-	  is => 'ro',
-	  isa => ArrayRef[HashRef],
-	);
+  has 'contact' => (
+    is => 'ro',
+    isa => HashRef,
+  );
+  has 'guest_list' => (
+    is => 'ro',
+    isa => ArrayRef[HashRef],
+  );
 
 These types provide a check that the I<contact> attribute is a C<hash> reference,
 and that the I<guest_list> is an C<array of hash> references.
@@ -518,7 +520,7 @@ For example, ArrayRef[HashRef]
 
 =head3 HashRef
 
-=head3 ScalarRef 
+=head3 ScalarRef
 
 =head3 Maybe
 
@@ -537,28 +539,27 @@ Note: AnyOf is passed an ArrayRef[CodeRef]
 
 =head3 AllOf
 
-Check if the attribute is all of the listed types (think intersection)
+Check if the attribute is all of the listed types (think intersection).
 Takes a list of types as the argument. For example:
 
   isa => AllOf[
-    InstanceOf['Human'], 
-    ConsumerOf['Air'], 
+    InstanceOf['Human'],
+    ConsumerOf['Air'],
     HasMethods['breath', 'dance']
   ],
 
- 
 =head2 Parameterizing Types With (Multiple) Strings
 
 In addition, we have some parameterized types that take string arguments.
 
 =head3 InstanceOf
 
-Check if the attribute is an object instance of one or more classes.  
+Check if the attribute is an object instance of one or more classes.
 Uses C<blessed> and C<isa> to do so.
 Takes a list of class names as the argument. For example:
 
   isa => InstanceOf['MyClass','MyOtherClass']
-  
+
 Note: InstanceOf is passed an ArrayRef[Str]
 
 =head3 ConsumerOf
@@ -567,7 +568,7 @@ Check if the attribute is blessed and consumes one or more roles.
 Uses C<blessed> and C<does> to do so.
 Takes a list of role names as the arguments. For example:
 
-  isa => ConsumerOf['My::Role', 'My::AnotherRole'] 
+  isa => ConsumerOf['My::Role', 'My::AnotherRole']
 
 =head3 HasMethods
 
