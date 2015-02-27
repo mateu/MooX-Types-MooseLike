@@ -1,3 +1,8 @@
+
+    - Refine POD (github.com/meAmidos)
+    - Bump version of Moo and Module::Runtime pre-reqs
+    - Modernize Makefile.PL
+
 0.27 - 2014-08-19
     - Fix tests to not use package B (haarg)
 
