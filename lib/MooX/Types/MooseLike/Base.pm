@@ -594,7 +594,7 @@ mst has provided critical guidance on the design
 
 =head1 COPYRIGHT
 
-Copyright 2011-2013 Mateu Hunter
+Copyright 2011-2015 Mateu Hunter
 
 =head1 LICENSE
 

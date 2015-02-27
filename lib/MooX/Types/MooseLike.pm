@@ -166,54 +166,94 @@ MooX::Types::MooseLike - some Moosish types and a type builder
 
 =head1 SYNOPSIS
 
-    package MyApp::Types;
-    use MooX::Types::MooseLike;
-    use base qw(Exporter);
-    our @EXPORT_OK = ();
+  package MyApp::Types;
+  use MooX::Types::MooseLike;
+  use base qw(Exporter);
+  our @EXPORT_OK = ();
 
-    # Define some types
-    my $defs = [{
-      name => 'MyType',
-      test => sub { predicate($_[0]) },
-      message => sub { "$_[0] is not the type we want!" }
+  # Define some types
+  my $defs = [{
+    name => 'MyType',
+    test => sub { predicate($_[0]) },
+    message => sub { "$_[0] is not the type we want!" }
+  },
+  {
+    name => 'VarChar',
+    test => sub {
+      my ($value, $param) = @_;
+      length($value) <= $param;
     },
-    {
-      name => 'VarChar',
-      test => sub {
-        my ($value, $param) = @_;
-        length($value) <= $param;
-      },
-      message => sub { "$_[0] is too large! It should be less than or equal to $_[1]." }
-    }];
+    message => sub { "$_[0] is too large! It should be less than or equal to $_[1]." }
+  }];
 
-    # Make the types available - this adds them to @EXPORT_OK automatically.
-    MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
+  # Make the types available - this adds them to @EXPORT_OK automatically.
+  MooX::Types::MooseLike::register_types($defs, __PACKAGE__);
 
-    ...
+  ...
 
-    # Somewhere in code that uses the type
-    package MyApp::Foo;
-    use Moo;
-    use MyApp::Types qw(MyType VarChar);
-    has attribute => (
-      is  => 'ro',
-      isa => MyType,
-    );
+  # Somewhere in code that uses the type
+  package MyApp::Foo;
+  use Moo;
+  use MyApp::Types qw(MyType VarChar);
 
-    has string => (
-      is  => 'ro',
-      isa => VarChar[25]
-    );
+  has attribute => (
+    is  => 'ro',
+    isa => MyType,
+  );
+
+  has string => (
+    is  => 'ro',
+    isa => VarChar[25]
+  );
 
 =head1 DESCRIPTION
 
-See L<MooX::Types::MooseLike::Base> for a list of available base types.  
-Its source also provides an example of how to build base types, along 
-with both parameterizable and non-parameterizable.
+This module provides a possibility to build your own set of Moose-like types. These custom types can then be used to describe fields in Moo-based classes.
+
+See L<MooX::Types::MooseLike::Base> for a list of available base types.
+Its source also provides an example of how to build base types, along with both parameterizable and non-parameterizable.
 
 See L<MooX::Types::MooseLike::Numeric> for an example of how to build subtypes.
 
 See L<MooX::Types::SetObject> for an example of how to build parameterized types.
+
+=head1 FUNCTIONS
+
+=head2 register_types
+
+B<register_types( types, package, moose_namespace )>
+
+Install the given types within the package. This makes the types automatically exportable by adding them to @EXPORT_OK of the package. Types are expected to be an array ref where every type is of the following format:
+
+  {
+    name            => 'MyType',
+    test            => sub { check_the_value_somehow($_[0]) },
+    message         => sub { "$_[0] is not the type we want!" },
+    parameterizable => sub { ... }, # Optional
+    inflate         => sub { ... }, # Optional
+  }
+
+=head2 exception_message
+
+B<exception_message( value, part_of_the_exception_string )>
+
+Helper function to be used in a type definition:
+
+  {
+    ...
+    message => sub { return exception_message($_[0], 'a HashRef' },
+    ...
+  }
+
+In the event of <value> mismatching the type constraints it produces the message:
+
+  "<value> is not a HashRef!"
+
+=head2 inflate_type
+
+B<inflate_type( coderef )>
+
+Inflates the type to a Moose type. Requires Moose.
 
 =head1 AUTHOR
 
@@ -235,7 +275,7 @@ Graham Knop (cpan:HAARG) <haarg@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2011-2013 the MooX::Types::MooseLike L</AUTHOR> and
+Copyright (c) 2011-2015 the MooX::Types::MooseLike L</AUTHOR> and
  L</CONTRIBUTORS> as listed above.
 
 =head1 LICENSE
