@@ -392,7 +392,7 @@ __END__
 
 =head1 NAME
 
-MooX::Types::MooseLike::Base - Moose like types for Moo
+MooX::Types::MooseLike::Base - A set of basic Moose-like types for Moo
 
 =head1 SYNOPSIS
 
