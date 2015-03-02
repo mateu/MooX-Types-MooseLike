@@ -213,16 +213,6 @@ This module provides a possibility to build your own set of Moose-like types. Th
 See L<MooX::Types::MooseLike::Base> for a list of available base types.
 Its source also provides an example of how to build base types, along with both parameterizable and non-parameterizable.
 
-=head1 SEE ALSO
-
-L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
-
-L<MooX::Types::SetObject> - an example of building parameterized types.
-
-L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
-
-L<Type::Tiny> - another implementation of type constraints. Compatible with L<Moo>, L<Moose> and L<Mouse>.
-
 =head1 FUNCTIONS
 
 =head2 register_types
@@ -235,9 +225,38 @@ Install the given types within the package. This makes the types automatically e
     name            => 'MyType',
     test            => sub { check_the_value_somehow($_[0]) },
     message         => sub { "$_[0] is not the type we want!" },
-    parameterizable => sub { ... }, # Optional
-    inflate         => sub { ... }, # Optional
+    subtype_of      => 'SomeParentType',           # Optional
+    from            => 'Some::Parent::CoolTypes',  # Optional
+    parameterizable => sub { ... },                # Optional
+    inflate         => sub { ... },                # Optional
   }
+
+A type can be declared with a reference (I<subtype_of>) to some previously declared type. In this case the new type will inherit the behaviour of the referenced type.
+
+The referenced type can come either from the same package or from a third party package:
+
+  MooX::Types::MooseLike::register_types([{
+    name       => 'GreaterThan10',
+    subtype_of => 'Int',
+    from       => 'MooX::Types::MooseLike::Base',
+    test       => sub { $_[0] > 10 },
+    message    => sub { 'not greater than 10' },
+  }], __PACKAGE__);
+
+  MooX::Types::MooseLike::register_types([{
+    name       => 'Between10And20',
+    subtype_of => 'GreaterThan10',
+    from       => __PACKAGE__,
+    test       => sub { $_[0] < 20 },
+    message    => sub { 'not an integer between 10 and 20' },
+  }], __PACKAGE__);
+
+  MooX::Types::MooseLike::register_types([{
+    name       => 'Between10And30',
+    subtype_of => GreaterThan10(),
+    test       => sub { $_[0] < 30 },
+    message    => sub { 'not an integer between 10 and 30' },
+  }], __PACKAGE__);
 
 =head2 exception_message
 
@@ -260,6 +279,16 @@ In the event of <value> mismatching the type constraints it produces the message
 B<inflate_type( coderef )>
 
 Inflates the type to a Moose type. Requires Moose.
+
+=head1 SEE ALSO
+
+L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
+
+L<MooX::Types::SetObject> - an example of building parameterized types.
+
+L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
+
+L<Type::Tiny> - another implementation of type constraints. Compatible with L<Moo>, L<Moose> and L<Mouse>.
 
 =head1 AUTHOR
 
