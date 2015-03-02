@@ -254,7 +254,7 @@ The referenced type can come either from the same package or from a third party 
   MooX::Types::MooseLike::register_types([{
     name       => 'Between10And30',
     subtype_of => GreaterThan10(),
-    test       => sub { $_[0] < 20 },
+    test       => sub { $_[0] < 30 },
     message    => sub { 'not an integer between 10 and 30' },
   }], __PACKAGE__);
 
