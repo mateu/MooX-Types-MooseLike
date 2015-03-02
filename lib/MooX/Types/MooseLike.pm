@@ -213,16 +213,6 @@ This module provides a possibility to build your own set of Moose-like types. Th
 See L<MooX::Types::MooseLike::Base> for a list of available base types.
 Its source also provides an example of how to build base types, along with both parameterizable and non-parameterizable.
 
-=head1 SEE ALSO
-
-L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
-
-L<MooX::Types::SetObject> - an example of building parameterized types.
-
-L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
-
-L<Type::Tiny> - another implementation of type constraints. Compatible with L<Moo>, L<Moose> and L<Mouse>.
-
 =head1 FUNCTIONS
 
 =head2 register_types
@@ -260,6 +250,16 @@ In the event of <value> mismatching the type constraints it produces the message
 B<inflate_type( coderef )>
 
 Inflates the type to a Moose type. Requires Moose.
+
+=head1 SEE ALSO
+
+L<MooX::Types::MooseLike::Numeric> - an example of building subtypes.
+
+L<MooX::Types::SetObject> - an example of building parameterized types.
+
+L<MooX::Types::MooseLike::Email>, L<MooX::Types::MooseLike::DateTime>
+
+L<Type::Tiny> - another implementation of type constraints. Compatible with L<Moo>, L<Moose> and L<Mouse>.
 
 =head1 AUTHOR
 
