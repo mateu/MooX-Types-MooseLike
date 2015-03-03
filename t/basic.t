@@ -160,8 +160,19 @@ like(
   );
 
 # Test Num
-ok(MooX::Types::MooseLike::Test->new(a_number => 0), 'Num zero');
-ok(MooX::Types::MooseLike::Test->new(a_number => 3.14), 'Num');
+ok(MooX::Types::MooseLike::Test->new(a_number => 0), 'Num: zero');
+ok(MooX::Types::MooseLike::Test->new(a_number => "+3"), 'Num string: positive int');
+ok(MooX::Types::MooseLike::Test->new(a_number => "-5"), 'Num string: negative int');
+ok(MooX::Types::MooseLike::Test->new(a_number => 123), 'Num: positive int');
+ok(MooX::Types::MooseLike::Test->new(a_number => 3.14), 'Num: positive decimal');
+ok(MooX::Types::MooseLike::Test->new(a_number => -5.26), 'Num: negative decimal');
+ok(MooX::Types::MooseLike::Test->new(a_number => "+3.14"), 'Num string: positive decimal');
+ok(MooX::Types::MooseLike::Test->new(a_number => ".14"), 'Num string: positive decimal, short form');
+ok(MooX::Types::MooseLike::Test->new(a_number => "-.14"), 'Num string: negative decimal, short form');
+ok(MooX::Types::MooseLike::Test->new(a_number => "1E1"), 'Num string: E');
+ok(MooX::Types::MooseLike::Test->new(a_number => ".5e+123"), 'Num string: E');
+ok(MooX::Types::MooseLike::Test->new(a_number => "12.5e-2"), 'Num string: E');
+ok(MooX::Types::MooseLike::Test->new(a_number => "0123"), 'Num string: octal int');
 like(
   exception { MooX::Types::MooseLike::Test->new(a_number => undef) },
   qr/undef is not a number/,
@@ -176,6 +187,16 @@ like(
   exception { MooX::Types::MooseLike::Test->new(a_number => '5x5') },
   qr/is not a number/,
   'a non number is an exception when we want a number'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_number => "0b1110011") },
+  qr/is not a number/,
+  'binary integer string is an exception when we want a number'
+  );
+like(
+  exception { MooX::Types::MooseLike::Test->new(a_number => "0x1234") },
+  qr/is not a number/,
+  'hexadecimal integer string is an exception when we want a number'
   );
 
 # Test Int
