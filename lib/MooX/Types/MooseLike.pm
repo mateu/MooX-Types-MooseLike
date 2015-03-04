@@ -308,6 +308,8 @@ Toby Inkster (cpan:TOBYINK) <tobyink@cpan.org>
 
 Graham Knop (cpan:HAARG) <haarg@cpan.org>
 
+Dmitry Matrosov (cpan:AMIDOS) <amidos@amidos.ru>
+
 =head1 COPYRIGHT
 
 Copyright (c) 2011-2015 the MooX::Types::MooseLike L</AUTHOR> and
