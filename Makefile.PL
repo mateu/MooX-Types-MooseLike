@@ -55,7 +55,7 @@ my %META = (
   x_authority => 'cpan:MATEU',
 );
 
-my %MM_ARGS = ();
+my %MM_ARGS = ('DISTNAME' => 'MooX-Types-MooseLike');
 
 ## BOILERPLATE ###############################################################
 require ExtUtils::MakeMaker;
