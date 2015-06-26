@@ -1,5 +1,6 @@
     - Add more Num tests (meAmdios)
     - Improve POD (meAmidos)
+    - Add DISTNAME to MakeMaker args
 
 0.28 - 2015-02-27
     - Refine POD (github.com/meAmidos)
