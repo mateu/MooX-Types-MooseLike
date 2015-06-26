@@ -7,7 +7,7 @@ use MooX::Types::MooseLike qw( exception_message inflate_type );
 use Exporter 5.57 'import';
 our @EXPORT_OK = ();
 
-our $VERSION = 0.28;
+our $VERSION = 0.29;
 
 # These types act like those found in Moose::Util::TypeConstraints.
 # Generally speaking, the same test is used.
