@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 use 5.008001;
 
 my %META = (
-  name => 'MooX::Types::MooseLike',
+  name => 'MooX-Types-MooseLike',
   license => 'perl_5',
   prereqs => {
     configure => { requires => {
