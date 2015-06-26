@@ -1,3 +1,4 @@
+0.29 - 2015-06-26
     - Add more Num tests (meAmdios)
     - Improve POD (meAmidos)
     - Add DISTNAME to MakeMaker args
